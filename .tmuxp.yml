@@ -1,0 +1,8 @@
+session_name: cargo
+windows:
+  - window_name: watcher
+    layout: even-horizontal
+    panes:
+      - cargo watch -x 'clippy'
+      - cargo watch -x 'test'
+      - cargo watch -x 'doc'
