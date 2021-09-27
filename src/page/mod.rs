@@ -1,10 +1,7 @@
 //! Traits and data structures to create, run, assemble and render a web page.
 
 use {
-    crate::{
-        module::{Module, Modules, RuntimeInformation},
-        Error,
-    },
+    crate::module::{Module, Modules, RuntimeInformation},
     std::{collections::HashMap, rc::Rc},
 };
 
@@ -39,7 +36,13 @@ pub trait Page: Metadata + Runtime + Render {
         // all modules
         for module in self.modules_mut() {
             // run
-            Rc::get_mut(module).unwrap().run(&runtime_options);
+            if let Err(e) = Rc::get_mut(module).unwrap().run(&runtime_options) {
+                log::error!(
+                    "Module with id \"{}\" returned an error: {:#?}",
+                    module.id(),
+                    e
+                );
+            }
             // render
             modules_rendered_dom.push(module.render());
             let id = module.id().to_owned();

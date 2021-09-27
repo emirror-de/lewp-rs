@@ -1,6 +1,6 @@
 //! Runtime traits and structs of a module.
 
-use crate::{module::Module, Error};
+use crate::Error;
 
 /// Defines the behavior during runtime.
 pub trait Runtime {

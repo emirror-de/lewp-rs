@@ -12,6 +12,10 @@ readme = "README.md"
 keywords = ["HTML5", "CSS", "JavaScript", "WASM", "website", "modules"]
 categories = []
 
+[features]
+full = ["submodules"]
+submodules = []
+
 [dependencies]
 serde = { version = "^1.0.130", features = ["derive"], optional = true }
 log = "^0.4.14"
@@ -20,3 +24,6 @@ html5ever = "^0.25.1"
 markup5ever_rcdom = "^0.1.0"
 charsets = "^0.2.0"
 #toml = { version = "^0.5.8", optional = true }
+
+[dev-dependencies]
+rand = "0.8.4"
