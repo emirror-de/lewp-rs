@@ -9,9 +9,19 @@ pub trait Runtime: SubModule {
     /// Runs all submodules in order as they are returned in [super::SubModule::submodules].
     fn run_submodules(&mut self) -> Result<(), Error> {
         for child in self.submodules_mut() {
-            Rc::get_mut(child)
-                .unwrap()
-                .run(&RuntimeInformation::new())?;
+            let child_id = child.id().to_owned();
+            match Rc::get_mut(child) {
+                Some(m) => m.run(&RuntimeInformation::new())?,
+                None => {
+                    return Err(Error::MutableReference((
+                        self.id().to_string(),
+                        format!(
+                            "Could not get mutable reference when running submodule with id \"{}\"",
+                            child_id
+                        ),
+                    )))
+                }
+            }
         }
         Ok(())
     }
@@ -32,9 +42,19 @@ pub trait Runtime: SubModule {
                 )))
             }
         };
-        Rc::get_mut(module)
-            .unwrap()
-            .run(&RuntimeInformation::new())?;
+        let child_id = module.id().to_owned();
+        match Rc::get_mut(module) {
+            Some(m) => m.run(&RuntimeInformation::new())?,
+            None => {
+                return Err(Error::MutableReference((
+                    self.id().to_string(),
+                    format!(
+                        "Could not get mutable reference when running submodule with id \"{}\"",
+                        child_id
+                    ),
+                )))
+            }
+        }
         Ok(())
     }
 
@@ -48,9 +68,18 @@ pub trait Runtime: SubModule {
             if module.id() != id {
                 continue;
             }
-            Rc::get_mut(module)
-                .unwrap()
-                .run(&RuntimeInformation::new())?;
+            match Rc::get_mut(module) {
+                Some(m) => m.run(&RuntimeInformation::new())?,
+                None => {
+                    return Err(Error::MutableReference((
+                        self.id().to_string(),
+                        format!(
+                            "Could not get mutable reference when running submodule with id \"{}\"",
+                            id
+                        ),
+                    )))
+                }
+            }
             return Ok(());
         }
         Err(Error::ModuleNotFound((
@@ -72,9 +101,18 @@ pub trait Runtime: SubModule {
             if module.id() != id {
                 continue;
             }
-            Rc::get_mut(module)
-                .unwrap()
-                .run(&RuntimeInformation::new())?;
+            match Rc::get_mut(module) {
+                Some(m) => m.run(&RuntimeInformation::new())?,
+                None => {
+                    return Err(Error::MutableReference((
+                        self.id().to_string(),
+                        format!(
+                            "Could not get mutable reference when running submodule with id \"{}\"",
+                            id
+                        ),
+                    )))
+                }
+            }
         }
         Ok(())
     }

@@ -33,4 +33,10 @@ pub enum Error {
     ///
     /// `(emitting_module_id, message)`
     ModuleNotFound((String, String)),
+    /// Occurs when a mutable reference could not be obtained.
+    ///
+    /// **Returns**
+    ///
+    /// `(emitting_module_id, message)`
+    MutableReference((String, String)),
 }
