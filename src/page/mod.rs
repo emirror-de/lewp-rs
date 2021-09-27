@@ -36,7 +36,17 @@ pub trait Page: Metadata + Runtime + Render {
         // all modules
         for module in self.modules_mut() {
             // run
-            if let Err(e) = Rc::get_mut(module).unwrap().run(&runtime_options) {
+            let module = match Rc::get_mut(module) {
+                None => {
+                    log::error!(
+                        "Could not get mutable reference to module \"{}\". Skipping...",
+                        module.id()
+                    );
+                    continue;
+                }
+                Some(m) => m,
+            };
+            if let Err(e) = module.run(&runtime_options) {
                 log::error!(
                     "Module with id \"{}\" returned an error: {:#?}",
                     module.id(),
