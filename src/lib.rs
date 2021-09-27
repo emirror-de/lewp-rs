@@ -13,8 +13,11 @@ pub mod config;
 pub mod dom;
 pub mod module;
 pub mod page;
+#[cfg(feature = "submodules")]
+pub mod submodule;
 
 /// Contains the error definitions that occur in [lewp](crate).
+#[derive(Debug)]
 pub enum Error {
     /// Raised when a loop reference has been detected.
     LoopDetection(String),
@@ -24,4 +27,10 @@ pub enum Error {
     ///
     /// `(module id, message)`
     RuntimeError((String, String)),
+    /// Indicates that a module has not been found.
+    ///
+    /// **Returns**
+    ///
+    /// `(emitting_module_id, message)`
+    ModuleNotFound((String, String)),
 }

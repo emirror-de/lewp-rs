@@ -14,7 +14,6 @@ use {
 struct HelloWorld {
     config: ModuleConfig,
     head_tags: Nodes,
-    children: Modules,
     data: String,
 }
 
@@ -23,7 +22,6 @@ impl HelloWorld {
         Self {
             config: ModuleConfig::new(),
             head_tags: vec![],
-            children: vec![],
             data: String::from("hello-world"),
         }
     }
@@ -32,14 +30,6 @@ impl HelloWorld {
 impl Module for HelloWorld {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
-    }
-
-    fn children(&self) -> &Modules {
-        &self.children
-    }
-
-    fn children_mut(&mut self) -> &mut Modules {
-        &mut self.children
     }
 }
 
