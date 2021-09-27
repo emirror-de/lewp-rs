@@ -1,14 +1,11 @@
-use {
-    lewp::{
-        config::{ModuleConfig, PageConfig},
-        dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-        },
-        Charset, Error, LanguageTag,
+use lewp::{
+    config::{ModuleConfig, PageConfig},
+    dom::{NodeCreator, Nodes},
+    module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
+    page::{
+        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
     },
-    std::rc::Rc,
+    Charset, Error, LanguageTag,
 };
 
 struct HelloWorld {
@@ -54,7 +51,7 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+    fn run(&mut self, _runtime_info: &mut Box<RuntimeInformation>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -115,7 +112,7 @@ const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &'static str = "<!DOCTYPE html><html l
 
 #[test]
 fn hello_world_with_module_wrapper() {
-    let module = Rc::new(HelloWorld::new());
+    let module = Box::new(HelloWorld::new());
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
@@ -128,7 +125,7 @@ fn hello_world_with_module_wrapper() {
 #[test]
 fn hello_world_skipped_wrapper() {
     let module_config = ModuleConfig { skip_wrapper: true };
-    let module = Rc::new(HelloWorld::from(module_config));
+    let module = Box::new(HelloWorld::from(module_config));
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),

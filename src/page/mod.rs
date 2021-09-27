@@ -21,7 +21,7 @@ pub trait Page: Metadata + Runtime + Render {
     fn modules_mut(&mut self) -> &mut Modules;
 
     /// Adds the module to the page. The page is rendered FIFO.
-    fn add_module(&mut self, module: Rc<dyn Module>) {
+    fn add_module(&mut self, module: Box<dyn Module>) {
         self.modules_mut().push(module);
     }
 
@@ -30,23 +30,12 @@ pub trait Page: Metadata + Runtime + Render {
     where
         Self: Assembler,
     {
-        let mut runtime_options = RuntimeInformation::new();
-        let mut module_register = HashMap::<String, u32>::new();
+        let mut runtime_information = Box::new(RuntimeInformation::new());
         let mut modules_rendered_dom = vec![];
         // all modules
         for module in self.modules_mut() {
             // run
-            let module = match Rc::get_mut(module) {
-                None => {
-                    log::error!(
-                        "Could not get mutable reference to module \"{}\". Skipping...",
-                        module.id()
-                    );
-                    continue;
-                }
-                Some(m) => m,
-            };
-            if let Err(e) = module.run(&runtime_options) {
+            if let Err(e) = module.run(&mut runtime_information) {
                 log::error!(
                     "Module with id \"{}\" returned an error: {:#?}",
                     module.id(),
@@ -55,11 +44,11 @@ pub trait Page: Metadata + Runtime + Render {
             }
             // render
             modules_rendered_dom.push(module.render());
+
+            // update runtime information
             let id = module.id().to_owned();
-            module_register.insert(id, module_register.get(module.id()).unwrap_or(&0) + 1);
-            runtime_options.previously_executed_count =
-                *module_register.get(module.id()).unwrap_or(&0);
-            runtime_options.previous_module_id = Some(module.id().to_string());
+            runtime_information.increase_execution_count(module.id());
+            runtime_information.previous_module_id = Some(module.id().to_string());
         }
         self.render(modules_rendered_dom)
     }

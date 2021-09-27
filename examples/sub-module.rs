@@ -1,13 +1,10 @@
-use {
-    lewp::{
-        config::PageConfig,
-        module::Modules,
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-        },
-        Charset, LanguageTag,
+use lewp::{
+    config::PageConfig,
+    module::Modules,
+    page::{
+        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
     },
-    std::rc::Rc,
+    Charset, LanguageTag,
 };
 
 mod modules {
@@ -34,8 +31,12 @@ mod modules {
                 children: Modules::new(),
                 data: String::from("hello-world"),
             };
-            let headline = std::rc::Rc::new(RandomHeadline::new());
+            let headline = Box::new(RandomHeadline::new());
             // Recommended way to add a module to have integrated loop prevention
+            if instance.append_module(headline).is_err() {
+                log::error!("Could not append module!");
+            }
+            let headline = Box::new(RandomHeadline::new());
             if instance.append_module(headline).is_err() {
                 log::error!("Could not append module!");
             }
@@ -60,9 +61,9 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
             // See Runtime trait in submodule for more run methods
-            self.run_submodules()?;
+            self.run_submodules(runtime_information)?;
             Ok(())
         }
     }
@@ -94,6 +95,7 @@ mod modules {
         config: ModuleConfig,
         head_tags: Nodes,
         current_headline: Option<usize>,
+        execution_count: u32,
         data: Vec<String>,
     }
 
@@ -103,6 +105,7 @@ mod modules {
                 config: ModuleConfig::new(),
                 head_tags: Nodes::new(),
                 current_headline: None,
+                execution_count: 0,
                 data: vec![
                     String::from("My first generated headline"),
                     String::from("Wow this is dynamic!"),
@@ -128,10 +131,11 @@ mod modules {
     }
 
     impl Runtime for RandomHeadline {
-        fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
             use rand::Rng;
             let mut rng = rand::thread_rng();
             self.current_headline = Some(rng.gen_range(0..self.data.len()));
+            self.execution_count = runtime_information.get_execution_count(self.id());
             Ok(())
         }
     }
@@ -142,7 +146,11 @@ mod modules {
                 Some(v) => NodeCreator::headline(2, &self.data[v]),
                 None => NodeCreator::headline(2, "This module did not run yet!"),
             };
-            vec![headline]
+            let p = NodeCreator::paragraph(
+                &format!("Has been executed {} times before!", self.execution_count),
+                vec![],
+            );
+            vec![headline, p]
         }
     }
 }
@@ -192,7 +200,7 @@ impl PageRender for HelloWorldPage {}
 impl Assembler for HelloWorldPage {}
 
 fn main() {
-    let module = Rc::new(modules::Header::new());
+    let module = Box::new(modules::Header::new());
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),

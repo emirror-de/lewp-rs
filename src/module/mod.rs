@@ -5,7 +5,7 @@ mod render;
 mod reset;
 mod runtime;
 
-use {crate::dom::Nodes, std::rc::Rc};
+use crate::dom::Nodes;
 
 pub use {
     metadata::Metadata,
@@ -15,7 +15,7 @@ pub use {
 };
 
 /// A collection of modules.
-pub type Modules = Vec<Rc<dyn Module>>;
+pub type Modules = Vec<Box<dyn Module>>;
 
 /// Defines a web page module.
 pub trait Module: Metadata + Runtime + Render {

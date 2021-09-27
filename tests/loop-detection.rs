@@ -1,13 +1,10 @@
-use {
-    lewp::{
-        config::PageConfig,
-        module::Modules,
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-        },
-        Charset, LanguageTag,
+use lewp::{
+    config::PageConfig,
+    module::Modules,
+    page::{
+        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
     },
-    std::rc::Rc,
+    Charset, LanguageTag,
 };
 
 mod modules {
@@ -36,7 +33,7 @@ mod modules {
             };
             // Recommended way to add a module to have integrated loop prevention
             if instance
-                .append_module(std::rc::Rc::new(Self {
+                .append_module(Box::new(Self {
                     config: ModuleConfig::new(),
                     head_tags: Nodes::new(),
                     children: Modules::new(),
@@ -67,9 +64,9 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
             // See Runtime trait in submodule for more run methods
-            self.run_submodules()?;
+            self.run_submodules(runtime_information)?;
             Ok(())
         }
     }
@@ -144,7 +141,7 @@ impl Assembler for HelloWorldPage {}
 
 #[test]
 fn loop_detection() {
-    let module = Rc::new(modules::Header::new());
+    let module = Box::new(modules::Header::new());
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),

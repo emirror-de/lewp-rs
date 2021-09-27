@@ -38,7 +38,7 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+    fn run(&mut self, _runtime_info: &mut Box<RuntimeInformation>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -53,7 +53,7 @@ impl Render for HelloWorld {
 #[test]
 fn hello_world() {
     let mut module = HelloWorld::new();
-    match module.run(&RuntimeInformation::new()) {
+    match module.run(&mut Box::new(RuntimeInformation::new())) {
         _ => (),
     }
 }

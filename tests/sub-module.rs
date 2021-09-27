@@ -34,7 +34,7 @@ mod modules {
                 children: Modules::new(),
                 data: String::from("hello-world"),
             };
-            let headline = std::rc::Rc::new(RandomHeadline::new());
+            let headline = Box::new(RandomHeadline::new());
             // Recommended way to add a module to have integrated loop prevention
             if instance.append_module(headline).is_err() {
                 log::error!("Could not append module!");
@@ -60,9 +60,9 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
             // See Runtime trait in submodule for more run methods
-            self.run_submodules()?;
+            self.run_submodules(runtime_information)?;
             Ok(())
         }
     }
@@ -123,7 +123,7 @@ mod modules {
     }
 
     impl Runtime for RandomHeadline {
-        fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        fn run(&mut self, _runtime_info: &mut Box<RuntimeInformation>) -> Result<(), Error> {
             self.data = String::from("Changed during run!");
             Ok(())
         }
@@ -184,7 +184,7 @@ const SUBMODULE_RESULT: &'static str = "<!DOCTYPE html><html lang=\"de\"><head><
 
 #[test]
 fn submodule() {
-    let module = Rc::new(modules::Header::new());
+    let module = Box::new(modules::Header::new());
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
