@@ -93,8 +93,7 @@ mod modules {
     pub struct RandomHeadline {
         config: ModuleConfig,
         head_tags: Nodes,
-        current_headline: Option<usize>,
-        data: Vec<String>,
+        data: String,
     }
 
     impl RandomHeadline {
@@ -102,11 +101,7 @@ mod modules {
             Self {
                 config: ModuleConfig::new(),
                 head_tags: Nodes::new(),
-                current_headline: None,
-                data: vec![
-                    String::from("My first generated headline"),
-                    String::from("Wow this is dynamic!"),
-                ],
+                data: String::from("Wow this is dynamic!"),
             }
         }
     }
@@ -129,20 +124,14 @@ mod modules {
 
     impl Runtime for RandomHeadline {
         fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
-            use rand::Rng;
-            let mut rng = rand::thread_rng();
-            self.current_headline = Some(rng.gen_range(0..self.data.len()));
+            self.data = String::from("Changed during run!");
             Ok(())
         }
     }
 
     impl Render for RandomHeadline {
         fn view(&self) -> Nodes {
-            let headline = match self.current_headline {
-                Some(v) => NodeCreator::headline(2, &self.data[v]),
-                None => NodeCreator::headline(2, "This module did not run yet!"),
-            };
-            vec![headline]
+            vec![NodeCreator::headline(2, &self.data)]
         }
     }
 }
@@ -191,7 +180,10 @@ impl PageRender for HelloWorldPage {}
 
 impl Assembler for HelloWorldPage {}
 
-fn main() {
+const SUBMODULE_RESULT: &'static str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"></head><body><div class=\"lewp-module header\"><h1>hello-world</h1><div class=\"lewp-module random-headline\"><h2>Changed during run!</h2></div></div></body></html>";
+
+#[test]
+fn submodule() {
     let module = Rc::new(modules::Header::new());
     let mut page = HelloWorldPage {
         modules: vec![],
@@ -199,5 +191,5 @@ fn main() {
     };
     page.add_module(module);
     let dom = page.execute();
-    println!("{}", dom);
+    assert_eq!(SUBMODULE_RESULT, dom);
 }

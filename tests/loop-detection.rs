@@ -34,10 +34,17 @@ mod modules {
                 children: Modules::new(),
                 data: String::from("hello-world"),
             };
-            let headline = std::rc::Rc::new(RandomHeadline::new());
             // Recommended way to add a module to have integrated loop prevention
-            if instance.append_module(headline).is_err() {
-                log::error!("Could not append module!");
+            if instance
+                .append_module(std::rc::Rc::new(Self {
+                    config: ModuleConfig::new(),
+                    head_tags: Nodes::new(),
+                    children: Modules::new(),
+                    data: String::from("hello-world"),
+                }))
+                .is_err()
+            {
+                assert_eq!(true, true);
             }
             instance
         }
@@ -89,62 +96,6 @@ mod modules {
 
     impl SubModuleRuntime for Header {}
     impl SubModuleRender for Header {}
-
-    pub struct RandomHeadline {
-        config: ModuleConfig,
-        head_tags: Nodes,
-        current_headline: Option<usize>,
-        data: Vec<String>,
-    }
-
-    impl RandomHeadline {
-        pub fn new() -> Self {
-            Self {
-                config: ModuleConfig::new(),
-                head_tags: Nodes::new(),
-                current_headline: None,
-                data: vec![
-                    String::from("My first generated headline"),
-                    String::from("Wow this is dynamic!"),
-                ],
-            }
-        }
-    }
-
-    impl Module for RandomHeadline {
-        fn head_tags(&self) -> &Nodes {
-            &self.head_tags
-        }
-    }
-
-    impl Metadata for RandomHeadline {
-        fn id(&self) -> &str {
-            "random-headline"
-        }
-
-        fn config(&self) -> &ModuleConfig {
-            &self.config
-        }
-    }
-
-    impl Runtime for RandomHeadline {
-        fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
-            use rand::Rng;
-            let mut rng = rand::thread_rng();
-            self.current_headline = Some(rng.gen_range(0..self.data.len()));
-            Ok(())
-        }
-    }
-
-    impl Render for RandomHeadline {
-        fn view(&self) -> Nodes {
-            let headline = match self.current_headline {
-                Some(v) => NodeCreator::headline(2, &self.data[v]),
-                None => NodeCreator::headline(2, "This module did not run yet!"),
-            };
-            vec![headline]
-        }
-    }
 }
 
 struct HelloWorldPage {
@@ -191,13 +142,13 @@ impl PageRender for HelloWorldPage {}
 
 impl Assembler for HelloWorldPage {}
 
-fn main() {
+#[test]
+fn loop_detection() {
     let module = Rc::new(modules::Header::new());
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
     page.add_module(module);
-    let dom = page.execute();
-    println!("{}", dom);
+    page.execute();
 }
