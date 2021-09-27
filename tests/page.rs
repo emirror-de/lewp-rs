@@ -131,12 +131,7 @@ fn hello_world_with_module_wrapper() {
         modules: vec![],
         config: PageConfig::new(),
     };
-    match page.add_module(module) {
-        Err(lewp::Error::LoopDetection(msg)) => {
-            log::error!("{}", msg);
-        }
-        _ => (),
-    }
+    page.add_module(module);
     let html_string = page.execute();
     assert_eq!(HELLO_WORLD_RESULT, html_string);
 }
@@ -149,12 +144,7 @@ fn hello_world_skipped_wrapper() {
         modules: vec![],
         config: PageConfig::new(),
     };
-    match page.add_module(module) {
-        Err(lewp::Error::LoopDetection(msg)) => {
-            log::error!("{}", msg);
-        }
-        _ => (),
-    }
+    page.add_module(module);
     let html_string = page.execute();
     assert_eq!(HELLO_WORLD_RESULT_SKIPPED_WRAPPER, html_string);
 }

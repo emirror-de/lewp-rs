@@ -24,9 +24,8 @@ pub trait Page: Metadata + Runtime + Render {
     fn modules_mut(&mut self) -> &mut Modules;
 
     /// Adds the module to the page. The page is rendered FIFO.
-    fn add_module(&mut self, module: Rc<dyn Module>) -> Result<(), Error> {
+    fn add_module(&mut self, module: Rc<dyn Module>) {
         self.modules_mut().push(module);
-        Ok(())
     }
 
     /// Executes all implemented functions and renders the page afterwards.

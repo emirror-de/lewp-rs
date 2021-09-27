@@ -116,12 +116,7 @@ fn main() {
         modules: vec![],
         config: PageConfig::new(),
     };
-    match page.add_module(module) {
-        Err(lewp::Error::LoopDetection(msg)) => {
-            log::error!("{}", msg);
-        }
-        _ => (),
-    }
+    page.add_module(module);
     let dom = page.execute();
     println!("{}", dom);
 }
