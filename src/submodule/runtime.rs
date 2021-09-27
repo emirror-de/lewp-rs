@@ -1,6 +1,7 @@
 use {
     super::SubModule,
     crate::{module::RuntimeInformation, Error},
+    std::rc::Rc,
 };
 
 /// Required to run submodules.
@@ -8,7 +9,7 @@ pub trait Runtime: SubModule {
     /// Runs all submodules in order as they are returned in [super::SubModule::submodules].
     fn run_submodules(&mut self) -> Result<(), Error> {
         for child in self.submodules_mut() {
-            std::rc::Rc::get_mut(child)
+            Rc::get_mut(child)
                 .unwrap()
                 .run(&RuntimeInformation::new())?;
         }
@@ -31,7 +32,7 @@ pub trait Runtime: SubModule {
                 )))
             }
         };
-        std::rc::Rc::get_mut(module)
+        Rc::get_mut(module)
             .unwrap()
             .run(&RuntimeInformation::new())?;
         Ok(())
@@ -47,7 +48,7 @@ pub trait Runtime: SubModule {
             if module.id() != id {
                 continue;
             }
-            std::rc::Rc::get_mut(module)
+            Rc::get_mut(module)
                 .unwrap()
                 .run(&RuntimeInformation::new())?;
             return Ok(());
@@ -71,7 +72,7 @@ pub trait Runtime: SubModule {
             if module.id() != id {
                 continue;
             }
-            std::rc::Rc::get_mut(module)
+            Rc::get_mut(module)
                 .unwrap()
                 .run(&RuntimeInformation::new())?;
         }
