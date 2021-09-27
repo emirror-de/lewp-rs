@@ -6,7 +6,7 @@ use {
         page::{
             Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
         },
-        Charset, LanguageTag,
+        Charset, Error, LanguageTag,
     },
     std::rc::Rc,
 };
@@ -54,7 +54,9 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &RuntimeInformation) {}
+    fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        Ok(())
+    }
 }
 
 impl Render for HelloWorld {
@@ -118,7 +120,7 @@ fn main() {
         Err(lewp::Error::LoopDetection(msg)) => {
             log::error!("{}", msg);
         }
-        Ok(_) => (),
+        _ => (),
     }
     let dom = page.execute();
     println!("{}", dom);

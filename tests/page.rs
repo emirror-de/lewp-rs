@@ -6,7 +6,7 @@ use {
         page::{
             Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
         },
-        Charset, LanguageTag,
+        Charset, Error, LanguageTag,
     },
     std::rc::Rc,
 };
@@ -65,7 +65,9 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &RuntimeInformation) {}
+    fn run(&mut self, _runtime_info: &RuntimeInformation) -> Result<(), Error> {
+        Ok(())
+    }
 }
 
 impl Render for HelloWorld {
@@ -133,7 +135,7 @@ fn hello_world_with_module_wrapper() {
         Err(lewp::Error::LoopDetection(msg)) => {
             log::error!("{}", msg);
         }
-        Ok(_) => (),
+        _ => (),
     }
     let html_string = page.execute();
     assert_eq!(HELLO_WORLD_RESULT, html_string);
@@ -151,7 +153,7 @@ fn hello_world_skipped_wrapper() {
         Err(lewp::Error::LoopDetection(msg)) => {
             log::error!("{}", msg);
         }
-        Ok(_) => (),
+        _ => (),
     }
     let html_string = page.execute();
     assert_eq!(HELLO_WORLD_RESULT_SKIPPED_WRAPPER, html_string);

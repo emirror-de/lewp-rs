@@ -18,4 +18,10 @@ pub mod page;
 pub enum Error {
     /// Raised when a loop reference has been detected.
     LoopDetection(String),
+    /// Occurs when the [run](crate::module::Runtime) function fails.
+    ///
+    /// **Returns**
+    ///
+    /// `(module id, message)`
+    RuntimeError((String, String)),
 }
