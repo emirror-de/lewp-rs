@@ -51,7 +51,7 @@ impl Runtime for HelloWorld {
 
 impl Render for HelloWorld {
     fn view(&self) -> Nodes {
-        let headline = NodeCreator::headline(1, &self.data);
+        let headline = NodeCreator::headline(1, &self.data, vec![]);
         vec![headline]
     }
 }

@@ -69,7 +69,7 @@ mod modules {
 
     impl Render for Header {
         fn view(&self) -> Nodes {
-            let headline = NodeCreator::headline(1, &self.data);
+            let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
             // see Render trait in submodule for more rendering methods
             self.render_submodules(&mut view);
@@ -142,8 +142,8 @@ mod modules {
     impl Render for RandomHeadline {
         fn view(&self) -> Nodes {
             let headline = match self.current_headline {
-                Some(v) => NodeCreator::headline(2, &self.data[v]),
-                None => NodeCreator::headline(2, "This module did not run yet!"),
+                Some(v) => NodeCreator::headline(2, &self.data[v], vec![]),
+                None => NodeCreator::headline(2, "This module did not run yet!", vec![]),
             };
             let p = NodeCreator::paragraph(
                 &format!("Has been executed {} times before!", self.execution_count),

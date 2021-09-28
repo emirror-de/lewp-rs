@@ -142,13 +142,17 @@ impl NodeCreator {
     /// Creates a `hX` tag, where `X` equals the given level.
     /// If the level is bigger than 6, it will be set to 6.
     /// If 0 is given, 1 is used.
-    pub fn headline(level: u8, content: &str) -> Rc<Node> {
+    pub fn headline(level: u8, content: &str, attributes: Vec<Attribute>) -> Rc<Node> {
         let level = match level {
             0 => 1,
             1..=6 => level,
             _ => 6,
         };
-        Self::element(&format!("h{}", level), vec![], Some(content.to_string()))
+        Self::element(
+            &format!("h{}", level),
+            attributes,
+            Some(content.to_string()),
+        )
     }
 
     /// Creates a `p` tag with the given attributes and content.

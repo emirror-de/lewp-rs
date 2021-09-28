@@ -81,7 +81,7 @@ mod modules {
 
     impl Render for Header {
         fn view(&self) -> Nodes {
-            let headline = NodeCreator::headline(1, &self.data);
+            let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
             // see Render trait in submodule for more rendering methods
             self.render_submodules(&mut view);

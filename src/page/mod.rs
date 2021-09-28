@@ -30,6 +30,7 @@ pub trait Page: Metadata + Runtime + Render {
     where
         Self: Assembler,
     {
+        self.run();
         let runtime_information = Rc::new(RuntimeInformation::new());
         let mut modules_rendered_dom = vec![];
         // all modules
