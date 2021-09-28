@@ -9,10 +9,14 @@ pub trait Metadata {
     fn description(&self) -> &str;
 
     /// Language of the page.
-    fn language(&self) -> LanguageTag;
+    fn language(&self) -> LanguageTag {
+        LanguageTag::parse("en-US").unwrap()
+    }
 
     /// Contains the charset of the HTML page.
-    fn charset(&self) -> Charset;
+    fn charset(&self) -> Charset {
+        Charset::Utf8
+    }
 
     /// Returns a reference to the page config.
     fn config(&self) -> &PageConfig;
