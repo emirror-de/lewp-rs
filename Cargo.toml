@@ -1,6 +1,6 @@
 [package]
 name = "lewp"
-version = "0.0.0"
+version = "0.1.0"
 authors = ["Lewin Probst <info@emirror.de>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
@@ -10,7 +10,7 @@ documentation = "https://github.com/emirror-de/lewp-rs"
 repository = "https://github.com/emirror-de/lewp-rs"
 readme = "README.md"
 keywords = ["HTML5", "CSS", "JavaScript", "WASM", "website", "modules"]
-categories = []
+categories = ["web-programming"]
 
 [features]
 full = ["submodules"]
