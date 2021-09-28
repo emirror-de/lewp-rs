@@ -34,5 +34,6 @@ Never touch confusing templates again! Write your website as dynamic as you can 
     - [ ] Minimization is implemented
     - [ ] JavaScript is isolated
     - [ ] Directories can be configured on module level
+- [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
 - [ ] Modules can send events to sub-modules
