@@ -44,7 +44,7 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &mut Box<RuntimeInformation>) -> Result<(), Error> {
+    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -101,12 +101,12 @@ impl PageRender for HelloWorldPage {}
 impl Assembler for HelloWorldPage {}
 
 fn main() {
-    let module = Box::new(HelloWorld::new());
+    let module = HelloWorld::new();
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
-    page.add_module(module);
+    page.add_module(module.into_module_ptr());
     let dom = page.execute();
     println!("{}", dom);
 }

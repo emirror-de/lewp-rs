@@ -4,8 +4,8 @@ use crate::{dom::Nodes, submodule::SubModule, Error};
 pub trait Render: SubModule {
     /// Renders all submodules to the parent view.
     fn render_submodules(&self, parent_module_view: &mut Nodes) {
-        for child in self.submodules() {
-            parent_module_view.append(&mut child.render());
+        for module in self.submodules() {
+            parent_module_view.append(&mut module.borrow().render());
         }
     }
 
@@ -16,7 +16,7 @@ pub trait Render: SubModule {
     /// **idx**: The index of the module in [super::SubModule::submodules].
     fn render_submodule(&self, idx: usize, parent_module_view: &mut Nodes) -> Result<(), Error> {
         let module = match self.submodules().get(idx) {
-            Some(m) => m,
+            Some(m) => m.borrow(),
             None => {
                 return Err(Error::ModuleNotFound((
                     self.id().to_string(),
@@ -35,6 +35,7 @@ pub trait Render: SubModule {
     /// **id**: The unique identifier of the module.
     fn render_submodule_id(&self, id: &str, parent_module_view: &mut Nodes) -> Result<(), Error> {
         for module in self.submodules() {
+            let module = module.borrow();
             if module.id() != id {
                 continue;
             }
@@ -61,6 +62,7 @@ pub trait Render: SubModule {
         parent_module_view: &mut Nodes,
     ) -> Result<(), Error> {
         for module in self.submodules() {
+            let module = module.borrow();
             if module.id() != id {
                 continue;
             }

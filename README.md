@@ -17,7 +17,7 @@ Never touch confusing templates again! Write your website as dynamic as you can 
 - [x] A webpage can have Modules
 - [x] A page is created with isolated modules (HTML only)
 - [x] Modules can have Modules, infinite loops are prevented
-    - [ ] Submodules have `RuntimeInformation` available
+    - [x] Submodules have `RuntimeInformation` available
 - [ ] `<head>` module only
 - [ ] Added CSS integration
     - [ ] File structure is defined

@@ -1,11 +1,14 @@
-use lewp::{
-    config::{ModuleConfig, PageConfig},
-    dom::{NodeCreator, Nodes},
-    module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-    page::{
-        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
+use {
+    lewp::{
+        config::{ModuleConfig, PageConfig},
+        dom::{NodeCreator, Nodes},
+        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
+        page::{
+            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
+        },
+        Charset, Error, LanguageTag,
     },
-    Charset, Error, LanguageTag,
+    std::rc::Rc,
 };
 
 struct HelloWorld {
@@ -51,7 +54,7 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &mut Box<RuntimeInformation>) -> Result<(), Error> {
+    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -112,12 +115,12 @@ const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &'static str = "<!DOCTYPE html><html l
 
 #[test]
 fn hello_world_with_module_wrapper() {
-    let module = Box::new(HelloWorld::new());
+    let module = HelloWorld::new();
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
-    page.add_module(module);
+    page.add_module(module.into_module_ptr());
     let html_string = page.execute();
     assert_eq!(HELLO_WORLD_RESULT, html_string);
 }
@@ -125,12 +128,12 @@ fn hello_world_with_module_wrapper() {
 #[test]
 fn hello_world_skipped_wrapper() {
     let module_config = ModuleConfig { skip_wrapper: true };
-    let module = Box::new(HelloWorld::from(module_config));
+    let module = HelloWorld::from(module_config);
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
-    page.add_module(module);
+    page.add_module(module.into_module_ptr());
     let html_string = page.execute();
     assert_eq!(HELLO_WORLD_RESULT_SKIPPED_WRAPPER, html_string);
 }

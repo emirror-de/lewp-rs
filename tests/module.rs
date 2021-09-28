@@ -1,8 +1,11 @@
-use lewp::{
-    config::ModuleConfig,
-    dom::{NodeCreator, Nodes},
-    module::{Metadata, Module, Render, Runtime, RuntimeInformation},
-    Error,
+use {
+    lewp::{
+        config::ModuleConfig,
+        dom::{NodeCreator, Nodes},
+        module::{Metadata, Module, Render, Runtime, RuntimeInformation},
+        Error,
+    },
+    std::rc::Rc,
 };
 
 struct HelloWorld {
@@ -38,7 +41,7 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: &mut Box<RuntimeInformation>) -> Result<(), Error> {
+    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
         Ok(())
     }
 }
@@ -53,7 +56,7 @@ impl Render for HelloWorld {
 #[test]
 fn hello_world() {
     let mut module = HelloWorld::new();
-    match module.run(&mut Box::new(RuntimeInformation::new())) {
+    match module.run(Rc::new(RuntimeInformation::new())) {
         _ => (),
     }
 }

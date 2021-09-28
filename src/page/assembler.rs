@@ -25,6 +25,7 @@ pub trait Assembler: Page {
             .push(NodeCreator::description(self.description()));
 
         for module in self.modules() {
+            let module = module.borrow();
             for head_tag in module.head_tags() {
                 head.children.borrow_mut().push(head_tag.clone());
             }

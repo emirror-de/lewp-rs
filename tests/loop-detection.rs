@@ -1,6 +1,6 @@
 use lewp::{
     config::PageConfig,
-    module::Modules,
+    module::{Module, Modules},
     page::{
         Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
     },
@@ -8,12 +8,15 @@ use lewp::{
 };
 
 mod modules {
-    use lewp::{
-        config::ModuleConfig,
-        dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
-        Error,
+    use {
+        lewp::{
+            config::ModuleConfig,
+            dom::{NodeCreator, Nodes},
+            module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
+            submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
+            Error,
+        },
+        std::rc::Rc,
     };
 
     pub struct Header {
@@ -33,15 +36,20 @@ mod modules {
             };
             // Recommended way to add a module to have integrated loop prevention
             if instance
-                .append_module(Box::new(Self {
-                    config: ModuleConfig::new(),
-                    head_tags: Nodes::new(),
-                    children: Modules::new(),
-                    data: String::from("hello-world"),
-                }))
+                .append_module(
+                    Self {
+                        config: ModuleConfig::new(),
+                        head_tags: Nodes::new(),
+                        children: Modules::new(),
+                        data: String::from("hello-world"),
+                    }
+                    .into_module_ptr(),
+                )
                 .is_err()
             {
                 assert_eq!(true, true);
+            } else {
+                assert_eq!(true, false);
             }
             instance
         }
@@ -64,7 +72,7 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information)?;
             Ok(())
@@ -141,11 +149,11 @@ impl Assembler for HelloWorldPage {}
 
 #[test]
 fn loop_detection() {
-    let module = Box::new(modules::Header::new());
+    let module = modules::Header::new();
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
-    page.add_module(module);
+    page.add_module(module.into_module_ptr());
     page.execute();
 }

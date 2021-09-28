@@ -7,14 +7,11 @@ use {
 /// Required to run submodules.
 pub trait Runtime: SubModule {
     /// Runs all submodules in order as they are returned in [super::SubModule::submodules].
-    fn run_submodules(
-        &mut self,
-        runtime_information: &mut Box<RuntimeInformation>,
-    ) -> Result<(), Error> {
-        for child in self.submodules_mut() {
-            let child_id = child.id().to_owned();
-            child.run(runtime_information)?;
-            runtime_information.increase_execution_count(child.id());
+    fn run_submodules(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
+        for module in self.submodules() {
+            let mut module = module.borrow_mut();
+            module.run(runtime_information.clone())?;
+            runtime_information.increase_execution_count(module.id());
         }
         Ok(())
     }
@@ -25,9 +22,9 @@ pub trait Runtime: SubModule {
     ///
     /// **idx**: The index of the module in [super::SubModule::submodules].
     fn run_submodule(&mut self, idx: usize) -> Result<(), Error> {
-        let submodules = self.submodules_mut();
-        let module = match submodules.get_mut(idx) {
-            Some(m) => m,
+        let submodules = self.submodules();
+        let mut module = match submodules.get(idx) {
+            Some(m) => m.borrow_mut(),
             None => {
                 return Err(Error::ModuleNotFound((
                     self.id().to_string(),
@@ -35,8 +32,7 @@ pub trait Runtime: SubModule {
                 )))
             }
         };
-        let child_id = module.id().to_owned();
-        module.run(&mut Box::new(RuntimeInformation::new()))?;
+        module.run(Rc::new(RuntimeInformation::new()))?;
         Ok(())
     }
 
@@ -46,11 +42,12 @@ pub trait Runtime: SubModule {
     ///
     /// **id**: The unique identifier of the module.
     fn run_submodule_id(&mut self, id: &str) -> Result<(), Error> {
-        for module in self.submodules_mut() {
+        for module in self.submodules() {
+            let mut module = module.borrow_mut();
             if module.id() != id {
                 continue;
             }
-            module.run(&mut Box::new(RuntimeInformation::new()))?;
+            module.run(Rc::new(RuntimeInformation::new()))?;
             return Ok(());
         }
         Err(Error::ModuleNotFound((
@@ -68,11 +65,12 @@ pub trait Runtime: SubModule {
     ///
     /// **id**: The unique identifier of the modules to be run.
     fn run_submodule_id_all(&mut self, id: &str) -> Result<(), Error> {
-        for module in self.submodules_mut() {
+        for module in self.submodules() {
+            let mut module = module.borrow_mut();
             if module.id() != id {
                 continue;
             }
-            module.run(&mut Box::new(RuntimeInformation::new()))?;
+            module.run(Rc::new(RuntimeInformation::new()))?;
         }
         Ok(())
     }

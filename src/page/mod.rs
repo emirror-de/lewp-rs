@@ -1,8 +1,8 @@
 //! Traits and data structures to create, run, assemble and render a web page.
 
 use {
-    crate::module::{Module, Modules, RuntimeInformation},
-    std::{collections::HashMap, rc::Rc},
+    crate::module::{ModulePtr, Modules, RuntimeInformation},
+    std::rc::Rc,
 };
 
 mod assembler;
@@ -21,7 +21,7 @@ pub trait Page: Metadata + Runtime + Render {
     fn modules_mut(&mut self) -> &mut Modules;
 
     /// Adds the module to the page. The page is rendered FIFO.
-    fn add_module(&mut self, module: Box<dyn Module>) {
+    fn add_module(&mut self, module: ModulePtr) {
         self.modules_mut().push(module);
     }
 
@@ -30,12 +30,13 @@ pub trait Page: Metadata + Runtime + Render {
     where
         Self: Assembler,
     {
-        let mut runtime_information = Box::new(RuntimeInformation::new());
+        let runtime_information = Rc::new(RuntimeInformation::new());
         let mut modules_rendered_dom = vec![];
         // all modules
-        for module in self.modules_mut() {
+        for module in self.modules() {
+            let mut module = module.borrow_mut();
             // run
-            if let Err(e) = module.run(&mut runtime_information) {
+            if let Err(e) = module.run(runtime_information.clone()) {
                 log::error!(
                     "Module with id \"{}\" returned an error: {:#?}",
                     module.id(),
@@ -46,9 +47,8 @@ pub trait Page: Metadata + Runtime + Render {
             modules_rendered_dom.push(module.render());
 
             // update runtime information
-            let id = module.id().to_owned();
             runtime_information.increase_execution_count(module.id());
-            runtime_information.previous_module_id = Some(module.id().to_string());
+            runtime_information.set_previous_module_id(module.id());
         }
         self.render(modules_rendered_dom)
     }

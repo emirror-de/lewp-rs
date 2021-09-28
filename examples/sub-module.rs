@@ -1,6 +1,6 @@
 use lewp::{
     config::PageConfig,
-    module::Modules,
+    module::{Module, Modules},
     page::{
         Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
     },
@@ -8,12 +8,15 @@ use lewp::{
 };
 
 mod modules {
-    use lewp::{
-        config::ModuleConfig,
-        dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
-        Error,
+    use {
+        lewp::{
+            config::ModuleConfig,
+            dom::{NodeCreator, Nodes},
+            module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
+            submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
+            Error,
+        },
+        std::rc::Rc,
     };
 
     pub struct Header {
@@ -31,13 +34,9 @@ mod modules {
                 children: Modules::new(),
                 data: String::from("hello-world"),
             };
-            let headline = Box::new(RandomHeadline::new());
+            let headline = RandomHeadline::new().into_module_ptr();
             // Recommended way to add a module to have integrated loop prevention
-            if instance.append_module(headline).is_err() {
-                log::error!("Could not append module!");
-            }
-            let headline = Box::new(RandomHeadline::new());
-            if instance.append_module(headline).is_err() {
+            if instance.append_module(headline.clone()).is_err() {
                 log::error!("Could not append module!");
             }
             instance
@@ -61,9 +60,9 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
             // See Runtime trait in submodule for more run methods
-            self.run_submodules(runtime_information)?;
+            self.run_submodules(runtime_information.clone())?;
             Ok(())
         }
     }
@@ -131,7 +130,7 @@ mod modules {
     }
 
     impl Runtime for RandomHeadline {
-        fn run(&mut self, runtime_information: &mut Box<RuntimeInformation>) -> Result<(), Error> {
+        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
             use rand::Rng;
             let mut rng = rand::thread_rng();
             self.current_headline = Some(rng.gen_range(0..self.data.len()));
@@ -200,12 +199,12 @@ impl PageRender for HelloWorldPage {}
 impl Assembler for HelloWorldPage {}
 
 fn main() {
-    let module = Box::new(modules::Header::new());
+    let module = modules::Header::new();
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
-    page.add_module(module);
+    page.add_module(module.into_module_ptr());
     let dom = page.execute();
     println!("{}", dom);
 }
