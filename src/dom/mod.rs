@@ -1,7 +1,7 @@
 //! DOM abstractions and helper functions such as [NodeCreator].
 
 use {
-    html5ever::{namespace_url, ns, tendril::Tendril, Attribute, LocalName, QualName},
+    html5ever::{namespace_url, ns, tendril::Tendril, LocalName, QualName},
     std::rc::Rc,
 };
 
@@ -22,6 +22,8 @@ pub trait NodeExt {
     fn add_class(&self, value: &str);
     /// Removes the given `value` from the `class` attribute.
     fn remove_class(&self, value: &str);
+    /// True if `value` is available in `class` attribute.
+    fn has_class(&self, value: &str) -> bool;
 }
 
 impl NodeExt for Node {
@@ -63,5 +65,20 @@ impl NodeExt for Node {
             attr.value = Tendril::from(value.join(" "));
             return;
         }
+    }
+
+    fn has_class(&self, class_value: &str) -> bool {
+        let attrs = match &self.data {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return false,
+        };
+        for attr in attrs.borrow().iter() {
+            if attr.name != QualName::new(None, ns!(), LocalName::from("class")) {
+                continue;
+            }
+            let value = String::from(attr.value.clone());
+            return value.split(' ').any(|x| x == class_value);
+        }
+        false
     }
 }
