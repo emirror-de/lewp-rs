@@ -33,7 +33,7 @@ pub trait NodeExt {
 
 impl NodeExt for Node {
     fn add_class(&self, class_value: &str) {
-        let attribute_index = find_class_attribute(self);
+        let attribute_index = find_attribute(self, "class");
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return,
@@ -56,7 +56,7 @@ impl NodeExt for Node {
     }
 
     fn remove_class(&self, class_value: &str) {
-        let attribute_index = find_class_attribute(self);
+        let attribute_index = find_attribute(self, "class");
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return,
@@ -76,7 +76,7 @@ impl NodeExt for Node {
     }
 
     fn has_class(&self, class_value: &str) -> bool {
-        let attribute_index = find_class_attribute(self);
+        let attribute_index = find_attribute(self, "class");
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return false,
@@ -89,7 +89,7 @@ impl NodeExt for Node {
     }
 
     fn toggle_class(&self, class_value: &str) {
-        let attribute_index = find_class_attribute(self);
+        let attribute_index = find_attribute(self, "class");
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return,
@@ -116,15 +116,15 @@ impl NodeExt for Node {
     }
 }
 
-/// Private helper function that looks for the `class` attribute in the given
+/// Private helper function that looks for the given attribute name in the given
 /// node.
-fn find_class_attribute(node: &Node) -> Option<usize> {
+fn find_attribute(node: &Node, attribute_name: &str) -> Option<usize> {
     let attrs = match &node.data {
         NodeData::Element { attrs, .. } => attrs,
         _ => return None,
     };
     for (idx, attr) in attrs.borrow().iter().enumerate() {
-        if attr.name != QualName::new(None, ns!(), LocalName::from("class")) {
+        if attr.name != QualName::new(None, ns!(), LocalName::from(attribute_name)) {
             continue;
         }
         return Some(idx);
@@ -141,7 +141,7 @@ fn find_class_attribute_index() {
         vec![NodeCreator::attribute("class", class_value)],
         None,
     );
-    assert_eq!(Some(0), find_class_attribute(&elem));
+    assert_eq!(Some(0), find_attribute(&elem, "class"));
 
     let elem = NodeCreator::element(
         "a",
@@ -151,10 +151,10 @@ fn find_class_attribute_index() {
         ],
         None,
     );
-    assert_eq!(Some(1), find_class_attribute(&elem));
+    assert_eq!(Some(1), find_attribute(&elem, "class"));
 
     let elem = NodeCreator::element("a", vec![], None);
-    assert_eq!(None, find_class_attribute(&elem));
+    assert_eq!(None, find_attribute(&elem, "class"));
 }
 
 #[test]
