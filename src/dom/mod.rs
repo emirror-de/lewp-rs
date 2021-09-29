@@ -31,6 +31,10 @@ pub trait NodeExt {
     /// if the attribute already exists. This method does not compare its
     /// values.
     fn add_attribute(&self, name: &str, value: &str);
+    /// Removes the attribute with the given `name`. Does nothing
+    /// if the attribute does not exist. This method does not compare its
+    /// values.
+    fn remove_attribute(&self, name: &str);
     /// Appends the given [Node] as child.
     fn append_child(&self, node: Rc<Node>);
 }
@@ -66,16 +70,11 @@ impl NodeExt for Node {
             _ => return,
         };
         let mut attrs = attrs.borrow_mut();
-        match attribute_index {
-            None => {
-                attrs.push(NodeCreator::attribute("class", class_value));
-            }
-            Some(index) => {
-                let value = String::from(attrs[index].value.clone());
-                let mut value = value.split(' ').collect::<Vec<_>>();
-                value.retain(|x| x != &class_value);
-                attrs[index].value = Tendril::from(value.join(" "));
-            }
+        if let Some(index) = attribute_index {
+            let value = String::from(attrs[index].value.clone());
+            let mut value = value.split(' ').collect::<Vec<_>>();
+            value.retain(|x| x != &class_value);
+            attrs[index].value = Tendril::from(value.join(" "));
         };
     }
 
@@ -126,11 +125,20 @@ impl NodeExt for Node {
             _ => return,
         };
         let mut attrs = attrs.borrow_mut();
-        match attribute_index {
-            None => {
-                attrs.push(NodeCreator::attribute(name, value));
-            }
-            Some(_) => (),
+        if attribute_index.is_none() {
+            attrs.push(NodeCreator::attribute(name, value));
+        };
+    }
+
+    fn remove_attribute(&self, name: &str) {
+        let attribute_index = find_attribute(self, name);
+        let attrs = match &self.data {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        if let Some(index) = attribute_index {
+            attrs.remove(index);
         };
     }
 }
@@ -237,6 +245,9 @@ fn remove_class() {
     elem.remove_class(class_value);
     // has_class can be used here because it is tested as well, see above
     assert_eq!(false, elem.has_class(class_value));
+    let elem = NodeCreator::element("a", vec![], None);
+    elem.remove_class(class_value);
+    assert_eq!(false, elem.has_class(class_value));
 }
 
 #[test]
@@ -286,4 +297,40 @@ fn add_attribute_ignore_duplicate() {
         true,
         *attrs.borrow() == vec![NodeCreator::attribute(name, value)]
     );
+}
+
+#[test]
+fn remove_attribute() {
+    use crate::dom::NodeCreator;
+    let attribute_name = "href";
+    let elem = NodeCreator::element(
+        "a",
+        vec![
+            NodeCreator::attribute("href", "/some/value"),
+            NodeCreator::attribute("rel", "stylesheet"),
+        ],
+        None,
+    );
+    elem.remove_attribute(attribute_name);
+    let attrs = match &elem.data {
+        NodeData::Element { attrs, .. } => attrs,
+        _ => {
+            assert_eq!(false, true);
+            return;
+        }
+    };
+    assert_eq!(
+        true,
+        *attrs.borrow() == vec![NodeCreator::attribute("rel", "stylesheet"),]
+    );
+    let elem = NodeCreator::element("a", vec![], None);
+    elem.remove_attribute(attribute_name);
+    let attrs = match &elem.data {
+        NodeData::Element { attrs, .. } => attrs,
+        _ => {
+            assert_eq!(false, true);
+            return;
+        }
+    };
+    assert_eq!(true, *attrs.borrow() == vec![]);
 }
