@@ -27,6 +27,8 @@ pub trait NodeExt {
     /// Toggles the given `value` of the `class` attribute. Creates the class
     /// attribute if not set yet.
     fn toggle_class(&self, value: &str);
+    /// Appends the given [Node] as child.
+    fn append_child(&self, node: Rc<Node>);
 }
 
 impl NodeExt for Node {
@@ -107,6 +109,10 @@ impl NodeExt for Node {
                 attrs[index].value = Tendril::from(value.join(" "));
             }
         };
+    }
+
+    fn append_child(&self, node: Rc<Node>) {
+        self.children.borrow_mut().push(node);
     }
 }
 
@@ -212,4 +218,13 @@ fn remove_class() {
     elem.remove_class(class_value);
     // has_class can be used here because it is tested as well, see above
     assert_eq!(false, elem.has_class(class_value));
+}
+
+#[test]
+fn append_child() {
+    use crate::dom::NodeCreator;
+    let link = NodeCreator::element("a", vec![], None);
+    let image = NodeCreator::element("img", vec![], None);
+    link.append_child(image);
+    assert_eq!(link.children.borrow().len(), 1);
 }
