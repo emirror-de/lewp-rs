@@ -81,4 +81,65 @@ impl NodeExt for Node {
         }
         false
     }
+#[test]
+fn has_class() {
+    use crate::dom::NodeCreator;
+    let class_value = "has-class-test";
+    let non_existent_class_value = "non-existing-class-value";
+    let elem = NodeCreator::element(
+        "a",
+        vec![NodeCreator::attribute("class", class_value)],
+        None,
+    );
+    assert_eq!(true, elem.has_class(class_value));
+    assert_eq!(false, elem.has_class(non_existent_class_value));
+}
+
+#[test]
+fn add_class() {
+    use crate::dom::NodeCreator;
+    let class_value = "add-class-test";
+    let elem = NodeCreator::element("a", vec![], None);
+    elem.add_class(class_value);
+    assert_eq!(true, elem.has_class(class_value));
+}
+
+#[test]
+fn add_class_ignore_duplicate() {
+    use crate::dom::NodeCreator;
+    let class_value = "add-class-test";
+    let elem = NodeCreator::element(
+        "a",
+        vec![NodeCreator::attribute("class", class_value)],
+        None,
+    );
+    elem.add_class(class_value);
+    let attrs = match &elem.data {
+        NodeData::Element { attrs, .. } => attrs,
+        _ => {
+            assert_eq!(false, true);
+            return;
+        }
+    };
+    assert_eq!(
+        true,
+        *attrs.borrow() == vec![NodeCreator::attribute("class", class_value)]
+    );
+}
+
+#[test]
+fn remove_class() {
+    use crate::dom::NodeCreator;
+    let class_value = "has-class-test";
+    let elem = NodeCreator::element(
+        "a",
+        vec![
+            NodeCreator::attribute("class", class_value),
+            NodeCreator::attribute("class", class_value),
+        ],
+        None,
+    );
+    elem.remove_class(class_value);
+    // has_class can be used here because it is tested as well, see above
+    assert_eq!(false, elem.has_class(class_value));
 }
