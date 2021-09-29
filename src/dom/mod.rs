@@ -27,6 +27,10 @@ pub trait NodeExt {
     /// Toggles the given `value` of the `class` attribute. Creates the class
     /// attribute if not set yet.
     fn toggle_class(&self, value: &str);
+    /// Adds an attribute with the given `name` and `value`. Does nothing
+    /// if the attribute already exists. This method does not compare its
+    /// values.
+    fn add_attribute(&self, name: &str, value: &str);
     /// Appends the given [Node] as child.
     fn append_child(&self, node: Rc<Node>);
 }
@@ -113,6 +117,21 @@ impl NodeExt for Node {
 
     fn append_child(&self, node: Rc<Node>) {
         self.children.borrow_mut().push(node);
+    }
+
+    fn add_attribute(&self, name: &str, value: &str) {
+        let attribute_index = find_attribute(self, name);
+        let attrs = match &self.data {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        match attribute_index {
+            None => {
+                attrs.push(NodeCreator::attribute(name, value));
+            }
+            Some(_) => (),
+        };
     }
 }
 
@@ -227,4 +246,44 @@ fn append_child() {
     let image = NodeCreator::element("img", vec![], None);
     link.append_child(image);
     assert_eq!(link.children.borrow().len(), 1);
+}
+
+#[test]
+fn add_attribute() {
+    use crate::dom::NodeCreator;
+    let name = "href";
+    let value = "/some/path";
+    let elem = NodeCreator::element("a", vec![], None);
+    elem.add_attribute(name, value);
+    let attrs = match &elem.data {
+        NodeData::Element { attrs, .. } => attrs,
+        _ => {
+            assert_eq!(false, true);
+            return;
+        }
+    };
+    assert_eq!(
+        true,
+        *attrs.borrow() == vec![NodeCreator::attribute(name, value)]
+    );
+}
+
+#[test]
+fn add_attribute_ignore_duplicate() {
+    use crate::dom::NodeCreator;
+    let name = "href";
+    let value = "/some/path";
+    let elem = NodeCreator::element("a", vec![NodeCreator::attribute(name, value)], None);
+    elem.add_attribute(name, value);
+    let attrs = match &elem.data {
+        NodeData::Element { attrs, .. } => attrs,
+        _ => {
+            assert_eq!(false, true);
+            return;
+        }
+    };
+    assert_eq!(
+        true,
+        *attrs.borrow() == vec![NodeCreator::attribute(name, value)]
+    );
 }
