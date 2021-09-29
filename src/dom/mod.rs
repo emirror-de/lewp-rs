@@ -24,63 +24,133 @@ pub trait NodeExt {
     fn remove_class(&self, value: &str);
     /// True if `value` is available in `class` attribute.
     fn has_class(&self, value: &str) -> bool;
+    /// Toggles the given `value` of the `class` attribute. Creates the class
+    /// attribute if not set yet.
+    fn toggle_class(&self, value: &str);
 }
 
 impl NodeExt for Node {
     fn add_class(&self, class_value: &str) {
+        let attribute_index = find_class_attribute(self);
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return,
         };
-        for attr in attrs.borrow_mut().iter_mut() {
-            if attr.name != QualName::new(None, ns!(), LocalName::from("class")) {
-                continue;
+        let mut attrs = attrs.borrow_mut();
+        match attribute_index {
+            None => {
+                attrs.push(NodeCreator::attribute("class", class_value));
             }
-            let value = String::from(attr.value.clone());
-            let mut value = value.split(' ').collect::<Vec<_>>();
-            if value.contains(&class_value) {
-                return;
+            Some(index) => {
+                let value = String::from(attrs[index].value.clone());
+                let mut value = value.split(' ').collect::<Vec<_>>();
+                if value.contains(&class_value) {
+                    return;
+                }
+                value.push(class_value);
+                attrs[index].value = Tendril::from(value.join(" "));
             }
-            value.push(class_value);
-            attr.value = Tendril::from(value.join(" "));
-            return;
-        }
-        attrs
-            .borrow_mut()
-            .push(NodeCreator::attribute("class", class_value));
+        };
     }
 
     fn remove_class(&self, class_value: &str) {
+        let attribute_index = find_class_attribute(self);
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return,
         };
-        for attr in attrs.borrow_mut().iter_mut() {
-            if attr.name != QualName::new(None, ns!(), LocalName::from("class")) {
-                continue;
+        let mut attrs = attrs.borrow_mut();
+        match attribute_index {
+            None => {
+                attrs.push(NodeCreator::attribute("class", class_value));
             }
-            let value = String::from(attr.value.clone());
-            let mut value = value.split(' ').collect::<Vec<_>>();
-            value.retain(|x| x != &class_value);
-            attr.value = Tendril::from(value.join(" "));
-            return;
-        }
+            Some(index) => {
+                let value = String::from(attrs[index].value.clone());
+                let mut value = value.split(' ').collect::<Vec<_>>();
+                value.retain(|x| x != &class_value);
+                attrs[index].value = Tendril::from(value.join(" "));
+            }
+        };
     }
 
     fn has_class(&self, class_value: &str) -> bool {
+        let attribute_index = find_class_attribute(self);
         let attrs = match &self.data {
             NodeData::Element { attrs, .. } => attrs,
             _ => return false,
         };
-        for attr in attrs.borrow().iter() {
-            if attr.name != QualName::new(None, ns!(), LocalName::from("class")) {
-                continue;
-            }
-            let value = String::from(attr.value.clone());
-            return value.split(' ').any(|x| x == class_value);
+        let attrs = attrs.borrow();
+        match attribute_index {
+            None => false,
+            Some(index) => attrs[index].value.split(' ').any(|x| x == class_value),
         }
-        false
     }
+
+    fn toggle_class(&self, class_value: &str) {
+        let attribute_index = find_class_attribute(self);
+        let attrs = match &self.data {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        match attribute_index {
+            None => {
+                attrs.push(NodeCreator::attribute("class", class_value));
+            }
+            Some(index) => {
+                let value = String::from(attrs[index].value.clone());
+                let mut value = value.split(' ').collect::<Vec<_>>();
+                if value.contains(&class_value) {
+                    return;
+                }
+                value.push(class_value);
+                attrs[index].value = Tendril::from(value.join(" "));
+            }
+        };
+    }
+}
+
+/// Private helper function that looks for the `class` attribute in the given
+/// node.
+fn find_class_attribute(node: &Node) -> Option<usize> {
+    let attrs = match &node.data {
+        NodeData::Element { attrs, .. } => attrs,
+        _ => return None,
+    };
+    for (idx, attr) in attrs.borrow().iter().enumerate() {
+        if attr.name != QualName::new(None, ns!(), LocalName::from("class")) {
+            continue;
+        }
+        return Some(idx);
+    }
+    None
+}
+
+#[test]
+fn find_class_attribute_index() {
+    use crate::dom::NodeCreator;
+    let class_value = "class-value";
+    let elem = NodeCreator::element(
+        "a",
+        vec![NodeCreator::attribute("class", class_value)],
+        None,
+    );
+    assert_eq!(Some(0), find_class_attribute(&elem));
+
+    let elem = NodeCreator::element(
+        "a",
+        vec![
+            NodeCreator::attribute("href", "/404/Not-Found"),
+            NodeCreator::attribute("class", class_value),
+        ],
+        None,
+    );
+    assert_eq!(Some(1), find_class_attribute(&elem));
+
+    let elem = NodeCreator::element("a", vec![], None);
+    assert_eq!(None, find_class_attribute(&elem));
+}
+
 #[test]
 fn has_class() {
     use crate::dom::NodeCreator;
