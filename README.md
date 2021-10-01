@@ -1,6 +1,6 @@
 # lewp
 
-Valid guaranteed HTML5 website generation suite. Truly isolated modules during runtime.
+Website generation suite with guarantee of always valid HTML5. Truly isolated modules during runtime.
 
 Never touch confusing templates again! Write your website as dynamic as you can imagine without writing unclear code.
 
@@ -36,4 +36,8 @@ Never touch confusing templates again! Write your website as dynamic as you can 
     - [ ] Directories can be configured on module level
 - [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
+- [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
+    - [ ] CSS attributes can be configured
+- [ ] JavaScript and CSS can be added to the binary
 - [ ] Modules can send events to sub-modules
+
