@@ -37,6 +37,8 @@ pub trait NodeExt {
     fn remove_attribute(&self, name: &str);
     /// Appends the given [Node] as child.
     fn append_child(&self, node: Rc<Node>);
+    /// Appends the given [Vec]tor of [Node]s as children.
+    fn append_children(&self, node: &mut Nodes);
 }
 
 impl NodeExt for Node {
@@ -116,6 +118,10 @@ impl NodeExt for Node {
 
     fn append_child(&self, node: Rc<Node>) {
         self.children.borrow_mut().push(node);
+    }
+
+    fn append_children(&self, node: &mut Nodes) {
+        self.children.borrow_mut().append(node);
     }
 
     fn add_attribute(&self, name: &str, value: &str) {
