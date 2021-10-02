@@ -19,6 +19,7 @@ Never touch confusing templates again! Write your website as dynamic as you can 
 - [x] Modules can have Modules, infinite loops are prevented
     - [x] Submodules have `RuntimeInformation` available
 - [ ] `<head>` module only
+- [ ] Add possibility to add attributes to the container wrapping the module
 - [ ] Added CSS integration
     - [ ] File structure is defined
     - [ ] Combining files is implemented
