@@ -1,10 +1,15 @@
 #![deny(missing_docs)]
 //! Generate your HTML5 website technically optimized and always valid.
 //!
-//! This crate addresses typical problems in web development like
-//! * generate **always valid** HTML5 code,
-//! * **always serve minified** HTML5 code,
-//! * development of **modules, truly isolated** during website runtime.
+//! ## Provided solutions
+//!
+//! When using [lewp](crate), you get the following benefits during web development:
+//!
+//! * No template hell in your code base any longer
+//! * No whitespace bugs in your website
+//! * Technically optimized, always valid, minified, HTML5 code
+//! * Module based development, truly isolated
+//! * Build the DOM fully in Rust
 //!
 
 pub use {charsets::Charset, langtag::LanguageTag};
@@ -21,22 +26,10 @@ pub mod submodule;
 pub enum Error {
     /// Raised when a loop reference has been detected.
     LoopDetection(String),
-    /// Occurs when the [run](crate::module::Runtime) function fails.
-    ///
-    /// **Returns**
-    ///
-    /// `(module id, message)`
-    RuntimeError((String, String)),
     /// Indicates that a module has not been found.
     ///
     /// **Returns**
     ///
-    /// `(emitting_module_id, message)`
+    /// `(emitting module id, message)`
     ModuleNotFound((String, String)),
-    /// Occurs when a mutable reference could not be obtained.
-    ///
-    /// **Returns**
-    ///
-    /// `(emitting_module_id, message)`
-    MutableReference((String, String)),
 }
