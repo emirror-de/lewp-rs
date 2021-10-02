@@ -1,6 +1,6 @@
 [package]
 name = "lewp"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Lewin Probst <info@emirror.de>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
@@ -23,7 +23,6 @@ langtag = "^0.2.0"
 html5ever = "^0.25.1"
 markup5ever_rcdom = "^0.1.0"
 charsets = "^0.2.0"
-#toml = { version = "^0.5.8", optional = true }
 
 [dev-dependencies]
 rand = "0.8.4"
