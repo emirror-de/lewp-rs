@@ -1,15 +1,15 @@
 [package]
 name = "lewp"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Lewin Probst <info@emirror.de>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
-description = "Valid guaranteed HTML5 website generation suite. Truly isolated modules during runtime."
+description = "Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source."
 homepage = "https://github.com/emirror-de/lewp-rs"
-documentation = "https://github.com/emirror-de/lewp-rs"
+documentation = "https://docs.rs/lewp"
 repository = "https://github.com/emirror-de/lewp-rs"
 readme = "README.md"
-keywords = ["HTML5", "CSS", "JavaScript", "WASM", "website", "modules"]
+keywords = ["HTML5", "CSS", "JavaScript", "WASM", "modules"]
 categories = ["web-programming"]
 
 [features]
@@ -23,7 +23,6 @@ langtag = "^0.2.0"
 html5ever = "^0.25.1"
 markup5ever_rcdom = "^0.1.0"
 charsets = "^0.2.0"
-#toml = { version = "^0.5.8", optional = true }
 
 [dev-dependencies]
 rand = "0.8.4"

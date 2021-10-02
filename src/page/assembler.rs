@@ -10,7 +10,7 @@ use {
 pub trait Assembler: Page {
     /// Assembles the `<head>` tag of the page.
     fn head(&self) -> Rc<Node> {
-        let head = NodeCreator::element("head", vec![], None);
+        let head = NodeCreator::element("head", vec![]);
         head.children
             .borrow_mut()
             .push(NodeCreator::charset(&self.charset()));
@@ -35,7 +35,7 @@ pub trait Assembler: Page {
 
     /// Assembles the `<body>` tag of the page.
     fn body(&self, modules: Vec<Nodes>) -> Rc<Node> {
-        let body = NodeCreator::element("body", vec![], None);
+        let body = NodeCreator::element("body", vec![]);
         for module in modules {
             for node in module {
                 body.children.borrow_mut().push(node);
