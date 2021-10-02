@@ -1,5 +1,5 @@
 #![deny(missing_docs)]
-//! Generate your HTML5 website technically optimized and always valid.
+//! Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source.
 //!
 //! ## Provided solutions
 //!
