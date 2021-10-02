@@ -9,7 +9,7 @@ homepage = "https://github.com/emirror-de/lewp-rs"
 documentation = "https://docs.rs/lewp"
 repository = "https://github.com/emirror-de/lewp-rs"
 readme = "README.md"
-keywords = ["HTML5", "CSS", "JavaScript", "WASM", "website", "modules"]
+keywords = ["HTML5", "CSS", "JavaScript", "WASM", "modules"]
 categories = ["web-programming"]
 
 [features]
