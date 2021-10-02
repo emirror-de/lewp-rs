@@ -2,7 +2,7 @@
 
 ----------------
 
-![Version](https://img.shields.io/crates/v/lewp?style=flat-square)![https://docs.rs/lewp](https://img.shields.io/docsrs/lewp?style=flat-square)![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square)![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)[![img](https://camo.githubusercontent.com/1fc0bfbdd255ff207d4a467fb67d5e00cc3b54e2b904771c95ae7e98cc8a5798/68747470733a2f2f696d672e736869656c64732e696f2f646973636f72642f3835353732363138313134323439353234323f636f6c6f723d313534363833266c6162656c3d646973636f7264267374796c653d666c61742d737175617265)](https://camo.githubusercontent.com/1fc0bfbdd255ff207d4a467fb67d5e00cc3b54e2b904771c95ae7e98cc8a5798/68747470733a2f2f696d672e736869656c64732e696f2f646973636f72642f3835353732363138313134323439353234323f636f6c6f723d313534363833266c6162656c3d646973636f7264267374796c653d666c61742d737175617265)
+![Version](https://img.shields.io/crates/v/lewp?style=flat-square)[![](https://img.shields.io/docsrs/lewp?style=flat-square)](https://docs.rs/lewp)![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square)![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)[![](https://img.shields.io/discord/855726181142495242?color=154683&label=discord&style=flat-square)](https://discord.gg/nx7YtsjEbT)
 
 Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source.
 
@@ -45,9 +45,12 @@ If you have questions, want to contribute or have any other type of request, you
     - [ ] Directories can be configured on module level
 - [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
+- [ ] JavaScript and CSS can be compiled into the binary
+- [ ] Provide an API for localization (l10n)
+- [ ] Provide an API for generic resources
+- [ ] Modules can have isolated folders for temporary files
 - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
     - [ ] CSS attributes can be configured
-- [ ] JavaScript and CSS can be added to the binary
 - [ ] Modules can send events to sub-modules
 
 ## Contributing
