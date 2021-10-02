@@ -1,6 +1,6 @@
 use {
     crate::{
-        dom::{Handle, Node, NodeData},
+        dom::{Handle, Node, NodeData, NodeExt},
         Charset, LanguageTag,
     },
     html5ever::{namespace_url, ns, tendril::Tendril, Attribute, LocalName, QualName},
@@ -14,25 +14,13 @@ pub struct NodeCreator;
 impl NodeCreator {
     /// Creates a HTML tag. If the third argument is given, a TextNode will be
     /// added as subelement to the tag.
-    pub fn element(
-        tag_name: &str,
-        attributes: Vec<Attribute>,
-        content: Option<String>,
-    ) -> Rc<Node> {
-        let node = Node::new(NodeData::Element {
+    pub fn element(tag_name: &str, attributes: Vec<Attribute>) -> Rc<Node> {
+        Node::new(NodeData::Element {
             name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
             attrs: RefCell::new(attributes),
             template_contents: None,
             mathml_annotation_xml_integration_point: false,
-        });
-
-        if content.is_none() {
-            return node;
-        }
-
-        let content = Self::text(&content.unwrap());
-        node.children.borrow_mut().push(content);
-        node
+        })
     }
 
     /// Creates a HTML tag. Same as
@@ -86,16 +74,12 @@ impl NodeCreator {
                 "".to_owned()
             }
         };
-        NodeCreator::element(
-            "html",
-            vec![NodeCreator::attribute("lang", &language)],
-            None,
-        )
+        NodeCreator::element("html", vec![NodeCreator::attribute("lang", &language)])
     }
 
     /// Creates a `<title>` tag node.
     pub fn title(title: &str) -> Rc<Node> {
-        let title_tag = NodeCreator::element("title", vec![], None);
+        let title_tag = NodeCreator::element("title", vec![]);
         title_tag
             .children
             .borrow_mut()
@@ -111,7 +95,6 @@ impl NodeCreator {
                 NodeCreator::attribute("name", "description"),
                 NodeCreator::attribute("content", description),
             ],
-            None,
         )
     }
 
@@ -126,7 +109,6 @@ impl NodeCreator {
                     "width=device-width, initial-scale=1.0, user-scalable=no",
                 ),
             ],
-            None,
         )
     }
 
@@ -135,7 +117,6 @@ impl NodeCreator {
         NodeCreator::element(
             "meta",
             vec![NodeCreator::attribute("charset", &charset.to_string())],
-            None,
         )
     }
 
@@ -148,15 +129,15 @@ impl NodeCreator {
             1..=6 => level,
             _ => 6,
         };
-        Self::element(
-            &format!("h{}", level),
-            attributes,
-            Some(content.to_string()),
-        )
+        let h = Self::element(&format!("h{}", level), attributes);
+        h.add_text(content);
+        h
     }
 
     /// Creates a `p` tag with the given attributes and content.
     pub fn paragraph(content: &str, attributes: Vec<Attribute>) -> Rc<Node> {
-        Self::element("p", attributes, Some(content.to_string()))
+        let p = Self::element("p", attributes);
+        p.add_text(content);
+        p
     }
 }

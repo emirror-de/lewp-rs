@@ -39,6 +39,8 @@ pub trait NodeExt {
     fn append_child(&self, node: Rc<Node>);
     /// Appends the given [Vec]tor of [Node]s as children.
     fn append_children(&self, node: &mut Nodes);
+    /// Adds a text node with the given value.
+    fn add_text(&self, value: &str);
 }
 
 impl NodeExt for Node {
@@ -147,6 +149,11 @@ impl NodeExt for Node {
             attrs.remove(index);
         };
     }
+
+    fn add_text(&self, value: &str) {
+        let text_node = NodeCreator::text(value);
+        self.append_child(text_node);
+    }
 }
 
 /// Private helper function that looks for the given attribute name in the given
@@ -169,11 +176,7 @@ fn find_attribute(node: &Node, attribute_name: &str) -> Option<usize> {
 fn find_class_attribute_index() {
     use crate::dom::NodeCreator;
     let class_value = "class-value";
-    let elem = NodeCreator::element(
-        "a",
-        vec![NodeCreator::attribute("class", class_value)],
-        None,
-    );
+    let elem = NodeCreator::element("a", vec![NodeCreator::attribute("class", class_value)]);
     assert_eq!(Some(0), find_attribute(&elem, "class"));
 
     let elem = NodeCreator::element(
@@ -182,11 +185,10 @@ fn find_class_attribute_index() {
             NodeCreator::attribute("href", "/404/Not-Found"),
             NodeCreator::attribute("class", class_value),
         ],
-        None,
     );
     assert_eq!(Some(1), find_attribute(&elem, "class"));
 
-    let elem = NodeCreator::element("a", vec![], None);
+    let elem = NodeCreator::element("a", vec![]);
     assert_eq!(None, find_attribute(&elem, "class"));
 }
 
@@ -195,11 +197,7 @@ fn has_class() {
     use crate::dom::NodeCreator;
     let class_value = "has-class-test";
     let non_existent_class_value = "non-existing-class-value";
-    let elem = NodeCreator::element(
-        "a",
-        vec![NodeCreator::attribute("class", class_value)],
-        None,
-    );
+    let elem = NodeCreator::element("a", vec![NodeCreator::attribute("class", class_value)]);
     assert_eq!(true, elem.has_class(class_value));
     assert_eq!(false, elem.has_class(non_existent_class_value));
 }
@@ -208,7 +206,7 @@ fn has_class() {
 fn add_class() {
     use crate::dom::NodeCreator;
     let class_value = "add-class-test";
-    let elem = NodeCreator::element("a", vec![], None);
+    let elem = NodeCreator::element("a", vec![]);
     elem.add_class(class_value);
     assert_eq!(true, elem.has_class(class_value));
 }
@@ -217,11 +215,7 @@ fn add_class() {
 fn add_class_ignore_duplicate() {
     use crate::dom::NodeCreator;
     let class_value = "add-class-test";
-    let elem = NodeCreator::element(
-        "a",
-        vec![NodeCreator::attribute("class", class_value)],
-        None,
-    );
+    let elem = NodeCreator::element("a", vec![NodeCreator::attribute("class", class_value)]);
     elem.add_class(class_value);
     let attrs = match &elem.data {
         NodeData::Element { attrs, .. } => attrs,
@@ -246,12 +240,11 @@ fn remove_class() {
             NodeCreator::attribute("class", class_value),
             NodeCreator::attribute("class", class_value),
         ],
-        None,
     );
     elem.remove_class(class_value);
     // has_class can be used here because it is tested as well, see above
     assert_eq!(false, elem.has_class(class_value));
-    let elem = NodeCreator::element("a", vec![], None);
+    let elem = NodeCreator::element("a", vec![]);
     elem.remove_class(class_value);
     assert_eq!(false, elem.has_class(class_value));
 }
@@ -259,8 +252,8 @@ fn remove_class() {
 #[test]
 fn append_child() {
     use crate::dom::NodeCreator;
-    let link = NodeCreator::element("a", vec![], None);
-    let image = NodeCreator::element("img", vec![], None);
+    let link = NodeCreator::element("a", vec![]);
+    let image = NodeCreator::element("img", vec![]);
     link.append_child(image);
     assert_eq!(link.children.borrow().len(), 1);
 }
@@ -270,7 +263,7 @@ fn add_attribute() {
     use crate::dom::NodeCreator;
     let name = "href";
     let value = "/some/path";
-    let elem = NodeCreator::element("a", vec![], None);
+    let elem = NodeCreator::element("a", vec![]);
     elem.add_attribute(name, value);
     let attrs = match &elem.data {
         NodeData::Element { attrs, .. } => attrs,
@@ -290,7 +283,7 @@ fn add_attribute_ignore_duplicate() {
     use crate::dom::NodeCreator;
     let name = "href";
     let value = "/some/path";
-    let elem = NodeCreator::element("a", vec![NodeCreator::attribute(name, value)], None);
+    let elem = NodeCreator::element("a", vec![NodeCreator::attribute(name, value)]);
     elem.add_attribute(name, value);
     let attrs = match &elem.data {
         NodeData::Element { attrs, .. } => attrs,
@@ -315,7 +308,6 @@ fn remove_attribute() {
             NodeCreator::attribute("href", "/some/value"),
             NodeCreator::attribute("rel", "stylesheet"),
         ],
-        None,
     );
     elem.remove_attribute(attribute_name);
     let attrs = match &elem.data {
@@ -329,7 +321,7 @@ fn remove_attribute() {
         true,
         *attrs.borrow() == vec![NodeCreator::attribute("rel", "stylesheet"),]
     );
-    let elem = NodeCreator::element("a", vec![], None);
+    let elem = NodeCreator::element("a", vec![]);
     elem.remove_attribute(attribute_name);
     let attrs = match &elem.data {
         NodeData::Element { attrs, .. } => attrs,

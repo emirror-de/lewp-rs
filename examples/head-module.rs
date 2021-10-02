@@ -1,12 +1,12 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        dom::{NodeCreator, Nodes},
+        dom::{NodeCreator, NodeExt, Nodes},
         module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
         page::{
             Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
         },
-        Charset, Error, LanguageTag,
+        Error,
     },
     std::rc::Rc,
 };
@@ -34,11 +34,8 @@ impl HeadOnly {
             \"I have been added using JavaScript.\"
             });",
         );
-        let script = NodeCreator::element(
-            "script",
-            vec![NodeCreator::attribute("defer", "defer")],
-            Some(content),
-        );
+        let script = NodeCreator::element("script", vec![NodeCreator::attribute("defer", "defer")]);
+        script.add_text(&content);
         vec![script]
     }
 }
@@ -70,7 +67,6 @@ impl Render for HeadOnly {
         vec![NodeCreator::element(
             "div",
             vec![NodeCreator::attribute("id", "head-only")],
-            None,
         )]
     }
 }

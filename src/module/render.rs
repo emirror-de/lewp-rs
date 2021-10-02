@@ -19,7 +19,6 @@ pub trait Render: Metadata {
                     "class",
                     &format!("lewp-module {}", self.id()),
                 )],
-                None,
             );
             for node in module_dom {
                 wrapper.children.borrow_mut().push(node);
