@@ -1,6 +1,8 @@
 #![deny(missing_docs)]
 //! Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source.
 //!
+//! ⚠ ***This crate is currently evolving. API changes can happen anytime until v1.0.0***
+//!
 //! ## Provided solutions
 //!
 //! When using [lewp](crate), you get the following benefits during web development:
@@ -11,6 +13,9 @@
 //! * Module based development, truly isolated
 //! * Build the DOM fully in Rust
 //!
+//! ## Examples
+//!
+//! Please find examples in the `examples` folder in the repository.
 
 pub use {charsets::Charset, langtag::LanguageTag};
 
