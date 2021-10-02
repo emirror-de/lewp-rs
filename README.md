@@ -45,9 +45,12 @@ If you have questions, want to contribute or have any other type of request, you
     - [ ] Directories can be configured on module level
 - [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
+- [ ] JavaScript and CSS can be compiled into the binary
+- [ ] Provide an API for localization (l10n)
+- [ ] Provide an API for generic resources
+- [ ] Modules can have isolated folders for temporary files
 - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
     - [ ] CSS attributes can be configured
-- [ ] JavaScript and CSS can be added to the binary
 - [ ] Modules can send events to sub-modules
 
 ## Contributing
