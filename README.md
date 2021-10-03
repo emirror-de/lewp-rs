@@ -14,8 +14,8 @@ If you have questions, want to contribute or have any other type of request, you
 
 - [x] Build your HTML website fully from Rust source
 - [x] Never touch confusing templates again
-- [x] Always emit correct, minimized HTML5
-- [x] Develop your Website as fully self-contained modules, never interfering each other
+- [x] Always serve correct, minimized HTML5
+- [x] Develop your Website as fully isolated modules, in HTML, CSS and JavaScript
 
 ## Roadmap
 
