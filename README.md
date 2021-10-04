@@ -10,14 +10,14 @@ Say goodbye to the web template hell. Generate your HTML5 website technically op
 
 If you have questions, want to contribute or have any other type of request, your invited to create an issue or visit the [openprobst.dev](https://openprobst.dev) discord server.
 
-## Features
+## 📦 Features
 
 - [x] Build your HTML website fully from Rust source
 - [x] Never touch confusing templates again
 - [x] Always serve correct, minimized HTML5
 - [x] Develop your Website as fully isolated modules, in HTML, CSS and JavaScript
 
-## Roadmap
+## 🚌 Roadmap
 
 - [x] Skeleton to create website with by creating the DOM
 - [x] A webpage can have Modules
@@ -53,11 +53,11 @@ If you have questions, want to contribute or have any other type of request, you
     - [ ] CSS attributes can be configured
 - [ ] Modules can send events to sub-modules
 
-## Contributing
+## 🤠 Contributing
 
 Unless explicitly stated, any contribution intentionally submitted for inclusion in this project, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
-## License
+## ⚖ License
 
 Licensed under either of
 
