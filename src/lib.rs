@@ -31,6 +31,7 @@ pub use {charsets::Charset, langtag::LanguageTag};
 
 pub mod config;
 pub mod dom;
+pub mod fh;
 pub mod module;
 pub mod page;
 #[cfg(feature = "submodules")]
