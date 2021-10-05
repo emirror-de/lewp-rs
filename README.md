@@ -1,4 +1,4 @@
-![https://gitlab.com/lewp/lewp/-/raw/master/logo/lewp-transparent-background.inkscape.svg](https://gitlab.com/lewp/lewp/-/raw/master/logo/lewp-transparent-background.inkscape.svg)
+![](logo/lewp-transparent-background.inkscape.png)
 
 ----------------
 
@@ -10,14 +10,14 @@ Say goodbye to the web template hell. Generate your HTML5 website technically op
 
 If you have questions, want to contribute or have any other type of request, your invited to create an issue or visit the [openprobst.dev](https://openprobst.dev) discord server.
 
-## Features
+## 📦 Features
 
 - [x] Build your HTML website fully from Rust source
 - [x] Never touch confusing templates again
-- [x] Always emit correct, minimized HTML5
-- [x] Develop your Website as fully self-contained modules, never interfering each other
+- [x] Always serve correct, minimized HTML5
+- [x] Develop your Website as fully isolated modules, in HTML, CSS and JavaScript
 
-## Roadmap
+## 🚌 Roadmap
 
 - [x] Skeleton to create website with by creating the DOM
 - [x] A webpage can have Modules
@@ -27,25 +27,25 @@ If you have questions, want to contribute or have any other type of request, you
     - [x] Submodules have `RuntimeInformation` available
 - [x] `<head>` modules only
 - [x] The wrapping `div` tag can be disabled *(recommended only for `<head>` modules)*
-- [ ] Add possibility to add attributes to the container wrapping the module
+- [ ] File hierarchy for CSS and JS is defined
 - [ ] Added CSS integration
-    - [ ] File structure is defined
     - [ ] Combining files is implemented
     - [ ] Minimization of CSS is implemented
-    - [ ] Directories can be configured on module level
 - [ ] Modules are isolated (HTML, CSS)
-- [ ] Added [html5-picture](https://github.com/emirror-de/html5-picture) support
-    - [ ] Conversion of pictures on startup is possible
-    - [ ] API for a global register that holds all pictures and creates the HTML code
+- [ ] Page specific CSS is possible
 - [ ] Added JavaScript integration
-    - [ ] File structure is defined
     - [ ] Combining files is implemented
     - [ ] Minimization is implemented
-    - [ ] JavaScript is isolated
-    - [ ] Directories can be configured on module level
 - [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
 - [ ] JavaScript and CSS can be compiled into the binary
+- [ ] Add possibility to add attributes to the container wrapping the module
+- [ ] Configuration using `.toml` files
+    - [ ] Modules
+    - [ ] Pages
+- [ ] Added [html5-picture](https://github.com/emirror-de/html5-picture) support
+    - [ ] Conversion of pictures on startup is possible
+    - [ ] API for a global register that holds all pictures and creates the HTML code
 - [ ] Provide an API for localization (l10n)
 - [ ] Provide an API for generic resources
 - [ ] Modules can have isolated folders for temporary files
@@ -53,11 +53,11 @@ If you have questions, want to contribute or have any other type of request, you
     - [ ] CSS attributes can be configured
 - [ ] Modules can send events to sub-modules
 
-## Contributing
+## 🤠 Contributing
 
 Unless explicitly stated, any contribution intentionally submitted for inclusion in this project, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
-## License
+## ⚖ License
 
 Licensed under either of
 

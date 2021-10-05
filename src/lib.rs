@@ -33,6 +33,7 @@ pub mod config;
 #[cfg(feature = "css")]
 pub mod css;
 pub mod dom;
+pub mod fh;
 pub mod module;
 pub mod page;
 #[cfg(feature = "submodules")]
