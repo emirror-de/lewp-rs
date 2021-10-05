@@ -11,6 +11,7 @@ pub enum FileType {
 }
 
 /// The file hierarchy level.
+#[derive(Debug, Clone)]
 pub enum Level {
     /// The module level.
     Module,
@@ -34,15 +35,16 @@ impl FileHierarchy {
     /// Generates the folder path according to the file hierarchy. The folder
     /// that contains the `file_type` always corresponds to the extension of the
     /// files contained.
-    pub fn folder(&self, file_type: FileType, level: Level) -> PathBuf {
+    pub fn folder(&self, id: &str, file_type: FileType, level: Level) -> PathBuf {
         let mut path = self.base_directory.clone();
-        path.push(self.level(&level));
-        path.push(self.extension(&file_type));
+        path.push(self.level(level));
+        path.push(id);
+        path.push(self.extension(file_type));
         path
     }
 
     /// Returns the correct extension for the given file type.
-    fn extension(&self, file_type: &FileType) -> &str {
+    pub(crate) fn extension(&self, file_type: FileType) -> &str {
         match file_type {
             FileType::CSS => "css",
             FileType::JavaScript => "js",
@@ -50,7 +52,7 @@ impl FileHierarchy {
     }
 
     /// Returns the correct level part.
-    fn level(&self, level: &Level) -> &str {
+    fn level(&self, level: Level) -> &str {
         match level {
             Level::Page => "pages",
             Level::Module => "modules",
@@ -68,12 +70,14 @@ impl Default for FileHierarchy {
 fn folder_creation() {
     let fh = FileHierarchy::new();
     assert_eq!(
-        "./modules/css",
-        fh.folder(FileType::CSS, Level::Module).to_str().unwrap()
+        "./modules/module-id/css",
+        fh.folder("module-id", FileType::CSS, Level::Module)
+            .to_str()
+            .unwrap()
     );
     assert_eq!(
-        "./pages/js",
-        fh.folder(FileType::JavaScript, Level::Page)
+        "./pages/hello-world/js",
+        fh.folder("hello-world", FileType::JavaScript, Level::Page)
             .to_str()
             .unwrap()
     );

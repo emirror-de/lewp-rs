@@ -15,7 +15,7 @@ categories = ["web-programming"]
 [features]
 full = ["submodules"]
 submodules = []
-css = []
+css = ["walkdir"]
 
 [dependencies]
 serde = { version = "^1.0.130", features = ["derive"], optional = true }
@@ -24,6 +24,7 @@ langtag = "^0.2.0"
 html5ever = "^0.25.1"
 markup5ever_rcdom = "^0.1.0"
 charsets = "^0.2.0"
+walkdir = { version = "^2.3.2", optional = true}
 
 [dev-dependencies]
 rand = "0.8.4"

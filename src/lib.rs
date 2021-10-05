@@ -27,6 +27,8 @@
 //!
 //! Please find examples in the `examples` folder in the repository.
 
+use crate::fh::Level;
+
 pub use {charsets::Charset, langtag::LanguageTag};
 
 pub mod config;
@@ -50,4 +52,10 @@ pub enum Error {
     ///
     /// `(emitting module id, message)`
     ModuleNotFound((String, String)),
+    /// Indicates an error that occured during CSS processing.
+    ///
+    /// **Returns**
+    ///
+    /// `([Level](crate::fh::Level), emitting id, message)`
+    Css(Level, String, String),
 }

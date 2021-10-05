@@ -28,6 +28,8 @@ If you have questions, want to contribute or have any other type of request, you
 - [x] `<head>` modules only
 - [x] The wrapping `div` tag can be disabled *(recommended only for `<head>` modules)*
 - [ ] File hierarchy for CSS and JS is defined
+    - [ ] Prevent `/` in IDs
+    - [ ] Remove `..` in IDs
 - [ ] Added CSS integration
     - [ ] Combining files is implemented
     - [ ] Minimization of CSS is implemented
