@@ -15,6 +15,7 @@ categories = ["web-programming"]
 [features]
 full = ["submodules"]
 submodules = []
+css = []
 
 [dependencies]
 serde = { version = "^1.0.130", features = ["derive"], optional = true }
