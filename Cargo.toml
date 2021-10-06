@@ -25,6 +25,9 @@ html5ever = "^0.25.1"
 markup5ever_rcdom = "^0.1.0"
 charsets = "^0.2.0"
 walkdir = { version = "^2.3.2", optional = true}
+pathdiff = "^0.2.1"
 
 [dev-dependencies]
 rand = "0.8.4"
+tempfile = "^3.2.0"
+fs_extra = "^1.2.0"
