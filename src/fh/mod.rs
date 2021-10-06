@@ -50,7 +50,7 @@ impl FileHierarchy {
     /// Collects all filenames recursively in the given subfolder. `subfolder`
     /// is referenced to the base directory given in the FileHierarchy instance.
     /// Parts containing `../` are removed before processing.
-    fn collect_filenames(&self, subfolder: &str) -> Vec<PathBuf> {
+    pub fn collect_filenames(&self, subfolder: &str) -> Vec<PathBuf> {
         let isolated_subfolder = self.isolate_path(subfolder);
         let subfolder = self.base_directory.join(Path::new(&isolated_subfolder));
         if !subfolder.is_dir() {
