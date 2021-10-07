@@ -32,7 +32,6 @@ use crate::fh::Level;
 pub use {charsets::Charset, langtag::LanguageTag};
 
 pub mod config;
-#[cfg(feature = "css")]
 pub mod css;
 pub mod dom;
 pub mod fh;
