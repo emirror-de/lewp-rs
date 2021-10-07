@@ -1,5 +1,5 @@
 #![deny(missing_docs)]
-//! ![](https://gitlab.com/lewp/lewp/-/raw/master/logo/lewp-transparent-background.inkscape.svg)
+//! ![](https://raw.githubusercontent.com/emirror-de/lewp-rs/main/logo/lewp-transparent-background.inkscape.png)
 //!
 //! ----------------
 //!
