@@ -39,7 +39,7 @@ impl Css {
                         format!(
                             "Error opening file {}: {}",
                             css_file_name.to_str().unwrap(),
-                            msg.to_string()
+                            msg
                         ),
                     ))
                 }
@@ -52,7 +52,7 @@ impl Css {
                         self.id.clone(),
                         format!(
                             "Error loading stylesheet: {}",
-                            msg.to_string(),
+                            msg,
                         ),
                     ))
                 }
