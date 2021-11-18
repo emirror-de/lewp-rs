@@ -81,7 +81,7 @@ mod modules {
             runtime_information: Rc<RuntimeInformation>,
         ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
-            self.run_submodules(runtime_information.clone())?;
+            self.run_submodules(runtime_information)?;
             Ok(())
         }
     }

@@ -54,7 +54,7 @@ pub trait Render: SubModule {
             self.id().to_string(),
             format!(
                 "Module with id \"{}\" could not be found in the submodules during rendering.",
-                id.to_string()
+                id
             ),
         )))
     }

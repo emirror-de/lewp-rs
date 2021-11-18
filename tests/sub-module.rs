@@ -202,7 +202,7 @@ impl PageRender for HelloWorldPage {}
 
 impl Assembler for HelloWorldPage {}
 
-const SUBMODULE_RESULT: &'static str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"></head><body><div class=\"lewp-module header\"><h1>hello-world</h1><div class=\"lewp-module random-headline\"><h2>Changed during run!</h2></div></div></body></html>";
+const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"></head><body><div class=\"lewp-module header\"><h1>hello-world</h1><div class=\"lewp-module random-headline\"><h2>Changed during run!</h2></div></div></body></html>";
 
 #[test]
 fn submodule() {
