@@ -25,6 +25,7 @@ markup5ever_rcdom = "^0.1.0"
 charsets = "^0.2.0"
 walkdir = "^2.3.2"
 pathdiff = "^0.2.1"
+css-next = { version = "^0.1.22", path = "../css" }
 
 [dev-dependencies]
 rand = "0.8.4"
