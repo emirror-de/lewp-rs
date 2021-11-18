@@ -1,7 +1,7 @@
 //! Traits and data structures for modules that have submodules.
 use crate::{
     module::{Module, ModulePtr, Modules},
-    Error,
+    LewpError,
 };
 
 mod render;
@@ -18,9 +18,9 @@ pub trait SubModule: Module {
     fn submodules_mut(&mut self) -> &mut Modules;
 
     /// Appends the given module as a submodule.
-    fn append_module(&mut self, module: ModulePtr) -> Result<(), Error> {
+    fn append_module(&mut self, module: ModulePtr) -> Result<(), LewpError> {
         if self.id() == module.borrow().id() {
-            return Err(Error::LoopDetection(format!(
+            return Err(LewpError::LoopDetection(format!(
                 "append_module, {}",
                 self.id()
             )));

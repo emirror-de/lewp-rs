@@ -42,7 +42,7 @@ pub mod submodule;
 
 /// Contains the error definitions that occur in [lewp](crate).
 #[derive(Debug)]
-pub enum Error {
+pub enum LewpError {
     /// Raised when a loop reference has been detected.
     LoopDetection(String),
     /// Indicates that a module has not been found.

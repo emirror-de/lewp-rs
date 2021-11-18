@@ -3,8 +3,9 @@
 use {
     crate::{
         fh::{FileHierarchy, FileType, Level},
-        Error,
+        LewpError,
     },
+    css_next::Stylesheet,
     std::{io::Read, path::PathBuf},
 };
 
@@ -21,32 +22,7 @@ pub struct Css {
 }
 
 impl Css {
-    fn collect_files(&self) -> Vec<PathBuf> {
-        let path = self.fh.folder(&self.id, FileType::CSS, self.level.clone());
-        let path = match path.to_str() {
-            Some(p) => p,
-            None => {
-                log::error!("Path does not contain valid unicode!");
-                return vec![];
-            }
-        };
-        let mut css_files = self.fh.collect_filenames(path);
-        css_files.retain(|e| {
-            if self.exclude_files.contains(e) {
-                return false;
-            }
-            match &e.extension() {
-                Some(s) => match s.to_str() {
-                    None => false,
-                    Some(v) => v == self.fh.extension(FileType::CSS),
-                },
-                None => false,
-            }
-        });
-        css_files
-    }
-
-    fn combine(&self, css_files: Vec<PathBuf>) -> Result<String, Error> {
+    fn combine(&self, css_files: Vec<PathBuf>) -> Result<String, LewpError> {
         let mut css_combined = String::new();
         for css_file_name in css_files {
             let mut css = String::new();
@@ -57,7 +33,7 @@ impl Css {
             let mut css_file = match std::fs::File::open(&file_path) {
                 Ok(c) => c,
                 Err(msg) => {
-                    return Err(Error::Css(
+                    return Err(LewpError::Css(
                         self.level.clone(),
                         self.id.clone(),
                         format!(
@@ -71,10 +47,13 @@ impl Css {
             match css_file.read_to_string(&mut css) {
                 Ok(_) => (),
                 Err(msg) => {
-                    return Err(Error::Css(
+                    return Err(LewpError::Css(
                         self.level.clone(),
                         self.id.clone(),
-                        format!("Error loading stylesheet: {}", msg.to_string(),),
+                        format!(
+                            "Error loading stylesheet: {}",
+                            msg.to_string(),
+                        ),
                     ))
                 }
             };
@@ -83,12 +62,22 @@ impl Css {
         Ok(css_combined)
     }
 
+    fn isolate_module_css(&self, css_raw: &str) -> Result<String, LewpError> {
+        let css_raw = css_raw.to_owned();
+        let stylesheet = match Stylesheet::parse(&css_raw) {
+            Ok(s) => s,
+            Err(msg) => {
+                return Err(LewpError::Css(self.level, self.id, msg.to_string))
+            }
+        };
+    }
+
     /// Prepares and processes CSS files for given id and level. Returns the
     /// processed CSS as String.
-    pub fn process(&self) -> Result<String, Error> {
-        let files = self.collect_files();
-        let css_raw = self.combine(files)?;
-        Ok(String::new())
+    pub fn process(&self) -> Result<String, LewpError> {
+        let files = self.fh.collect_filenames(".");
+        let css_raw = self.combine(files.unwrap())?;
+        Ok(css_raw)
     }
 }
 

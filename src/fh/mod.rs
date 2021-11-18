@@ -50,19 +50,23 @@ impl FileHierarchy {
     /// Collects all filenames recursively in the given subfolder. `subfolder`
     /// is referenced to the base directory given in the FileHierarchy instance.
     /// Parts containing `../` are removed before processing.
-    pub fn collect_filenames(&self, subfolder: &str) -> Vec<PathBuf> {
+    pub fn collect_filenames(&self, subfolder: &str) -> Result<Vec<PathBuf>, String> {
         let isolated_subfolder = self.isolate_path(subfolder);
         let subfolder = self.base_directory.join(Path::new(&isolated_subfolder));
         if !subfolder.is_dir() {
-            return vec![];
+            return Err(format!(
+                "Given input is not a folder: {}",
+                subfolder.display()
+            ));
         }
         let mut filenames = vec![];
         for entry in walkdir::WalkDir::new(&subfolder) {
             let entry = match entry {
                 Ok(v) => v.into_path(),
-                Err(_) => continue,
+                Err(msg) => return Err(msg.to_string()),
             };
             if entry.is_dir() {
+                // skip folders because we only want to get the files in the list
                 continue;
             }
             let entry = match self.remove_base_dir(&subfolder, &entry) {
@@ -72,9 +76,9 @@ impl FileHierarchy {
                     continue;
                 }
             };
-            filenames.push(entry)
+            filenames.push(self.base_directory.join(entry));
         }
-        filenames
+        Ok(filenames)
     }
 
     fn remove_base_dir(&self, base_dir: &Path, input_path: &Path) -> Result<PathBuf, String> {
@@ -152,7 +156,10 @@ fn collect_filenames() {
     let fh = FileHierarchyBuilder::new()
         .base_directory(PathBuf::from("testfiles"))
         .build();
-    let mut filenames = fh.collect_filenames("");
+    let mut filenames = match fh.collect_filenames("") {
+        Ok(f) => f,
+        Err(msg) => panic!("{}", msg),
+    };
     let mut reference = vec![
         PathBuf::from("modules/hello-world/css/primary.css"),
         PathBuf::from("modules/hello-world/css/secondary.css"),

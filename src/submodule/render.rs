@@ -1,4 +1,4 @@
-use crate::{dom::Nodes, submodule::SubModule, Error};
+use crate::{dom::Nodes, submodule::SubModule, LewpError};
 
 /// Renders the given submodule to the calling module.
 pub trait Render: SubModule {
@@ -14,11 +14,15 @@ pub trait Render: SubModule {
     /// Parameters:
     ///
     /// **idx**: The index of the module in [super::SubModule::submodules].
-    fn render_submodule(&self, idx: usize, parent_module_view: &mut Nodes) -> Result<(), Error> {
+    fn render_submodule(
+        &self,
+        idx: usize,
+        parent_module_view: &mut Nodes,
+    ) -> Result<(), LewpError> {
         let module = match self.submodules().get(idx) {
             Some(m) => m.borrow(),
             None => {
-                return Err(Error::ModuleNotFound((
+                return Err(LewpError::ModuleNotFound((
                     self.id().to_string(),
                     format!("Submodule with index {} not found!", idx),
                 )))
@@ -33,7 +37,11 @@ pub trait Render: SubModule {
     /// Parameters:
     ///
     /// **id**: The unique identifier of the module.
-    fn render_submodule_id(&self, id: &str, parent_module_view: &mut Nodes) -> Result<(), Error> {
+    fn render_submodule_id(
+        &self,
+        id: &str,
+        parent_module_view: &mut Nodes,
+    ) -> Result<(), LewpError> {
         for module in self.submodules() {
             let module = module.borrow();
             if module.id() != id {
@@ -42,7 +50,7 @@ pub trait Render: SubModule {
             parent_module_view.append(&mut module.render());
             return Ok(());
         }
-        Err(Error::ModuleNotFound((
+        Err(LewpError::ModuleNotFound((
             self.id().to_string(),
             format!(
                 "Module with id \"{}\" could not be found in the submodules during rendering.",
@@ -60,7 +68,7 @@ pub trait Render: SubModule {
         &self,
         id: &str,
         parent_module_view: &mut Nodes,
-    ) -> Result<(), Error> {
+    ) -> Result<(), LewpError> {
         for module in self.submodules() {
             let module = module.borrow();
             if module.id() != id {
