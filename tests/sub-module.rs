@@ -2,9 +2,14 @@ use lewp::{
     config::PageConfig,
     module::{Module, Modules},
     page::{
-        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
+        Assembler,
+        Metadata as PageMetadata,
+        Page,
+        Render as PageRender,
+        Runtime as PageRuntime,
     },
-    Charset, LanguageTag,
+    Charset,
+    LanguageTag,
 };
 
 mod modules {
@@ -12,9 +17,20 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-            submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
-            Error,
+            module::{
+                Metadata,
+                Module,
+                Modules,
+                Render,
+                Runtime,
+                RuntimeInformation,
+            },
+            submodule::{
+                Render as SubModuleRender,
+                Runtime as SubModuleRuntime,
+                SubModule,
+            },
+            LewpError,
         },
         std::rc::Rc,
     };
@@ -60,7 +76,10 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            runtime_information: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information)?;
             Ok(())
@@ -123,7 +142,10 @@ mod modules {
     }
 
     impl Runtime for RandomHeadline {
-        fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            _runtime_info: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             self.data = String::from("Changed during run!");
             Ok(())
         }

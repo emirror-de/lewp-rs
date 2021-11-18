@@ -2,11 +2,24 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
+        module::{
+            Metadata,
+            Module,
+            Modules,
+            Render,
+            Runtime,
+            RuntimeInformation,
         },
-        Charset, Error, LanguageTag,
+        page::{
+            Assembler,
+            Metadata as PageMetadata,
+            Page,
+            Render as PageRender,
+            Runtime as PageRuntime,
+        },
+        Charset,
+        LanguageTag,
+        LewpError,
     },
     std::rc::Rc,
 };
@@ -44,7 +57,10 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+    fn run(
+        &mut self,
+        _runtime_info: Rc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         Ok(())
     }
 }

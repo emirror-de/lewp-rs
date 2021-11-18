@@ -2,9 +2,14 @@ use lewp::{
     config::PageConfig,
     module::{Module, Modules},
     page::{
-        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
+        Assembler,
+        Metadata as PageMetadata,
+        Page,
+        Render as PageRender,
+        Runtime as PageRuntime,
     },
-    Charset, LanguageTag,
+    Charset,
+    LanguageTag,
 };
 
 mod modules {
@@ -12,9 +17,20 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-            submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
-            Error,
+            module::{
+                Metadata,
+                Module,
+                Modules,
+                Render,
+                Runtime,
+                RuntimeInformation,
+            },
+            submodule::{
+                Render as SubModuleRender,
+                Runtime as SubModuleRuntime,
+                SubModule,
+            },
+            LewpError,
         },
         std::rc::Rc,
     };
@@ -60,7 +76,10 @@ mod modules {
     }
 
     impl Runtime for Header {
-        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            runtime_information: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information.clone())?;
             Ok(())
@@ -130,11 +149,15 @@ mod modules {
     }
 
     impl Runtime for RandomHeadline {
-        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            runtime_information: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             use rand::Rng;
             let mut rng = rand::thread_rng();
             self.current_headline = Some(rng.gen_range(0..self.data.len()));
-            self.execution_count = runtime_information.get_execution_count(self.id());
+            self.execution_count =
+                runtime_information.get_execution_count(self.id());
             Ok(())
         }
     }
@@ -143,10 +166,17 @@ mod modules {
         fn view(&self) -> Nodes {
             let headline = match self.current_headline {
                 Some(v) => NodeCreator::headline(2, &self.data[v], vec![]),
-                None => NodeCreator::headline(2, "This module did not run yet!", vec![]),
+                None => NodeCreator::headline(
+                    2,
+                    "This module did not run yet!",
+                    vec![],
+                ),
             };
             let p = NodeCreator::paragraph(
-                &format!("Has been executed {} times before!", self.execution_count),
+                &format!(
+                    "Has been executed {} times before!",
+                    self.execution_count
+                ),
                 vec![],
             );
             vec![headline, p]

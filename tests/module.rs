@@ -3,7 +3,7 @@ use {
         config::ModuleConfig,
         dom::{NodeCreator, Nodes},
         module::{Metadata, Module, Render, Runtime, RuntimeInformation},
-        Error,
+        LewpError,
     },
     std::rc::Rc,
 };
@@ -41,7 +41,10 @@ impl Metadata for HelloWorld {
 }
 
 impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+    fn run(
+        &mut self,
+        _runtime_info: Rc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         Ok(())
     }
 }

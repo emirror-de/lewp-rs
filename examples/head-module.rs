@@ -2,11 +2,22 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, NodeExt, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
+        module::{
+            Metadata,
+            Module,
+            Modules,
+            Render,
+            Runtime,
+            RuntimeInformation,
         },
-        Error,
+        page::{
+            Assembler,
+            Metadata as PageMetadata,
+            Page,
+            Render as PageRender,
+            Runtime as PageRuntime,
+        },
+        LewpError,
     },
     std::rc::Rc,
 };
@@ -34,7 +45,10 @@ impl HeadOnly {
             \"I have been added using JavaScript.\"
             });",
         );
-        let script = NodeCreator::element("script", vec![NodeCreator::attribute("defer", "defer")]);
+        let script = NodeCreator::element(
+            "script",
+            vec![NodeCreator::attribute("defer", "defer")],
+        );
         script.add_text(&content);
         vec![script]
     }
@@ -57,7 +71,10 @@ impl Metadata for HeadOnly {
 }
 
 impl Runtime for HeadOnly {
-    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+    fn run(
+        &mut self,
+        _runtime_info: Rc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         Ok(())
     }
 }

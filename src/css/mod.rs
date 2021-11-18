@@ -67,9 +67,14 @@ impl Css {
         let stylesheet = match Stylesheet::parse(&css_raw) {
             Ok(s) => s,
             Err(msg) => {
-                return Err(LewpError::Css(self.level, self.id, msg.to_string))
+                return Err(LewpError::Css(
+                    self.level.clone(),
+                    self.id.clone(),
+                    format!("{:#?}", msg),
+                ))
             }
         };
+        Ok(String::new())
     }
 
     /// Prepares and processes CSS files for given id and level. Returns the
