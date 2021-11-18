@@ -13,6 +13,7 @@ If you have questions, want to contribute or have any other type of request, you
 ## 📦 Features
 
 - [x] Build your HTML website fully from Rust source
+- [x] No additional fancy markup or language
 - [x] Never touch confusing templates again
 - [x] Always serve correct, minimized HTML5
 - [x] Develop your Website as fully isolated modules, in HTML, CSS and JavaScript
@@ -30,18 +31,18 @@ If you have questions, want to contribute or have any other type of request, you
 - [ ] File hierarchy for CSS and JS is defined
     - [ ] Prevent `/` in IDs
     - [ ] Remove `..` in IDs
-- [ ] Added CSS integration
+- [ ] CSS integration
     - [ ] Combining files is implemented
     - [ ] Minimization of CSS is implemented
 - [ ] Modules are isolated (HTML, CSS)
 - [ ] Page specific CSS is possible
-- [ ] Added JavaScript integration
+- [ ] JavaScript integration
     - [ ] Combining files is implemented
     - [ ] Minimization is implemented
 - [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
 - [ ] JavaScript and CSS can be compiled into the binary
-- [ ] Add possibility to add attributes to the container wrapping the module
+- [ ] Add attributes to the container wrapping the module
 - [ ] Configuration using `.toml` files
     - [ ] Modules
     - [ ] Pages
