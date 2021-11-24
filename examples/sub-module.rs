@@ -18,11 +18,7 @@ mod modules {
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
             module::{Module, Modules, RuntimeInformation},
-            submodule::{
-                Render as SubModuleRender,
-                Runtime as SubModuleRuntime,
-                SubModule,
-            },
+            submodule::SubModule,
             LewpError,
         },
         std::rc::Rc,
@@ -92,9 +88,6 @@ mod modules {
             &mut self.children
         }
     }
-
-    impl SubModuleRuntime for Header {}
-    impl SubModuleRender for Header {}
 
     pub struct RandomHeadline {
         config: ModuleConfig,

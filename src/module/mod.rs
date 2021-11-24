@@ -1,8 +1,5 @@
 //! Traits and types necessary for creating a web module.
 
-//mod metadata;
-//mod render;
-//mod reset;
 mod runtime;
 
 use {

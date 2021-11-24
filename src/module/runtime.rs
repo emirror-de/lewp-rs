@@ -5,16 +5,6 @@ use {
     std::{cell::RefCell, collections::HashMap, rc::Rc},
 };
 
-///// Defines the behavior during runtime.
-//pub trait Runtime {
-//    /// Executes the module. Main function that is able to collect and modify
-//    /// data required for rendering.
-//    fn run(
-//        &mut self,
-//        runtime_info: Rc<RuntimeInformation>,
-//    ) -> Result<(), LewpError>;
-//}
-
 /// Contains runtime information of a module.
 pub struct RuntimeInformation {
     /// Information about how often a module has been executed.
