@@ -31,6 +31,7 @@ pub use {
     charsets::Charset,
     error::{LewpError, LewpErrorKind},
     langtag::LanguageTag,
+    page::Page,
 };
 
 pub mod config;
