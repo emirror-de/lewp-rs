@@ -17,14 +17,7 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{
-                Metadata,
-                Module,
-                Modules,
-                Render,
-                Runtime,
-                RuntimeInformation,
-            },
+            module::{Module, Modules, RuntimeInformation},
             submodule::{
                 Render as SubModuleRender,
                 Runtime as SubModuleRuntime,
@@ -63,9 +56,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for Header {
         fn id(&self) -> &str {
             "header"
         }
@@ -73,9 +64,7 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for Header {
         fn run(
             &mut self,
             runtime_information: Rc<RuntimeInformation>,
@@ -84,9 +73,7 @@ mod modules {
             self.run_submodules(runtime_information)?;
             Ok(())
         }
-    }
 
-    impl Render for Header {
         fn view(&self) -> Nodes {
             let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
@@ -129,9 +116,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for RandomHeadline {
         fn id(&self) -> &str {
             "random-headline"
         }
@@ -139,9 +124,7 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for RandomHeadline {
         fn run(
             &mut self,
             _runtime_info: Rc<RuntimeInformation>,
@@ -149,9 +132,7 @@ mod modules {
             self.data = String::from("Changed during run!");
             Ok(())
         }
-    }
 
-    impl Render for RandomHeadline {
         fn view(&self) -> Nodes {
             vec![NodeCreator::headline(2, &self.data, vec![])]
         }
@@ -212,6 +193,6 @@ fn submodule() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let dom = page.execute();
+    let dom = page.build();
     assert_eq!(SUBMODULE_RESULT, dom);
 }

@@ -17,14 +17,7 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{
-                Metadata,
-                Module,
-                Modules,
-                Render,
-                Runtime,
-                RuntimeInformation,
-            },
+            module::{Module, Modules, RuntimeInformation},
             submodule::{
                 Render as SubModuleRender,
                 Runtime as SubModuleRuntime,
@@ -75,9 +68,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for Header {
         fn id(&self) -> &str {
             "header"
         }
@@ -85,9 +76,7 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for Header {
         fn run(
             &mut self,
             runtime_information: Rc<RuntimeInformation>,
@@ -96,9 +85,7 @@ mod modules {
             self.run_submodules(runtime_information)?;
             Ok(())
         }
-    }
 
-    impl Render for Header {
         fn view(&self) -> Nodes {
             let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
@@ -174,5 +161,5 @@ fn loop_detection() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    page.execute();
+    page.build();
 }

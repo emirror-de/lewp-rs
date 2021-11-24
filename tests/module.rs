@@ -2,7 +2,7 @@ use {
     lewp::{
         config::ModuleConfig,
         dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Render, Runtime, RuntimeInformation},
+        module::{Module, RuntimeInformation},
         LewpError,
     },
     std::rc::Rc,
@@ -28,9 +28,7 @@ impl Module for HelloWorld {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HelloWorld {
     fn id(&self) -> &str {
         "hello-world"
     }
@@ -38,18 +36,14 @@ impl Metadata for HelloWorld {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HelloWorld {
     fn run(
         &mut self,
         _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HelloWorld {
     fn view(&self) -> Nodes {
         let headline = NodeCreator::headline(1, &self.data, vec![]);
         vec![headline]

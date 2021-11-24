@@ -17,14 +17,7 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{
-                Metadata,
-                Module,
-                Modules,
-                Render,
-                Runtime,
-                RuntimeInformation,
-            },
+            module::{Module, Modules, RuntimeInformation},
             submodule::{
                 Render as SubModuleRender,
                 Runtime as SubModuleRuntime,
@@ -63,9 +56,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for Header {
         fn id(&self) -> &str {
             "header"
         }
@@ -73,9 +64,7 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for Header {
         fn run(
             &mut self,
             runtime_information: Rc<RuntimeInformation>,
@@ -84,9 +73,7 @@ mod modules {
             self.run_submodules(runtime_information)?;
             Ok(())
         }
-    }
 
-    impl Render for Header {
         fn view(&self) -> Nodes {
             let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
@@ -136,9 +123,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for RandomHeadline {
         fn id(&self) -> &str {
             "random-headline"
         }
@@ -146,9 +131,7 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for RandomHeadline {
         fn run(
             &mut self,
             runtime_information: Rc<RuntimeInformation>,
@@ -160,9 +143,7 @@ mod modules {
                 runtime_information.get_execution_count(self.id());
             Ok(())
         }
-    }
 
-    impl Render for RandomHeadline {
         fn view(&self) -> Nodes {
             let headline = match self.current_headline {
                 Some(v) => NodeCreator::headline(2, &self.data[v], vec![]),
@@ -235,6 +216,6 @@ fn main() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let dom = page.execute();
+    let dom = page.build();
     println!("{}", dom);
 }

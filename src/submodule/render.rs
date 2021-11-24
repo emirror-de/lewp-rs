@@ -66,9 +66,9 @@ pub trait Render: SubModule {
         }
         Err(LewpError {
             kind: LewpErrorKind::Render,
-            message: format!(
+            message:
                 "Module could not be found in the submodules during rendering."
-            ),
+                    .to_string(),
             source_component: Component {
                 id: self.id().to_string(),
                 kind: ComponentType::Module,

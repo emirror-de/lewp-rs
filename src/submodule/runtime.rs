@@ -68,7 +68,8 @@ pub trait Runtime: SubModule {
         }
         Err(LewpError {
             kind: LewpErrorKind::ModuleNotFound,
-            message: format!("Could not find module in submodules register.",),
+            message: "Could not find module in submodules register."
+                .to_string(),
             source_component: Component {
                 id: self.id().to_string(),
                 kind: ComponentType::Module,

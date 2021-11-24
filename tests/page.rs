@@ -2,14 +2,7 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
-        module::{
-            Metadata,
-            Module,
-            Modules,
-            Render,
-            Runtime,
-            RuntimeInformation,
-        },
+        module::{Module, Modules, RuntimeInformation},
         page::{
             Assembler,
             Metadata as PageMetadata,
@@ -54,9 +47,7 @@ impl Module for HelloWorld {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HelloWorld {
     fn id(&self) -> &str {
         "hello-world"
     }
@@ -64,18 +55,14 @@ impl Metadata for HelloWorld {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HelloWorld {
     fn run(
         &mut self,
         _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HelloWorld {
     fn view(&self) -> Nodes {
         let headline = NodeCreator::headline(1, &self.data, vec![]);
         vec![headline]
@@ -137,7 +124,7 @@ fn hello_world_with_module_wrapper() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let html_string = page.execute();
+    let html_string = page.build();
     assert_eq!(HELLO_WORLD_RESULT, html_string);
 }
 
@@ -150,6 +137,6 @@ fn hello_world_skipped_wrapper() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let html_string = page.execute();
+    let html_string = page.build();
     assert_eq!(HELLO_WORLD_RESULT_SKIPPED_WRAPPER, html_string);
 }

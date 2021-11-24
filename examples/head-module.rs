@@ -2,14 +2,7 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, NodeExt, Nodes},
-        module::{
-            Metadata,
-            Module,
-            Modules,
-            Render,
-            Runtime,
-            RuntimeInformation,
-        },
+        module::{Module, Modules, RuntimeInformation},
         page::{
             Assembler,
             Metadata as PageMetadata,
@@ -58,9 +51,7 @@ impl Module for HeadOnly {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HeadOnly {
     fn id(&self) -> &str {
         "head-module"
     }
@@ -68,18 +59,14 @@ impl Metadata for HeadOnly {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HeadOnly {
     fn run(
         &mut self,
         _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HeadOnly {
     fn view(&self) -> Nodes {
         vec![NodeCreator::element(
             "div",
@@ -132,6 +119,6 @@ fn main() {
         modules: vec![],
         config: PageConfig::new(),
     };
-    let dom = page.execute();
+    let dom = page.build();
     println!("{}", dom);
 }

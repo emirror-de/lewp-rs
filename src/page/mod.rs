@@ -31,7 +31,7 @@ pub trait Page: Metadata + Runtime + Render {
     }
 
     /// Executes all implemented functions and renders the page afterwards.
-    fn execute(&mut self) -> String
+    fn build(&mut self) -> String
     where
         Self: Assembler,
     {

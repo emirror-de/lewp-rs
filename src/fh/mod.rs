@@ -39,9 +39,8 @@ impl FileHierarchy {
         path
     }
 
-    /// Collects all filenames recursively in the given subfolder. `subfolder`
-    /// is referenced to the base directory given in the FileHierarchy instance.
-    /// Parts containing `../` are removed before processing.
+    /// Collects all filenames recursively in the given component. The resulting
+    /// vector is referenced to the base directory given in the FileHierarchy instance.
     pub fn collect_filenames(
         &self,
         component: &Component,
@@ -76,7 +75,9 @@ impl FileHierarchy {
                 // skip folders because we only want to get the files in the list
                 continue;
             }
-            let entry = match self.remove_base_dir(&subfolder, &entry) {
+            //let entry = match self.remove_base_dir(&subfolder, &entry) {
+            let entry = match self.remove_base_dir(&self.base_directory, &entry)
+            {
                 Ok(p) => p,
                 Err(msg) => {
                     log::error!("{}", msg);

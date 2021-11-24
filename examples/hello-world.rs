@@ -2,14 +2,7 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
-        module::{
-            Metadata,
-            Module,
-            Modules,
-            Render,
-            Runtime,
-            RuntimeInformation,
-        },
+        module::{Module, Modules, RuntimeInformation},
         page::{
             Assembler,
             Metadata as PageMetadata,
@@ -44,9 +37,7 @@ impl Module for HelloWorld {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HelloWorld {
     fn id(&self) -> &str {
         "hello-world"
     }
@@ -54,18 +45,14 @@ impl Metadata for HelloWorld {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HelloWorld {
     fn run(
         &mut self,
         _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HelloWorld {
     fn view(&self) -> Nodes {
         let headline = NodeCreator::headline(1, &self.data, vec![]);
         vec![headline]
@@ -123,6 +110,6 @@ fn main() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let dom = page.execute();
+    let dom = page.build();
     println!("{}", dom);
 }

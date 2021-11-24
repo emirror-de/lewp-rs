@@ -2,6 +2,7 @@ use {
     crate::{
         fh::{Component, ComponentType, FileHierarchy},
         LewpError,
+        LewpErrorKind,
     },
     css_next::{
         cssparser::ToCss,
@@ -70,30 +71,30 @@ impl CssLevel {
         let mut css_combined = String::new();
         for css_file_name in css_files {
             let mut css = String::new();
-            let file_path = self
-                .fh
-                .folder(&self.component, ComponentType::CSS)
-                .join(&css_file_name);
+            let file_path =
+                self.fh.folder(&self.component).join(&css_file_name);
             let mut css_file = match std::fs::File::open(&file_path) {
                 Ok(c) => c,
                 Err(msg) => {
-                    return Err(LewpError::Css(
-                        self.component.clone(),
-                        format!(
+                    return Err(LewpError {
+                        kind: LewpErrorKind::Css,
+                        message: format!(
                             "Error opening file {}: {}",
                             css_file_name.to_str().unwrap(),
                             msg
                         ),
-                    ))
+                        source_component: self.component.clone(),
+                    });
                 }
             };
             match css_file.read_to_string(&mut css) {
                 Ok(_) => (),
                 Err(msg) => {
-                    return Err(LewpError::Css(
-                        self.component.clone(),
-                        format!("Error loading stylesheet: {}", msg,),
-                    ))
+                    return Err(LewpError {
+                        kind: LewpErrorKind::Css,
+                        message: format!("Error loading stylesheet: {}", msg),
+                        source_component: self.component.clone(),
+                    });
                 }
             };
             css_combined.push_str(&css);
@@ -106,10 +107,11 @@ impl CssLevel {
         let stylesheet = match Stylesheet::parse(&css_raw) {
             Ok(s) => s,
             Err(msg) => {
-                return Err(LewpError::Css(
-                    self.component.clone(),
-                    format!("{:#?}", msg),
-                ))
+                return Err(LewpError {
+                    kind: LewpErrorKind::Css,
+                    message: format!("{:#?}", msg),
+                    source_component: self.component.clone(),
+                });
             }
         };
         Ok(String::new())
@@ -118,8 +120,8 @@ impl CssLevel {
     /// Prepares and processes CSS files for given component. Returns the
     /// processed CSS as String.
     pub fn process(&self) -> Result<String, LewpError> {
-        let files = self.fh.collect_filenames(".");
-        let css_raw = self.combine_files(files.unwrap())?;
+        let files = self.fh.collect_filenames(&self.component);
+        let css_raw = self.combine_files(files?)?;
         Ok(css_raw)
     }
 }
@@ -127,29 +129,44 @@ impl CssLevel {
 #[test]
 fn collect_css_files() {
     use crate::fh::Level;
+    let id = "hello-world";
 
+    // get temporary directory
     let dir = tempfile::tempdir().unwrap();
+    // base the file hierarchy to this directory
+    let fh = crate::fh::FileHierarchyBuilder::new()
+        .base_directory(dir.path().to_path_buf())
+        .build();
+
+    // create path where the testfiles should be copied
+    let testfiles_destination = dir.path().join("modules");
+    let testfiles_source = "testfiles/modules";
     let mut copy_options = fs_extra::dir::CopyOptions::new();
     copy_options.copy_inside = true;
     match fs_extra::dir::copy(
-        "testfiles/modules",
-        dir.path().join("modules"),
+        testfiles_source,
+        testfiles_destination,
         &copy_options,
     ) {
         Err(msg) => panic!("{}", msg.to_string()),
         Ok(_) => (),
     };
 
-    let fh = crate::fh::FileHierarchyBuilder::new()
-        .base_directory(dir.path().to_path_buf())
-        .build();
     let css = CssLevel {
         fh,
         exclude_files: vec![],
-        component: Component::new("hello-world", Level::Module),
+        component: Component::new(
+            "hello-world",
+            Level::Module,
+            ComponentType::CSS,
+        ),
+    };
+    let css = match css.process() {
+        Ok(c) => c,
+        Err(e) => panic!("{}", e),
     };
     assert_eq!(
-        css.process().unwrap(),
+        css,
         String::from("h2 {\n    font-style: italic;\n}\nh1 {\n    font-style: bold;\n}\n")
         );
 
