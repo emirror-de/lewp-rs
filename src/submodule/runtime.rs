@@ -1,6 +1,11 @@
 use {
     super::SubModule,
-    crate::{module::RuntimeInformation, LewpError},
+    crate::{
+        fh::{Component, ComponentType, Level},
+        module::RuntimeInformation,
+        LewpError,
+        LewpErrorKind,
+    },
     std::rc::Rc,
 };
 
@@ -29,10 +34,18 @@ pub trait Runtime: SubModule {
         let mut module = match submodules.get(idx) {
             Some(m) => m.borrow_mut(),
             None => {
-                return Err(LewpError::ModuleNotFound((
-                    self.id().to_string(),
-                    format!("Could not run submodule with index {}", idx),
-                )))
+                return Err(LewpError {
+                    kind: LewpErrorKind::Runtime,
+                    message: format!(
+                        "Could not run submodule with index {}",
+                        idx
+                    ),
+                    source_component: Component {
+                        id: self.id().to_string(),
+                        kind: ComponentType::Module,
+                        level: Level::Module,
+                    },
+                });
             }
         };
         module.run(Rc::new(RuntimeInformation::new()))?;
@@ -53,13 +66,15 @@ pub trait Runtime: SubModule {
             module.run(Rc::new(RuntimeInformation::new()))?;
             return Ok(());
         }
-        Err(LewpError::ModuleNotFound((
-            self.id().to_string(),
-            format!(
-                "Module with id \"{}\" could not be found in the submodules.",
-                id
-            ),
-        )))
+        Err(LewpError {
+            kind: LewpErrorKind::ModuleNotFound,
+            message: format!("Could not find module in submodules register.",),
+            source_component: Component {
+                id: self.id().to_string(),
+                kind: ComponentType::Module,
+                level: Level::Module,
+            },
+        })
     }
 
     /// Runs all submodules with the given [id](crate::module::Metadata::id).

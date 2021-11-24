@@ -10,7 +10,12 @@ mod metadata;
 mod render;
 mod runtime;
 
-pub use {assembler::Assembler, metadata::Metadata, render::Render, runtime::Runtime};
+pub use {
+    assembler::Assembler,
+    metadata::Metadata,
+    render::Render,
+    runtime::Runtime,
+};
 
 /// Main trait of a page.
 pub trait Page: Metadata + Runtime + Render {
@@ -38,11 +43,7 @@ pub trait Page: Metadata + Runtime + Render {
             let mut module = module.borrow_mut();
             // run
             if let Err(e) = module.run(runtime_information.clone()) {
-                log::error!(
-                    "Module with id \"{}\" returned an error: {:#?}",
-                    module.id(),
-                    e
-                );
+                log::error!("{}", e);
             }
             // render
             modules_rendered_dom.push(module.render());

@@ -1,7 +1,9 @@
 //! Traits and data structures for modules that have submodules.
 use crate::{
+    fh::{Component, ComponentType, Level},
     module::{Module, ModulePtr, Modules},
     LewpError,
+    LewpErrorKind,
 };
 
 mod render;
@@ -20,10 +22,18 @@ pub trait SubModule: Module {
     /// Appends the given module as a submodule.
     fn append_module(&mut self, module: ModulePtr) -> Result<(), LewpError> {
         if self.id() == module.borrow().id() {
-            return Err(LewpError::LoopDetection(format!(
-                "append_module, {}",
-                self.id()
-            )));
+            return Err(LewpError {
+                kind: LewpErrorKind::LoopDetection,
+                message: format!(
+                    "Circular reference found in module with id '{}'.",
+                    self.id()
+                ),
+                source_component: Component::new(
+                    self.id(),
+                    Level::Module,
+                    ComponentType::Module,
+                ),
+            });
         }
         self.submodules_mut().push(module);
         Ok(())

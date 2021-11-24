@@ -1,4 +1,10 @@
-use crate::{dom::Nodes, submodule::SubModule, LewpError};
+use crate::{
+    dom::Nodes,
+    fh::{Component, ComponentType, Level},
+    submodule::SubModule,
+    LewpError,
+    LewpErrorKind,
+};
 
 /// Renders the given submodule to the calling module.
 pub trait Render: SubModule {
@@ -22,10 +28,18 @@ pub trait Render: SubModule {
         let module = match self.submodules().get(idx) {
             Some(m) => m.borrow(),
             None => {
-                return Err(LewpError::ModuleNotFound((
-                    self.id().to_string(),
-                    format!("Submodule with index {} not found!", idx),
-                )))
+                return Err(LewpError {
+                    kind: LewpErrorKind::Render,
+                    message: format!(
+                        "Could not find module with index {}.",
+                        idx
+                    ),
+                    source_component: Component {
+                        id: self.id().to_string(),
+                        kind: ComponentType::Module,
+                        level: Level::Module,
+                    },
+                })
             }
         };
         parent_module_view.append(&mut module.render());
@@ -50,13 +64,17 @@ pub trait Render: SubModule {
             parent_module_view.append(&mut module.render());
             return Ok(());
         }
-        Err(LewpError::ModuleNotFound((
-            self.id().to_string(),
-            format!(
-                "Module with id \"{}\" could not be found in the submodules during rendering.",
-                id
+        Err(LewpError {
+            kind: LewpErrorKind::Render,
+            message: format!(
+                "Module could not be found in the submodules during rendering."
             ),
-        )))
+            source_component: Component {
+                id: self.id().to_string(),
+                kind: ComponentType::Module,
+                level: Level::Module,
+            },
+        })
     }
 
     /// Renders all submodules with the given [id](crate::module::Metadata::id).

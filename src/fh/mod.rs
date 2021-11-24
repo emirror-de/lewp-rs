@@ -1,27 +1,19 @@
 //! Defines the file hierarchy of [lewp](crate).
 
-use std::path::{Path, PathBuf};
+use {
+    crate::{LewpError, LewpErrorKind},
+    std::path::{Path, PathBuf},
+};
 
 mod builder;
+mod component;
+mod level;
 
-pub use builder::FileHierarchyBuilder;
-
-/// Possible file types that the file hierarchy is covering.
-pub enum FileType {
-    /// A CSS file with `.css` extension.
-    CSS,
-    /// A JavaScript file with `.js` extension.
-    JavaScript,
-}
-
-/// The file hierarchy level.
-#[derive(Debug, Clone)]
-pub enum Level {
-    /// The module level.
-    Module,
-    /// The page level.
-    Page,
-}
+pub use {
+    builder::FileHierarchyBuilder,
+    component::{Component, ComponentType},
+    level::Level,
+};
 
 /// File hierarchy instance, handles file path generation.
 pub struct FileHierarchy {
@@ -39,31 +31,46 @@ impl FileHierarchy {
     /// Generates the folder path according to the file hierarchy. The folder
     /// that contains the `file_type` always corresponds to the extension of the
     /// files contained.
-    pub fn folder(&self, id: &str, file_type: FileType, level: Level) -> PathBuf {
+    pub fn folder(&self, component: &Component) -> PathBuf {
         let mut path = self.base_directory.clone();
-        path.push(self.level(level));
-        path.push(id);
-        path.push(self.extension(file_type));
+        path.push(component.level.to_string());
+        path.push(&component.id);
+        path.push(component.kind.to_string());
         path
     }
 
     /// Collects all filenames recursively in the given subfolder. `subfolder`
     /// is referenced to the base directory given in the FileHierarchy instance.
     /// Parts containing `../` are removed before processing.
-    pub fn collect_filenames(&self, subfolder: &str) -> Result<Vec<PathBuf>, String> {
-        let isolated_subfolder = self.isolate_path(subfolder);
-        let subfolder = self.base_directory.join(Path::new(&isolated_subfolder));
+    pub fn collect_filenames(
+        &self,
+        component: &Component,
+    ) -> Result<Vec<PathBuf>, LewpError> {
+        let subfolder = self.base_directory.join(Path::new(&format!(
+            "{}/{}/{}",
+            component.level, component.id, component.kind
+        )));
         if !subfolder.is_dir() {
-            return Err(format!(
-                "Given input is not a folder: {}",
-                subfolder.display()
-            ));
+            return Err(LewpError {
+                kind: LewpErrorKind::FileHierarchy,
+                message: format!(
+                    "Given input is not a folder: {}",
+                    subfolder.display()
+                ),
+                source_component: component.clone(),
+            });
         }
         let mut filenames = vec![];
         for entry in walkdir::WalkDir::new(&subfolder) {
             let entry = match entry {
                 Ok(v) => v.into_path(),
-                Err(msg) => return Err(msg.to_string()),
+                Err(msg) => {
+                    return Err(LewpError {
+                        kind: LewpErrorKind::FileHierarchy,
+                        message: msg.to_string(),
+                        source_component: component.clone(),
+                    });
+                }
             };
             if entry.is_dir() {
                 // skip folders because we only want to get the files in the list
@@ -81,7 +88,11 @@ impl FileHierarchy {
         Ok(filenames)
     }
 
-    fn remove_base_dir(&self, base_dir: &Path, input_path: &Path) -> Result<PathBuf, String> {
+    fn remove_base_dir(
+        &self,
+        base_dir: &Path,
+        input_path: &Path,
+    ) -> Result<PathBuf, String> {
         match pathdiff::diff_paths(input_path, base_dir) {
             Some(p) => Ok(p),
             None => match input_path.to_str() {
@@ -91,21 +102,22 @@ impl FileHierarchy {
         }
     }
 
-    /// Returns the correct extension for the given file type.
-    pub(crate) fn extension(&self, file_type: FileType) -> &str {
-        match file_type {
-            FileType::CSS => "css",
-            FileType::JavaScript => "js",
-        }
-    }
+    ///// Returns the correct extension for the given file type.
+    //pub(crate) fn extension(&self, file_type: ComponentType) -> &str {
+    //    match file_type {
+    //        ComponentType::CSS => "css",
+    //        ComponentType::JavaScript => "js",
+    //        _ =>
+    //    }
+    //}
 
-    /// Returns the correct level part.
-    fn level(&self, level: Level) -> &str {
-        match level {
-            Level::Page => "pages",
-            Level::Module => "modules",
-        }
-    }
+    ///// Returns the correct level part.
+    //fn level(&self, level: &Level) -> &str {
+    //    match level {
+    //        Level::Page(_) => "pages",
+    //        Level::Module(_) => "modules",
+    //    }
+    //}
 
     /// Removes `../` from the given string to isolate the filepath to a base
     /// directory.
@@ -128,15 +140,23 @@ fn folder_name_generation() {
     let fh = FileHierarchy::new();
     assert_eq!(
         "./modules/module-id/css",
-        fh.folder("module-id", FileType::CSS, Level::Module)
+        fh.folder(&Component::new(
+            "module-id",
+            Level::Module,
+            ComponentType::CSS
+        ),)
             .to_str()
             .unwrap()
     );
     assert_eq!(
         "./pages/hello-world/js",
-        fh.folder("hello-world", FileType::JavaScript, Level::Page)
-            .to_str()
-            .unwrap()
+        fh.folder(&Component::new(
+            "hello-world",
+            Level::Page,
+            ComponentType::JavaScript
+        ))
+        .to_str()
+        .unwrap()
     );
 }
 
@@ -156,9 +176,15 @@ fn collect_filenames() {
     let fh = FileHierarchyBuilder::new()
         .base_directory(PathBuf::from("testfiles"))
         .build();
-    let mut filenames = match fh.collect_filenames("") {
+    let mut filenames = match fh.collect_filenames(&Component {
+        id: format!("hello-world"),
+        level: Level::Module,
+        kind: ComponentType::CSS,
+    }) {
         Ok(f) => f,
-        Err(msg) => panic!("{}", msg),
+        Err(e) => {
+            panic!("{}", e)
+        }
     };
     let mut reference = vec![
         PathBuf::from("modules/hello-world/css/primary.css"),
