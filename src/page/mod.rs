@@ -13,18 +13,6 @@ use {
     std::rc::Rc,
 };
 
-//mod assembler;
-//mod metadata;
-//mod render;
-//mod runtime;
-
-//pub use {
-//    assembler::Assembler,
-//    metadata::Metadata,
-//    render::Render,
-//    runtime::Runtime,
-//};
-
 /// Main trait of a page.
 pub trait Page {
     /// Returns a reference to the modules added to the page.
