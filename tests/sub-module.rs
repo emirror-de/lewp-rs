@@ -1,13 +1,7 @@
 use lewp::{
     config::PageConfig,
     module::{Module, Modules},
-    page::{
-        Assembler,
-        Metadata as PageMetadata,
-        Page,
-        Render as PageRender,
-        Runtime as PageRuntime,
-    },
+    page::Page,
     Charset,
     LanguageTag,
 };
@@ -144,9 +138,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "lewp sub-module demonstration!"
     }
@@ -166,15 +158,9 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
-
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
 
 const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"></head><body><div class=\"lewp-module header\"><h1>hello-world</h1><div class=\"lewp-module random-headline\"><h2>Changed during run!</h2></div></div></body></html>";
 

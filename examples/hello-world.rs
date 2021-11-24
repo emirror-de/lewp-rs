@@ -3,13 +3,7 @@ use {
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
         module::{Module, Modules, RuntimeInformation},
-        page::{
-            Assembler,
-            Metadata as PageMetadata,
-            Page,
-            Render as PageRender,
-            Runtime as PageRuntime,
-        },
+        page::Page,
         Charset,
         LanguageTag,
         LewpError,
@@ -71,9 +65,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "Hello World from lewp!"
     }
@@ -93,15 +85,9 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
-
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
 
 fn main() {
     let module = HelloWorld::new();

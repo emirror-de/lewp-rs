@@ -3,13 +3,7 @@ use {
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, NodeExt, Nodes},
         module::{Module, Modules, RuntimeInformation},
-        page::{
-            Assembler,
-            Metadata as PageMetadata,
-            Page,
-            Render as PageRender,
-            Runtime as PageRuntime,
-        },
+        page::Page,
         LewpError,
     },
     std::rc::Rc,
@@ -87,9 +81,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "Head-only module example!"
     }
@@ -101,18 +93,12 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {
         let module = HeadOnly::new();
         self.add_module(module.into_module_ptr());
     }
 }
-
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
 
 fn main() {
     let mut page = HelloWorldPage {

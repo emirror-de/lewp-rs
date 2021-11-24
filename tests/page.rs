@@ -3,13 +3,7 @@ use {
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
         module::{Module, Modules, RuntimeInformation},
-        page::{
-            Assembler,
-            Metadata as PageMetadata,
-            Page,
-            Render as PageRender,
-            Runtime as PageRuntime,
-        },
+        page::Page,
         Charset,
         LanguageTag,
         LewpError,
@@ -81,9 +75,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "Hello World from lewp!"
     }
@@ -103,15 +95,9 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
-
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
 
 const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><div class=\"lewp-module hello-world\"><h1>hello-world</h1></div></body></html>";
 const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><h1>hello-world</h1></body></html>";
