@@ -54,7 +54,7 @@ pub trait SubModule: Module {
     ///
     /// Parameters:
     ///
-    /// **idx**: The index of the module in [super::SubModule::submodules].
+    /// **idx**: The index of the module in [Self::submodules].
     fn render_submodule(
         &self,
         idx: usize,
@@ -81,7 +81,7 @@ pub trait SubModule: Module {
         Ok(())
     }
 
-    /// Renders the first submodule with the given [id](crate::module::Metadata::id).
+    /// Renders the first submodule with the given [id](crate::module::Module::id).
     ///
     /// Parameters:
     ///
@@ -112,7 +112,7 @@ pub trait SubModule: Module {
         })
     }
 
-    /// Renders all submodules with the given [id](crate::module::Metadata::id).
+    /// Renders all submodules with the given [id](crate::module::Module::id).
     ///
     /// Parameters:
     ///
@@ -132,7 +132,7 @@ pub trait SubModule: Module {
         Ok(())
     }
 
-    /// Runs all submodules in order as they are returned in [super::SubModule::submodules].
+    /// Runs all submodules in order as they are returned in [Self::submodules].
     fn run_submodules(
         &mut self,
         runtime_information: Rc<RuntimeInformation>,
@@ -149,7 +149,7 @@ pub trait SubModule: Module {
     ///
     /// Parameters:
     ///
-    /// **idx**: The index of the module in [super::SubModule::submodules].
+    /// **idx**: The index of the module in [Self::submodules].
     fn run_submodule(&mut self, idx: usize) -> Result<(), LewpError> {
         let submodules = self.submodules();
         let mut module = match submodules.get(idx) {
@@ -173,7 +173,7 @@ pub trait SubModule: Module {
         Ok(())
     }
 
-    /// Runs the first submodule with the given [id](crate::module::Metadata::id).
+    /// Runs the first submodule with the given [id](crate::module::Module::id).
     ///
     /// Parameters:
     ///
@@ -199,7 +199,7 @@ pub trait SubModule: Module {
         })
     }
 
-    /// Runs all submodules with the given [id](crate::module::Metadata::id).
+    /// Runs all submodules with the given [id](crate::module::Module::id).
     ///
     /// Parameters:
     ///
