@@ -20,7 +20,6 @@ use {
 /// Helps creating a Css instance.
 pub struct CssComponentBuilder {
     fh: FileHierarchy,
-    exclude_files: Vec<PathBuf>,
     component: Component,
 }
 
@@ -30,7 +29,6 @@ impl CssComponentBuilder {
         Self {
             component,
             fh: FileHierarchy::new(),
-            exclude_files: vec![],
         }
     }
 
@@ -40,17 +38,11 @@ impl CssComponentBuilder {
         self
     }
 
-    /// Sets the excluded files.
-    pub fn exclude_files(mut self, files: Vec<PathBuf>) -> Self {
-        self.exclude_files = files;
-        self
-    }
 
     /// Creates the Css instance.
     pub fn build(self) -> CssComponent {
         CssComponent {
             fh: self.fh,
-            exclude_files: self.exclude_files,
             component: self.component,
         }
     }
@@ -59,7 +51,6 @@ impl CssComponentBuilder {
 /// Responsible for CSS that is stored for a given [Component].
 pub struct CssComponent {
     fh: FileHierarchy,
-    exclude_files: Vec<PathBuf>,
     component: Component,
 }
 
@@ -154,7 +145,6 @@ fn collect_css_files() {
 
     let css = CssComponent {
         fh,
-        exclude_files: vec![],
         component: Component::new(
             "hello-world",
             Level::Module,
