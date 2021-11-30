@@ -1,6 +1,6 @@
 use {
     crate::{
-        fh::{Component, ComponentType, FileHierarchy},
+        fh::{Component as FHComponent, ComponentType, FileHierarchy},
         LewpError,
         LewpErrorKind,
     },
@@ -17,15 +17,15 @@ use {
     std::{io::Read, path::PathBuf},
 };
 
-/// Helps creating a CssComponent instance.
-pub struct CssComponentBuilder {
+/// Helps creating a Component instance.
+pub struct ComponentBuilder {
     fh: FileHierarchy,
-    component: Component,
+    component: FHComponent,
 }
 
-impl CssComponentBuilder {
+impl ComponentBuilder {
     /// Creates a new instance.
-    pub fn new(component: Component) -> Self {
+    pub fn new(component: FHComponent) -> Self {
         Self {
             component,
             fh: FileHierarchy::new(),
@@ -38,23 +38,22 @@ impl CssComponentBuilder {
         self
     }
 
-
     /// Creates the Css instance.
-    pub fn build(self) -> CssComponent {
-        CssComponent {
+    pub fn build(self) -> Component {
+        Component {
             fh: self.fh,
             component: self.component,
         }
     }
 }
 
-/// Responsible for CSS that is stored for a given [Component].
-pub struct CssComponent {
+/// Responsible for CSS that is stored for a given [FHComponent].
+pub struct Component {
     fh: FileHierarchy,
-    component: Component,
+    component: FHComponent,
 }
 
-impl CssComponent {
+impl Component {
     fn combine_files(
         &self,
         css_files: Vec<PathBuf>,
@@ -131,9 +130,9 @@ fn collect_css_files() {
         Ok(_) => (),
     };
 
-    let css = CssComponent {
+    let css = Component {
         fh,
-        component: Component::new(
+        component: FHComponent::new(
             "hello-world",
             Level::Module,
             ComponentType::CSS,
