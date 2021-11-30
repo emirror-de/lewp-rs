@@ -17,7 +17,7 @@ use {
     std::{io::Read, path::PathBuf},
 };
 
-/// Helps creating a Css instance.
+/// Helps creating a CssComponent instance.
 pub struct CssComponentBuilder {
     fh: FileHierarchy,
     component: Component,
@@ -61,29 +61,17 @@ impl CssComponent {
     ) -> Result<String, LewpError> {
         let mut css_combined = String::new();
         for css_file_name in css_files {
-            let mut css = String::new();
             let file_path =
                 self.fh.folder(&self.component).join(&css_file_name);
-            let mut css_file = match std::fs::File::open(&file_path) {
-                Ok(c) => c,
+            let css = match std::fs::read_to_string(&file_path) {
+                Ok(r) => r,
                 Err(msg) => {
                     return Err(LewpError {
                         kind: LewpErrorKind::Css,
                         message: format!(
-                            "Error opening file {}: {}",
-                            css_file_name.to_str().unwrap(),
+                            "Error reading stylesheet file: {}",
                             msg
                         ),
-                        source_component: self.component.clone(),
-                    });
-                }
-            };
-            match css_file.read_to_string(&mut css) {
-                Ok(_) => (),
-                Err(msg) => {
-                    return Err(LewpError {
-                        kind: LewpErrorKind::Css,
-                        message: format!("Error loading stylesheet: {}", msg),
                         source_component: self.component.clone(),
                     });
                 }
