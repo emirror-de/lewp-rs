@@ -1,8 +1,5 @@
-//! Traits and types necessary for creating a web module.
-
-mod runtime;
-
 use {
+    super::{ModulePtr, RuntimeInformation},
     crate::{
         config::ModuleConfig,
         dom::{NodeCreator, Nodes},
@@ -10,14 +7,6 @@ use {
     },
     std::{cell::RefCell, rc::Rc},
 };
-
-pub use runtime::RuntimeInformation;
-
-/// A collection of modules.
-pub type Modules = Vec<ModulePtr>;
-
-/// Wrapper type for a Module instance.
-pub type ModulePtr = Rc<RefCell<dyn Module>>;
 
 /// Defines a web page module.
 pub trait Module {
