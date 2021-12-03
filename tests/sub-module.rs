@@ -1,10 +1,9 @@
 use lewp::{
     config::PageConfig,
     module::{Module, Modules},
-    page::{
-        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-    },
-    Charset, LanguageTag,
+    page::Page,
+    Charset,
+    LanguageTag,
 };
 
 mod modules {
@@ -12,9 +11,9 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-            submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
-            Error,
+            module::{Module, Modules, RuntimeInformation},
+            submodule::SubModule,
+            LewpError,
         },
         std::rc::Rc,
     };
@@ -47,9 +46,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for Header {
         fn id(&self) -> &str {
             "header"
         }
@@ -57,17 +54,16 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for Header {
-        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            runtime_information: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information)?;
             Ok(())
         }
-    }
 
-    impl Render for Header {
         fn view(&self) -> Nodes {
             let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
@@ -86,9 +82,6 @@ mod modules {
             &mut self.children
         }
     }
-
-    impl SubModuleRuntime for Header {}
-    impl SubModuleRender for Header {}
 
     pub struct RandomHeadline {
         config: ModuleConfig,
@@ -110,9 +103,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for RandomHeadline {
         fn id(&self) -> &str {
             "random-headline"
         }
@@ -120,16 +111,15 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for RandomHeadline {
-        fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            _runtime_info: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             self.data = String::from("Changed during run!");
             Ok(())
         }
-    }
 
-    impl Render for RandomHeadline {
         fn view(&self) -> Nodes {
             vec![NodeCreator::headline(2, &self.data, vec![])]
         }
@@ -148,9 +138,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "lewp sub-module demonstration!"
     }
@@ -170,17 +158,11 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
-
-const SUBMODULE_RESULT: &'static str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"></head><body><div class=\"lewp-module header\"><h1>hello-world</h1><div class=\"lewp-module random-headline\"><h2>Changed during run!</h2></div></div></body></html>";
+const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"></head><body><div class=\"lewp-module header\"><h1>hello-world</h1><div class=\"lewp-module random-headline\"><h2>Changed during run!</h2></div></div></body></html>";
 
 #[test]
 fn submodule() {
@@ -190,6 +172,6 @@ fn submodule() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let dom = page.execute();
+    let dom = page.build();
     assert_eq!(SUBMODULE_RESULT, dom);
 }

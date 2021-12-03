@@ -1,10 +1,9 @@
 use lewp::{
     config::PageConfig,
     module::{Module, Modules},
-    page::{
-        Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-    },
-    Charset, LanguageTag,
+    page::Page,
+    Charset,
+    LanguageTag,
 };
 
 mod modules {
@@ -12,9 +11,9 @@ mod modules {
         lewp::{
             config::ModuleConfig,
             dom::{NodeCreator, Nodes},
-            module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-            submodule::{Render as SubModuleRender, Runtime as SubModuleRuntime, SubModule},
-            Error,
+            module::{Module, Modules, RuntimeInformation},
+            submodule::SubModule,
+            LewpError,
         },
         std::rc::Rc,
     };
@@ -59,9 +58,7 @@ mod modules {
         fn head_tags(&self) -> &Nodes {
             &self.head_tags
         }
-    }
 
-    impl Metadata for Header {
         fn id(&self) -> &str {
             "header"
         }
@@ -69,17 +66,16 @@ mod modules {
         fn config(&self) -> &ModuleConfig {
             &self.config
         }
-    }
 
-    impl Runtime for Header {
-        fn run(&mut self, runtime_information: Rc<RuntimeInformation>) -> Result<(), Error> {
+        fn run(
+            &mut self,
+            runtime_information: Rc<RuntimeInformation>,
+        ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information)?;
             Ok(())
         }
-    }
 
-    impl Render for Header {
         fn view(&self) -> Nodes {
             let headline = NodeCreator::headline(1, &self.data, vec![]);
             let mut view = vec![headline];
@@ -98,9 +94,6 @@ mod modules {
             &mut self.children
         }
     }
-
-    impl SubModuleRuntime for Header {}
-    impl SubModuleRender for Header {}
 }
 
 struct HelloWorldPage {
@@ -115,9 +108,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "lewp sub-module demonstration!"
     }
@@ -137,15 +128,9 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
-
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
 
 #[test]
 fn loop_detection() {
@@ -155,5 +140,5 @@ fn loop_detection() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    page.execute();
+    page.build();
 }

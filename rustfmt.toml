@@ -1,0 +1,7 @@
+max_width=80
+imports_granularity = "One"
+imports_layout="HorizontalVertical"
+format_strings = false
+reorder_imports = true
+hard_tabs = false
+tab_spaces = 4

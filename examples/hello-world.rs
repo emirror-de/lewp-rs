@@ -2,11 +2,11 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-        },
-        Charset, Error, LanguageTag,
+        module::{Module, Modules, RuntimeInformation},
+        page::Page,
+        Charset,
+        LanguageTag,
+        LewpError,
     },
     std::rc::Rc,
 };
@@ -31,9 +31,7 @@ impl Module for HelloWorld {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HelloWorld {
     fn id(&self) -> &str {
         "hello-world"
     }
@@ -41,15 +39,14 @@ impl Metadata for HelloWorld {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+    fn run(
+        &mut self,
+        _runtime_info: Rc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HelloWorld {
     fn view(&self) -> Nodes {
         let headline = NodeCreator::headline(1, &self.data, vec![]);
         vec![headline]
@@ -68,9 +65,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "Hello World from lewp!"
     }
@@ -90,15 +85,9 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
-
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
 
 fn main() {
     let module = HelloWorld::new();
@@ -107,6 +96,6 @@ fn main() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let dom = page.execute();
+    let dom = page.build();
     println!("{}", dom);
 }

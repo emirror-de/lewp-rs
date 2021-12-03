@@ -2,11 +2,11 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-        },
-        Charset, Error, LanguageTag,
+        module::{Module, Modules, RuntimeInformation},
+        page::Page,
+        Charset,
+        LanguageTag,
+        LewpError,
     },
     std::rc::Rc,
 };
@@ -41,9 +41,7 @@ impl Module for HelloWorld {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HelloWorld {
     fn id(&self) -> &str {
         "hello-world"
     }
@@ -51,15 +49,14 @@ impl Metadata for HelloWorld {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HelloWorld {
-    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+    fn run(
+        &mut self,
+        _runtime_info: Rc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HelloWorld {
     fn view(&self) -> Nodes {
         let headline = NodeCreator::headline(1, &self.data, vec![]);
         vec![headline]
@@ -78,9 +75,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "Hello World from lewp!"
     }
@@ -100,18 +95,12 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
-
-const HELLO_WORLD_RESULT: &'static str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><div class=\"lewp-module hello-world\"><h1>hello-world</h1></div></body></html>";
-const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &'static str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><h1>hello-world</h1></body></html>";
+const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><div class=\"lewp-module hello-world\"><h1>hello-world</h1></div></body></html>";
+const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><h1>hello-world</h1></body></html>";
 
 #[test]
 fn hello_world_with_module_wrapper() {
@@ -121,7 +110,7 @@ fn hello_world_with_module_wrapper() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let html_string = page.execute();
+    let html_string = page.build();
     assert_eq!(HELLO_WORLD_RESULT, html_string);
 }
 
@@ -134,6 +123,6 @@ fn hello_world_skipped_wrapper() {
         config: PageConfig::new(),
     };
     page.add_module(module.into_module_ptr());
-    let html_string = page.execute();
+    let html_string = page.build();
     assert_eq!(HELLO_WORLD_RESULT_SKIPPED_WRAPPER, html_string);
 }

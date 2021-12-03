@@ -1,16 +1,9 @@
 //! Runtime traits and structs of a module.
 
 use {
-    crate::Error,
+    crate::LewpError,
     std::{cell::RefCell, collections::HashMap, rc::Rc},
 };
-
-/// Defines the behavior during runtime.
-pub trait Runtime {
-    /// Executes the module. Main function that is able to collect and modify
-    /// data required for rendering.
-    fn run(&mut self, runtime_info: Rc<RuntimeInformation>) -> Result<(), Error>;
-}
 
 /// Contains runtime information of a module.
 pub struct RuntimeInformation {

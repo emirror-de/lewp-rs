@@ -1,5 +1,5 @@
 #![deny(missing_docs)]
-//! ![](https://gitlab.com/lewp/lewp/-/raw/master/logo/lewp-transparent-background.inkscape.svg)
+//! ![](https://raw.githubusercontent.com/emirror-de/lewp-rs/main/logo/lewp-transparent-background.inkscape.png)
 //!
 //! ----------------
 //!
@@ -17,35 +17,29 @@
 //!
 //! When using [lewp](crate), you get the following benefits during web development:
 //!
-//! * No template hell in your code base any longer
-//! * No whitespace bugs in your website
+//! * No more template hell in your code base
+//! * No more whitespace bugs in your website
 //! * Technically optimized, always valid, minified, HTML5 code
 //! * Module based development, truly isolated
-//! * Build the DOM fully in Rust
+//! * Build the DOM completely in Rust
 //!
 //! ## Examples
 //!
 //! Please find examples in the `examples` folder in the repository.
 
-pub use {charsets::Charset, langtag::LanguageTag};
+pub use {
+    charsets::Charset,
+    error::{LewpError, LewpErrorKind},
+    langtag::LanguageTag,
+    page::Page,
+};
 
 pub mod config;
+pub mod css;
 pub mod dom;
+mod error;
 pub mod fh;
 pub mod module;
 pub mod page;
 #[cfg(feature = "submodules")]
 pub mod submodule;
-
-/// Contains the error definitions that occur in [lewp](crate).
-#[derive(Debug)]
-pub enum Error {
-    /// Raised when a loop reference has been detected.
-    LoopDetection(String),
-    /// Indicates that a module has not been found.
-    ///
-    /// **Returns**
-    ///
-    /// `(emitting module id, message)`
-    ModuleNotFound((String, String)),
-}

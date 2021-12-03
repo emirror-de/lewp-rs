@@ -2,11 +2,9 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         dom::{NodeCreator, NodeExt, Nodes},
-        module::{Metadata, Module, Modules, Render, Runtime, RuntimeInformation},
-        page::{
-            Assembler, Metadata as PageMetadata, Page, Render as PageRender, Runtime as PageRuntime,
-        },
-        Error,
+        module::{Module, Modules, RuntimeInformation},
+        page::Page,
+        LewpError,
     },
     std::rc::Rc,
 };
@@ -34,7 +32,10 @@ impl HeadOnly {
             \"I have been added using JavaScript.\"
             });",
         );
-        let script = NodeCreator::element("script", vec![NodeCreator::attribute("defer", "defer")]);
+        let script = NodeCreator::element(
+            "script",
+            vec![NodeCreator::attribute("defer", "defer")],
+        );
         script.add_text(&content);
         vec![script]
     }
@@ -44,9 +45,7 @@ impl Module for HeadOnly {
     fn head_tags(&self) -> &Nodes {
         &self.head_tags
     }
-}
 
-impl Metadata for HeadOnly {
     fn id(&self) -> &str {
         "head-module"
     }
@@ -54,15 +53,14 @@ impl Metadata for HeadOnly {
     fn config(&self) -> &ModuleConfig {
         &self.config
     }
-}
 
-impl Runtime for HeadOnly {
-    fn run(&mut self, _runtime_info: Rc<RuntimeInformation>) -> Result<(), Error> {
+    fn run(
+        &mut self,
+        _runtime_info: Rc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         Ok(())
     }
-}
 
-impl Render for HeadOnly {
     fn view(&self) -> Nodes {
         vec![NodeCreator::element(
             "div",
@@ -83,9 +81,7 @@ impl Page for HelloWorldPage {
     fn modules_mut(&mut self) -> &mut Modules {
         &mut self.modules
     }
-}
 
-impl PageMetadata for HelloWorldPage {
     fn title(&self) -> &str {
         "Head-only module example!"
     }
@@ -97,24 +93,18 @@ impl PageMetadata for HelloWorldPage {
     fn config(&self) -> &PageConfig {
         &self.config
     }
-}
 
-impl PageRuntime for HelloWorldPage {
     fn run(&mut self) {
         let module = HeadOnly::new();
         self.add_module(module.into_module_ptr());
     }
 }
 
-impl PageRender for HelloWorldPage {}
-
-impl Assembler for HelloWorldPage {}
-
 fn main() {
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
     };
-    let dom = page.execute();
+    let dom = page.build();
     println!("{}", dom);
 }
