@@ -1,5 +1,5 @@
 /// The file hierarchy level.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Level {
     /// The module level.
     Module,

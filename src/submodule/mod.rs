@@ -2,7 +2,7 @@
 use {
     crate::{
         dom::Nodes,
-        fh::{Component, ComponentType, Level},
+        fh::{Component, ComponentInformation, Level},
         module::{Module, ModulePtr, Modules, RuntimeInformation},
         LewpError,
         LewpErrorKind,
@@ -32,11 +32,7 @@ pub trait SubModule: Module {
                     "Circular reference found in module with id '{}'.",
                     self.id()
                 ),
-                source_component: Component::new(
-                    self.id(),
-                    Level::Module,
-                    ComponentType::Module,
-                ),
+                source_component: self.component_information(),
             });
         }
         self.submodules_mut().push(module);
@@ -69,12 +65,8 @@ pub trait SubModule: Module {
                         "Could not find module with index {}.",
                         idx
                     ),
-                    source_component: Component {
-                        id: self.id().to_string(),
-                        kind: ComponentType::Module,
-                        level: Level::Module,
-                    },
-                })
+                    source_component: self.component_information(),
+                });
             }
         };
         parent_module_view.append(&mut module.render());
@@ -104,11 +96,7 @@ pub trait SubModule: Module {
             message:
                 "Module could not be found in the submodules during rendering."
                     .to_string(),
-            source_component: Component {
-                id: self.id().to_string(),
-                kind: ComponentType::Module,
-                level: Level::Module,
-            },
+            source_component: self.component_information(),
         })
     }
 
@@ -161,11 +149,7 @@ pub trait SubModule: Module {
                         "Could not run submodule with index {}",
                         idx
                     ),
-                    source_component: Component {
-                        id: self.id().to_string(),
-                        kind: ComponentType::Module,
-                        level: Level::Module,
-                    },
+                    source_component: self.component_information(),
                 });
             }
         };
@@ -191,11 +175,7 @@ pub trait SubModule: Module {
             kind: LewpErrorKind::ModuleNotFound,
             message: "Could not find module in submodules register."
                 .to_string(),
-            source_component: Component {
-                id: self.id().to_string(),
-                kind: ComponentType::Module,
-                level: Level::Module,
-            },
+            source_component: self.component_information(),
         })
     }
 
@@ -213,5 +193,14 @@ pub trait SubModule: Module {
             module.run(Rc::new(RuntimeInformation::new()))?;
         }
         Ok(())
+    }
+
+    /// Returns the meta information for this submodule.
+    fn component_information(&self) -> Rc<ComponentInformation> {
+        Rc::new(ComponentInformation {
+            id: self.id().to_string(),
+            level: Level::Module,
+            kind: String::from("SubModule"),
+        })
     }
 }
