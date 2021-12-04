@@ -36,10 +36,10 @@ pub trait Module {
         if !self.config().skip_wrapper {
             let wrapper = NodeCreator::element(
                 "div",
-                vec![NodeCreator::attribute(
-                    "class",
-                    &format!("lewp-module {}", self.id()),
-                )],
+                vec![
+                    NodeCreator::attribute("class", self.id()),
+                    NodeCreator::attribute("data-lewp-component", "module"),
+                ],
             );
             for node in module_dom {
                 wrapper.children.borrow_mut().push(node);

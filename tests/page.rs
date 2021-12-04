@@ -99,7 +99,7 @@ impl Page for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><div class=\"lewp-module hello-world\"><h1>hello-world</h1></div></body></html>";
+const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><div class=\"hello-world\" data-lewp-component=\"module\"><h1>hello-world</h1></div></body></html>";
 const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><h1>hello-world</h1></body></html>";
 
 #[test]
