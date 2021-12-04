@@ -28,13 +28,16 @@ If you have questions, want to contribute or have any other type of request, you
     - [x] Submodules have `RuntimeInformation` available
 - [x] `<head>` modules only
 - [x] The wrapping `div` tag can be disabled *(recommended only for `<head>` modules)*
-- [ ] File hierarchy for CSS and JS is defined
+- [x] File hierarchy for CSS and JS is defined
     - [ ] Prevent `/` in IDs
     - [ ] Remove `..` in IDs
 - [ ] CSS integration
-    - [ ] Combining files is implemented
-    - [ ] Minimization of CSS is implemented
-- [ ] Modules are isolated (HTML, CSS)
+    - [x] Combining files is implemented
+    - [x] Minimization of CSS is implemented
+    - [ ] CSS links are automatically inserted into the HTML `<head>` tag if files are available
+    - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
+    - [ ] A CSS register is implemented that can be used as shared global querying instance for CSS files
+- [x] Modules are isolated (HTML, CSS)
 - [ ] Page specific CSS is possible
 - [ ] JavaScript integration
     - [ ] Combining files is implemented
@@ -52,13 +55,14 @@ If you have questions, want to contribute or have any other type of request, you
 - [ ] Provide an API for localization (l10n)
 - [ ] Provide an API for generic resources
 - [ ] Modules can have isolated folders for temporary files
-- [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
     - [ ] CSS attributes can be configured
 - [ ] Modules can send events to sub-modules
 
 ## 🤠 Contributing
 
 Unless explicitly stated, any contribution intentionally submitted for inclusion in this project, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
+
+Please have a look at [CONTRIBUTING.md] for guidelines and conventions.
 
 ## ⚖ License
 
