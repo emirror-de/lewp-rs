@@ -11,6 +11,10 @@ use {
 /// Defines a web page module.
 pub trait Module {
     /// Returns the unique module id.
+    ///
+    /// Allowed characters for id are `[a-z]`, `[0-9]` and `-`.
+    /// **There is currently no check wether other characters are used. So please
+    /// make sure that you do not use any other characters while creating modules.**
     fn id(&self) -> &str;
 
     /// The configuration of the module.
