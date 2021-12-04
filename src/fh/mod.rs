@@ -86,14 +86,7 @@ impl FileHierarchy {
                 // skip folders because we only want to get the files in the list
                 continue;
             }
-            let entry = match self.remove_mountpoint(&self.mountpoint, &entry) {
-                Ok(p) => p,
-                Err(msg) => {
-                    log::error!("{}", msg);
-                    continue;
-                }
-            };
-            filenames.push(self.mountpoint.join(entry));
+            filenames.push(entry);
         }
         Ok(filenames)
     }
