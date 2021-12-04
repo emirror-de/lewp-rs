@@ -12,6 +12,8 @@ use {
 pub trait Component {
     /// Content type that the component type delivers.
     type Content;
+    /// Parameter that can be used to decide about the content delivered.
+    type ContentParameter;
 
     /// Returns the ComponentInformation instance. Required eg. for passing information to
     /// LewpError.
@@ -19,7 +21,10 @@ pub trait Component {
     /// Returns a reference to the file hierarchy instance attached to this component.
     fn file_hierarchy(&self) -> Rc<FileHierarchy>;
     /// Implementation of acquiring the content for this type of component.
-    fn content(&self) -> Result<Self::Content, LewpError>;
+    fn content(
+        &self,
+        params: Self::ContentParameter,
+    ) -> Result<Self::Content, LewpError>;
 
     /// The unique ID of the component.
     fn id(&self) -> String {

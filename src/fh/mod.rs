@@ -154,6 +154,7 @@ mod tests {
     }
     impl Component for Css {
         type Content = ();
+        type ContentParameter = ();
         fn component_information(&self) -> Rc<ComponentInformation> {
             Rc::new(ComponentInformation {
                 id: self.id.clone(),
@@ -161,7 +162,10 @@ mod tests {
                 kind: ComponentType::Css,
             })
         }
-        fn content(&self) -> Result<Self::Content, LewpError> {
+        fn content(
+            &self,
+            _: Self::ContentParameter,
+        ) -> Result<Self::Content, LewpError> {
             Ok(())
         }
         fn file_hierarchy(&self) -> Rc<FileHierarchy> {
@@ -173,6 +177,7 @@ mod tests {
     }
     impl Component for Js {
         type Content = ();
+        type ContentParameter = ();
         fn component_information(&self) -> Rc<ComponentInformation> {
             Rc::new(ComponentInformation {
                 id: "hello-world".to_string(),
@@ -180,7 +185,10 @@ mod tests {
                 kind: ComponentType::JavaScript,
             })
         }
-        fn content(&self) -> Result<Self::Content, LewpError> {
+        fn content(
+            &self,
+            _: Self::ContentParameter,
+        ) -> Result<Self::Content, LewpError> {
             Ok(())
         }
         fn file_hierarchy(&self) -> Rc<FileHierarchy> {
