@@ -85,7 +85,7 @@ impl Component {
     ) -> Result<String, LewpError> {
         let mut css_combined = String::new();
         for css_file_name in css_files {
-            let file_path = self.fh.folder(self).join(&css_file_name);
+            let file_path = self.fh.mountpoint().join(&css_file_name);
             let css = match std::fs::read_to_string(&file_path) {
                 Ok(r) => r,
                 Err(msg) => {
