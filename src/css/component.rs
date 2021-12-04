@@ -68,6 +68,17 @@ impl FHComponent for Component {
 }
 
 impl Component {
+    /// Creates a new CSS component
+    pub fn new(
+        component_information: Rc<FHComponentInformation>,
+        fh: Rc<FileHierarchy>,
+    ) -> Self {
+        Self {
+            fh,
+            component_information,
+        }
+    }
+
     fn combine_files(
         &self,
         css_files: Vec<PathBuf>,
