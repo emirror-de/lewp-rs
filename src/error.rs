@@ -4,6 +4,7 @@ use {
 };
 
 /// List of error kinds that occur within lewp.
+#[derive(Debug)]
 pub enum LewpErrorKind {
     /// Raised when a loop reference has been detected.
     LoopDetection,
@@ -22,6 +23,7 @@ pub enum LewpErrorKind {
 }
 
 /// Contains the error definitions that occur in [lewp](crate).
+#[derive(Debug)]
 pub struct LewpError {
     /// The error type.
     pub kind: LewpErrorKind,
