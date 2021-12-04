@@ -20,22 +20,27 @@ pub use {
 
 /// File hierarchy definition, handles file path generation.
 pub struct FileHierarchy {
-    base_directory: PathBuf,
+    mountpoint: PathBuf,
 }
 
 impl FileHierarchy {
     /// Creates a new file hierarchy instance.
     pub fn new() -> Self {
         Self {
-            base_directory: PathBuf::from("."),
+            mountpoint: PathBuf::from("."),
         }
+    }
+
+    /// Returns the directory where the file hierarchy is mounted.
+    pub fn mountpoint(&self) -> PathBuf {
+        self.mountpoint.clone()
     }
 
     /// Generates the folder path according to the file hierarchy. The folder
     /// that contains the `file_type` always corresponds to the extension of the
     /// files contained.
     pub fn folder<COMP: Component>(&self, component: &COMP) -> PathBuf {
-        let mut path = self.base_directory.clone();
+        let mut path = self.mountpoint.clone();
         path.push(component.level().to_string());
         path.push(component.id().to_string());
         path.push(component.kind().to_string());
@@ -48,7 +53,7 @@ impl FileHierarchy {
         &self,
         component: &COMP,
     ) -> Result<Vec<PathBuf>, LewpError> {
-        let subfolder = self.base_directory.join(Path::new(&format!(
+        let subfolder = self.mountpoint.join(Path::new(&format!(
             "{}/{}/{}",
             component.level(),
             component.id(),
@@ -81,15 +86,14 @@ impl FileHierarchy {
                 continue;
             }
             //let entry = match self.remove_base_dir(&subfolder, &entry) {
-            let entry = match self.remove_base_dir(&self.base_directory, &entry)
-            {
+            let entry = match self.remove_base_dir(&self.mountpoint, &entry) {
                 Ok(p) => p,
                 Err(msg) => {
                     log::error!("{}", msg);
                     continue;
                 }
             };
-            filenames.push(self.base_directory.join(entry));
+            filenames.push(self.mountpoint.join(entry));
         }
         Ok(filenames)
     }
@@ -227,7 +231,7 @@ mod tests {
         use std::path::PathBuf;
         let fh = Rc::new(
             FileHierarchyBuilder::new()
-                .base_directory(PathBuf::from("testfiles"))
+                .mountpoint(PathBuf::from("testfiles"))
                 .build(),
         );
         let css = Css {

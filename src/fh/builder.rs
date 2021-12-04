@@ -2,27 +2,27 @@ use {crate::fh::FileHierarchy, std::path::PathBuf};
 
 /// Helper struct for creating a FileHierarchy instance.
 pub struct FileHierarchyBuilder {
-    base_directory: PathBuf,
+    mountpoint: PathBuf,
 }
 
 impl FileHierarchyBuilder {
     /// Returns the default instance.
     pub fn new() -> Self {
         Self {
-            base_directory: PathBuf::from("."),
+            mountpoint: PathBuf::from("."),
         }
     }
 
     /// Sets the base directory of the file hierarchy.
-    pub fn base_directory(mut self, base_directory: PathBuf) -> Self {
-        self.base_directory = base_directory;
+    pub fn mountpoint(mut self, mountpoint: PathBuf) -> Self {
+        self.mountpoint = mountpoint;
         self
     }
 
     /// Builds the file hierarchy instance.
     pub fn build(self) -> FileHierarchy {
         FileHierarchy {
-            base_directory: self.base_directory,
+            mountpoint: self.mountpoint,
         }
     }
 }

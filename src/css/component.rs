@@ -170,7 +170,7 @@ fn isolate_css_module() {
     let dir = tempfile::tempdir().unwrap();
     // base the file hierarchy to this directory
     let fh = crate::fh::FileHierarchyBuilder::new()
-        .base_directory(dir.path().to_path_buf())
+        .mountpoint(dir.path().to_path_buf())
         .build();
 
     // create path where the testfiles should be copied
