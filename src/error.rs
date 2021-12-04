@@ -42,6 +42,18 @@ impl From<Rc<ComponentInformation>> for LewpError {
 }
 
 impl LewpError {
+    /// Creates a [LewpError] instance with the given details.
+    pub fn new(
+        kind: LewpErrorKind,
+        message: &str,
+        meta: Rc<ComponentInformation>,
+    ) -> Self {
+        Self {
+            kind,
+            message: message.to_string(),
+            source_component: meta,
+        }
+    }
     /// Creates a [LewpError] instance with the given message.
     pub fn from_with_message(
         meta: Rc<ComponentInformation>,

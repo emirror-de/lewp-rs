@@ -2,11 +2,27 @@
 #[derive(Debug, Clone)]
 pub enum ComponentType {
     /// A CSS file with `.css` extension.
-    CSS,
+    Css,
     /// A JavaScript file with `.js` extension.
     JavaScript,
     /// A module.
     Module,
+    /// A custom defined component. The String attached is also used as folder
+    /// name, therefore all whitespaces are replaced by hyphens and everything
+    /// is converted to lowercase.
+    Plugin(String),
+}
+
+impl ComponentType {
+    fn serialize(&self) -> String {
+        use ComponentType::*;
+        match self {
+            Css => String::from("css"),
+            JavaScript => String::from("js"),
+            Module => String::from("module"),
+            Plugin(s) => s.replace(" ", "-").to_lowercase(),
+        }
+    }
 }
 
 impl std::fmt::Display for ComponentType {
@@ -14,12 +30,6 @@ impl std::fmt::Display for ComponentType {
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> Result<(), std::fmt::Error> {
-        use ComponentType::*;
-        let s = match self {
-            CSS => String::from("css"),
-            JavaScript => String::from("js"),
-            Module => String::from("module"),
-        };
-        write!(f, "{}", s)
+        write!(f, "{}", self.serialize())
     }
 }

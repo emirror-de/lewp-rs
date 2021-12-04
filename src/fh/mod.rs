@@ -14,11 +14,11 @@ mod level;
 
 pub use {
     builder::FileHierarchyBuilder,
-    component::{Component, ComponentInformation},
+    component::{Component, ComponentInformation, ComponentType},
     level::Level,
 };
 
-/// File hierarchy instance, handles file path generation.
+/// File hierarchy definition, handles file path generation.
 pub struct FileHierarchy {
     base_directory: PathBuf,
 }
@@ -34,7 +34,7 @@ impl FileHierarchy {
     /// Generates the folder path according to the file hierarchy. The folder
     /// that contains the `file_type` always corresponds to the extension of the
     /// files contained.
-    pub fn folder<COMP: Component>(&self, component: Rc<COMP>) -> PathBuf {
+    pub fn folder<COMP: Component>(&self, component: &COMP) -> PathBuf {
         let mut path = self.base_directory.clone();
         path.push(component.level().to_string());
         path.push(component.id().to_string());
@@ -44,9 +44,9 @@ impl FileHierarchy {
 
     /// Collects all filenames recursively in the given component. The resulting
     /// vector is referenced to the base directory given in the FileHierarchy instance.
-    pub fn collect_filenames<COMP: Component>(
+    pub fn get_file_list<COMP: Component>(
         &self,
-        component: Rc<COMP>,
+        component: &COMP,
     ) -> Result<Vec<PathBuf>, LewpError> {
         let subfolder = self.base_directory.join(Path::new(&format!(
             "{}/{}/{}",
@@ -108,22 +108,15 @@ impl FileHierarchy {
         }
     }
 
-    ///// Returns the correct extension for the given file type.
-    //pub(crate) fn extension(&self, file_type: ComponentType) -> &str {
-    //    match file_type {
-    //        ComponentType::CSS => "css",
-    //        ComponentType::JavaScript => "js",
-    //        _ =>
-    //    }
-    //}
-
-    ///// Returns the correct level part.
-    //fn level(&self, level: &Level) -> &str {
-    //    match level {
-    //        Level::Page(_) => "pages",
-    //        Level::Module(_) => "modules",
-    //    }
-    //}
+    /// Gets a list of the component ids available for this [ComponentType] on the
+    /// given [Level].
+    pub fn get_component_ids(
+        &self,
+        kind: ComponentType,
+        level: Level,
+    ) -> Vec<String> {
+        vec![]
+    }
 
     /// Removes `../` from the given string to isolate the filepath to a base
     /// directory.
@@ -141,64 +134,108 @@ impl Default for FileHierarchy {
     }
 }
 
-/*
-#[test]
-fn folder_name_generation() {
-    let fh = FileHierarchy::new();
-    assert_eq!(
-        "./modules/module-id/css",
-        fh.folder(&Component::new(
-            "module-id",
-            Level::Module,
-            ComponentType::CSS
-        ),)
-            .to_str()
-            .unwrap()
-    );
-    assert_eq!(
-        "./pages/hello-world/js",
-        fh.folder(&Component::new(
-            "hello-world",
-            Level::Page,
-            ComponentType::JavaScript
-        ))
-        .to_str()
-        .unwrap()
-    );
-}
-
-#[test]
-fn isolate_file_paths() {
-    let fh = FileHierarchyBuilder::new().build();
-    let breakout = "../something";
-    let isolated = fh.isolate_path(breakout);
-    assert_eq!(isolated, "something");
-    let non_breakout = "something/subfolder";
-    let isolated = fh.isolate_path(non_breakout);
-    assert_eq!(isolated, "something/subfolder");
-}
-*/
-
-/*
-#[test]
-fn collect_filenames() {
-    let fh = FileHierarchyBuilder::new()
-        .base_directory(PathBuf::from("testfiles"))
-        .build();
-    let mut filenames = match fh.collect_filenames(&Component {
-        id: format!("hello-world"),
-        level: Level::Module,
-        kind: ComponentType::CSS,
-    }) {
-        Ok(f) => f,
-        Err(e) => {
-            panic!("{}", e)
-        }
+#[cfg(test)]
+mod tests {
+    use {
+        super::{
+            Component,
+            ComponentInformation,
+            ComponentType,
+            FileHierarchy,
+            FileHierarchyBuilder,
+            Level,
+        },
+        crate::LewpError,
+        std::rc::Rc,
     };
-    let mut reference = vec![
-        PathBuf::from("modules/hello-world/css/primary.css"),
-        PathBuf::from("modules/hello-world/css/secondary.css"),
-    ];
-    assert_eq!(filenames.sort(), reference.sort());
+    struct Css {
+        id: String,
+        fh: Rc<FileHierarchy>,
+    }
+    impl Component for Css {
+        type Content = ();
+        fn component_information(&self) -> Rc<ComponentInformation> {
+            Rc::new(ComponentInformation {
+                id: self.id.clone(),
+                level: Level::Module,
+                kind: ComponentType::Css,
+            })
+        }
+        fn content(&self) -> Result<Self::Content, LewpError> {
+            Ok(())
+        }
+        fn file_hierarchy(&self) -> Rc<FileHierarchy> {
+            self.fh.clone()
+        }
+    }
+    struct Js {
+        fh: Rc<FileHierarchy>,
+    }
+    impl Component for Js {
+        type Content = ();
+        fn component_information(&self) -> Rc<ComponentInformation> {
+            Rc::new(ComponentInformation {
+                id: "hello-world".to_string(),
+                level: Level::Page,
+                kind: ComponentType::JavaScript,
+            })
+        }
+        fn content(&self) -> Result<Self::Content, LewpError> {
+            Ok(())
+        }
+        fn file_hierarchy(&self) -> Rc<FileHierarchy> {
+            self.fh.clone()
+        }
+    }
+
+    #[test]
+    fn folder_name_generation() {
+        let fh = Rc::new(FileHierarchy::new());
+        let css = Css {
+            id: String::from("module-id"),
+            fh: fh.clone(),
+        };
+        let js = Js { fh: fh.clone() };
+        assert_eq!(
+            "./modules/module-id/css",
+            fh.folder(&css).to_str().unwrap()
+        );
+        assert_eq!("./pages/hello-world/js", fh.folder(&js).to_str().unwrap());
+    }
+
+    #[test]
+    fn isolate_file_paths() {
+        let fh = FileHierarchyBuilder::new().build();
+        let breakout = "../something";
+        let isolated = fh.isolate_path(breakout);
+        assert_eq!(isolated, "something");
+        let non_breakout = "something/subfolder";
+        let isolated = fh.isolate_path(non_breakout);
+        assert_eq!(isolated, "something/subfolder");
+    }
+
+    #[test]
+    fn collect_filenames() {
+        use std::path::PathBuf;
+        let fh = Rc::new(
+            FileHierarchyBuilder::new()
+                .base_directory(PathBuf::from("testfiles"))
+                .build(),
+        );
+        let css = Css {
+            id: String::from("hello-world"),
+            fh: fh.clone(),
+        };
+        let mut filenames = match fh.get_file_list(&css) {
+            Ok(f) => f,
+            Err(e) => {
+                panic!("{}", e)
+            }
+        };
+        let mut reference = vec![
+            PathBuf::from("modules/hello-world/css/primary.css"),
+            PathBuf::from("modules/hello-world/css/secondary.css"),
+        ];
+        assert_eq!(filenames.sort(), reference.sort());
+    }
 }
-*/

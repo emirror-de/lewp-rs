@@ -6,7 +6,7 @@ This release brings several new features.
 
 ### 📦 New features
 
-* Introduced the lewp file hierarchy for CSS and JavaScript
+* Introduced the lewp file hierarchy, see the `fh` module for more information
 * 
 
 ### 🐛 Bugfixes

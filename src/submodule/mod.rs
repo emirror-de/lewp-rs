@@ -2,7 +2,7 @@
 use {
     crate::{
         dom::Nodes,
-        fh::{Component, ComponentInformation, Level},
+        fh::{Component, ComponentInformation, ComponentType, Level},
         module::{Module, ModulePtr, Modules, RuntimeInformation},
         LewpError,
         LewpErrorKind,
@@ -200,7 +200,7 @@ pub trait SubModule: Module {
         Rc::new(ComponentInformation {
             id: self.id().to_string(),
             level: Level::Module,
-            kind: String::from("SubModule"),
+            kind: ComponentType::Module,
         })
     }
 }
