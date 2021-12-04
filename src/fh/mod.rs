@@ -85,8 +85,7 @@ impl FileHierarchy {
                 // skip folders because we only want to get the files in the list
                 continue;
             }
-            //let entry = match self.remove_base_dir(&subfolder, &entry) {
-            let entry = match self.remove_base_dir(&self.mountpoint, &entry) {
+            let entry = match self.remove_mountpoint(&self.mountpoint, &entry) {
                 Ok(p) => p,
                 Err(msg) => {
                     log::error!("{}", msg);
@@ -98,12 +97,12 @@ impl FileHierarchy {
         Ok(filenames)
     }
 
-    fn remove_base_dir(
+    fn remove_mountpoint(
         &self,
-        base_dir: &Path,
+        mountpoint: &Path,
         input_path: &Path,
     ) -> Result<PathBuf, String> {
-        match pathdiff::diff_paths(input_path, base_dir) {
+        match pathdiff::diff_paths(input_path, mountpoint) {
             Some(p) => Ok(p),
             None => match input_path.to_str() {
                 Some(v) => Err(format!("Could not remove base dir of {}", v)),
