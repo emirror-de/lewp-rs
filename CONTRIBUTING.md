@@ -8,6 +8,17 @@ Thanks for choosing to contribute to `lewp-rs`! You can find a few details about
 
 Please make sure that every commit is a complete one, meaning the code should run as expected. This includes that all tests in `cargo test --all-features` pass.
 
+## GIT usage
+
+This project follows [git flow](http://danielkummer.github.io/git-flow-cheatsheet/). The main development takes place in the `develop` branch. Please make sure that your PR goes in there. The `main` branch is the production release branch. The following prefixes are used:
+
+* `f/` for feature branches
+* `b/` for bugfix branches
+* `r/` for release branches
+* `h/` for hotfix branches
+* `s/` for support branches
+* `v` is the version tag prefix
+
 ## Commit messages
 
 ### Headline
@@ -21,6 +32,7 @@ The `type` **must** be *lowercase*, the first character of the short headline *c
 The following types are allowed:
 
 * `feat`, declares that a new feature that has been added
+* `refactor`, refactoring a feature or other parts of the code base
 * `fix`, a bugfix
 * `test`, everything related to tests
 * `docs`, documentation updates
