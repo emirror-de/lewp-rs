@@ -4,10 +4,8 @@ mod component;
 mod entireness;
 mod register;
 
-use crate::fh::{Component as FHComponent, FileHierarchy};
-
 pub use {
-    component::{Component, ComponentBuilder},
+    component::Component,
     entireness::Entireness,
     register::{Register, RegisterOptions},
 };

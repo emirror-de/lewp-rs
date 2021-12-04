@@ -35,7 +35,7 @@ pub use {
 };
 
 pub mod config;
-//pub mod css;
+pub mod css;
 pub mod dom;
 mod error;
 pub mod fh;

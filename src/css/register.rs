@@ -36,8 +36,8 @@ impl Register {
     }
 
     /// Queries the CSS of the given component using the given options.
-    pub fn query(
-        component: &FHComponent,
+    pub fn query<COMP: FHComponent>(
+        component: &COMP,
         entity: Entireness,
     ) -> Result<(), ()> {
         Ok(())
