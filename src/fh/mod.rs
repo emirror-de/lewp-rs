@@ -47,8 +47,9 @@ impl FileHierarchy {
         path
     }
 
-    /// Collects all filenames recursively in the given component. The resulting
+    /// Collects all filenames in the given component. The resulting
     /// vector is referenced to the base directory given in the FileHierarchy instance.
+    /// This function is not recursive.
     pub fn get_file_list<COMP: Component>(
         &self,
         component: &COMP,
