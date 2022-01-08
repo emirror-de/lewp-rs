@@ -16,6 +16,15 @@ pub enum ComponentType {
 }
 
 impl ComponentType {
+    /// Returns the extension of the given [ComponentType] if available.
+    pub fn extension(&self) -> Option<String> {
+        match self {
+            Self::Css => Some(String::from("css")),
+            Self::JavaScript => Some(String::from("js")),
+            _ => None,
+        }
+    }
+
     fn serialize(&self) -> String {
         use ComponentType::*;
         match self {
