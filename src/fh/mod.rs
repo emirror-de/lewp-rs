@@ -107,12 +107,150 @@ impl FileHierarchy {
 
     /// Gets a list of the component ids available for this [ComponentType] on the
     /// given [Level].
-    pub fn get_component_ids(
+    pub fn collect_component_ids(
         &self,
         kind: ComponentType,
         level: Level,
-    ) -> Vec<String> {
-        vec![]
+    ) -> Result<Vec<String>, LewpError> {
+        let mut v = vec![];
+        // create a pattern to search for
+        let pattern = PathBuf::from(&level.to_string())
+            .join("*")
+            .join(&kind.to_string());
+        log::trace!("pattern: {:#?}", pattern);
+        // combine it with the mountpoint
+        let filepath = self.mountpoint().join(pattern);
+        let filepath = match filepath.to_str() {
+            Some(f) => f,
+            None => {
+                return Err(LewpError {
+                    kind: LewpErrorKind::FileHierarchy,
+                    message: String::from(
+                        "Error converting filepath to string!",
+                    ),
+                    source_component: Rc::new(ComponentInformation::core(
+                        "get_component_ids",
+                    )),
+                })
+            }
+        };
+        log::trace!("filepath: {:#?}", filepath);
+        // glob it!
+        let glob_paths = match glob::glob(&filepath) {
+            Ok(paths) => paths,
+            Err(e) => {
+                return Err(LewpError {
+                    kind: LewpErrorKind::FileHierarchy,
+                    message: format!("Error during glob call: {}", e),
+                    source_component: Rc::new(ComponentInformation::core(
+                        "get_component_ids",
+                    )),
+                })
+            }
+        };
+        // iterate through paths
+        for path in glob_paths {
+            match path {
+                Ok(p) => {
+                    if let Some(ext) = kind.extension() {
+                        // an extension is available so count the number of files
+                        let count = walkdir::WalkDir::new(&p)
+                            .follow_links(true)
+                            .into_iter()
+                            .filter_entry(|e| {
+                                if e.file_type().is_dir() {
+                                    return true;
+                                }
+                                let depth = e.depth() == 1;
+                                let extension = e
+                                    .file_name()
+                                    .to_str()
+                                    .map(|s| s.ends_with(&format!(".{}", ext)))
+                                    .unwrap_or(false);
+                                depth && extension
+                            })
+                            .count();
+                        // skip path if there are no files
+                        // if there is only one entry, it is the directory
+                        // itself where we are iterating over
+                        if count == 1 {
+                            continue;
+                        }
+                    }
+                    let p = self.extract_component_ids_from_pathbuf(&p)?;
+                    v.push(p);
+                }
+                Err(e) => {
+                    return Err(LewpError {
+                        kind: LewpErrorKind::FileHierarchy,
+                        message: format!(
+                            "Error during glob call: {}",
+                            e.into_error()
+                        ),
+                        source_component: Rc::new(ComponentInformation::core(
+                            "get_component_ids",
+                        )),
+                    })
+                }
+            }
+        }
+        log::trace!("Found component ids:\n{:#?}", v);
+        Ok(v)
+    }
+
+    /// Extracts the component id from the given PathBuf.
+    ///
+    /// Example:
+    /// `testfiles/modules/footer/css` will result in `footer`.
+    fn extract_component_ids_from_pathbuf(
+        &self,
+        p: &PathBuf,
+    ) -> Result<String, LewpError> {
+        let os_str = match p.parent() {
+            Some(parent) => match parent.file_name() {
+                Some(f) => f,
+                None => {
+                    return Err(LewpError {
+                        kind: LewpErrorKind::FileHierarchy,
+                        message: format!(
+                            "Could not extract file name from parent of PathBuf: {:#?}",
+                            p
+                        ),
+                        source_component: Rc::new(ComponentInformation::core(
+                            "extract_component_ids_from_pathbuf",
+                        )),
+                    })
+            }
+            },
+            None => {
+                    return Err(LewpError {
+                        kind: LewpErrorKind::FileHierarchy,
+                        message: format!(
+                            "Could not extract parent from PathBuf: {:#?}",
+                            p
+                        ),
+                        source_component: Rc::new(ComponentInformation::core(
+                            "extract_component_ids_from_pathbuf",
+                        )),
+                    })
+            }
+        };
+        let id = match os_str.to_str() {
+            Some(s) => s.to_string(),
+            None => {
+                return Err(LewpError {
+                    kind: LewpErrorKind::FileHierarchy,
+                    message: format!(
+                        "Could not create String from OsStr: {:#?}",
+                        os_str
+                    ),
+                    source_component: Rc::new(ComponentInformation::core(
+                        "extract_component_ids_from_pathbuf",
+                    )),
+                })
+            }
+        };
+        Ok(id)
     }
 
     /// Removes `../` from the given string to isolate the filepath to a base
@@ -242,5 +380,24 @@ mod tests {
             PathBuf::from("modules/hello-world/css/secondary.css"),
         ];
         assert_eq!(filenames.sort(), reference.sort());
+    }
+
+    #[test]
+    fn collect_component_ids() {
+        use std::path::PathBuf;
+        let fh = Rc::new(
+            FileHierarchyBuilder::new()
+                .mountpoint(PathBuf::from("testfiles"))
+                .build(),
+        );
+        let mut component_ids =
+            match fh.collect_component_ids(ComponentType::Css, Level::Module) {
+                Ok(ids) => ids,
+                Err(e) => {
+                    panic!("{}", e)
+                }
+            };
+        let mut reference = vec!["footer", "hello-world", "navigation"];
+        assert_eq!(component_ids.sort(), reference.sort());
     }
 }
