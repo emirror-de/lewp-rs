@@ -1,6 +1,8 @@
 /// Possible component types of the file hierarchy.
 #[derive(Debug, Clone)]
 pub enum ComponentType {
+    /// This represents a core component.
+    Core(String),
     /// A CSS file with `.css` extension.
     Css,
     /// A JavaScript file with `.js` extension.
@@ -17,6 +19,7 @@ impl ComponentType {
     fn serialize(&self) -> String {
         use ComponentType::*;
         match self {
+            Core(s) => format!("core-{}", s),
             Css => String::from("css"),
             JavaScript => String::from("js"),
             Module => String::from("module"),

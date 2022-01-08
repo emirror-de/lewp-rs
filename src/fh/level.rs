@@ -1,6 +1,8 @@
 /// The file hierarchy level.
 #[derive(Debug, Clone, Copy)]
 pub enum Level {
+    /// The core level, only used when an error is thrown by lewp core.
+    Core,
     /// The module level.
     Module,
     /// The page level.
@@ -14,6 +16,7 @@ impl std::fmt::Display for Level {
     ) -> Result<(), std::fmt::Error> {
         use Level::*;
         let s = match self {
+            Core => "core",
             Module => "modules",
             Page => "pages",
         };
