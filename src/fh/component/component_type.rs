@@ -1,5 +1,5 @@
 /// Possible component types of the file hierarchy.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ComponentType {
     /// This represents a core component.
     Core(String),
