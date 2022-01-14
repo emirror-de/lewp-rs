@@ -35,6 +35,7 @@ pub struct Component {
 }
 
 impl FHComponent for Component {
+    /// The actual content is parsed and provided as [Stylesheet].
     type Content = Stylesheet;
     type ContentParameter = ();
 
