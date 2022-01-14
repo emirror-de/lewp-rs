@@ -92,7 +92,6 @@ impl FileHierarchy {
     }
 
     fn remove_mountpoint(
-        &self,
         mountpoint: &Path,
         input_path: &Path,
     ) -> Result<PathBuf, String> {
@@ -104,6 +103,36 @@ impl FileHierarchy {
             },
         }
     }
+
+    /// Collects all filenames in the given directory.
+    ///
+    /// The directory is relative to the mountpoint of the file hierarchy.
+    /*
+    fn collect_filenames(
+        &self,
+        dir: PathBuf,
+    ) -> Result<Vec<PathBuf>, LewpError> {
+        let mut filenames = vec![];
+        for entry in walkdir::WalkDir::new(&dir) {
+            let entry = match entry {
+                Ok(v) => v.into_path(),
+                Err(msg) => {
+                    return Err(LewpError {
+                        kind: LewpErrorKind::FileHierarchy,
+                        message: msg.to_string(),
+                        source_component: component.component_information(),
+                    });
+                }
+            };
+            if entry.is_dir() {
+                // skip folders because we only want to get the files in the list
+                continue;
+            }
+            filenames.push(entry);
+        }
+        Ok(filenames)
+    }
+    */
 
     /// Gets a list of the component ids available for this [ComponentType] on the
     /// given [Level].
@@ -261,6 +290,50 @@ impl FileHierarchy {
         s.retain(|&e| !e.contains(".."));
         s.join("/")
     }
+
+    /// Collects all folders in the given subfolder. Can be used to find eg.
+    /// all modules available
+    ///
+    /// **For internal use only.**
+    fn collect_foldernames(
+        &self,
+        subfolder: &PathBuf,
+    ) -> Result<Vec<PathBuf>, LewpError> {
+        let subfolder = self.mountpoint.join(subfolder);
+        if !subfolder.is_dir() {
+            return Err(LewpError {
+                kind: LewpErrorKind::FileHierarchy,
+                message: format!(
+                    "Given input is not a folder: {}",
+                    subfolder.display()
+                ),
+                source_component: Rc::new(ComponentInformation::core(
+                    "collect_foldernames",
+                )),
+            });
+        }
+        let mut foldernames = vec![];
+        for entry in walkdir::WalkDir::new(&subfolder) {
+            let entry = match entry {
+                Ok(v) => v.into_path(),
+                Err(msg) => {
+                    return Err(LewpError {
+                        kind: LewpErrorKind::FileHierarchy,
+                        message: msg.to_string(),
+                        source_component: Rc::new(ComponentInformation::core(
+                            "collect_foldernames",
+                        )),
+                    });
+                }
+            };
+            if !entry.is_dir() {
+                // skip files because we only want to get the folders in the list
+                continue;
+            }
+            foldernames.push(entry);
+        }
+        Ok(foldernames)
+    }
 }
 
 impl Default for FileHierarchy {
@@ -379,6 +452,29 @@ mod tests {
             PathBuf::from("modules/hello-world/css/primary.css"),
             PathBuf::from("modules/hello-world/css/secondary.css"),
         ];
+        assert_eq!(filenames.sort(), reference.sort());
+    }
+
+    #[test]
+    fn collect_foldernames() {
+        use std::path::PathBuf;
+        let fh = Rc::new(
+            FileHierarchyBuilder::new()
+                .mountpoint(PathBuf::from("testfiles"))
+                .build(),
+        );
+        let css = Css {
+            id: String::from("hello-world"),
+            fh: fh.clone(),
+        };
+        let mut filenames =
+            match fh.collect_foldernames(&PathBuf::from("modules")) {
+                Ok(f) => f,
+                Err(e) => {
+                    panic!("{}", e)
+                }
+            };
+        let mut reference = vec![PathBuf::from("modules/hello-world")];
         assert_eq!(filenames.sort(), reference.sort());
     }
 
