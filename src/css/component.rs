@@ -2,21 +2,17 @@ use {
     crate::{
         fh::{
             Component as FHComponent,
-            ComponentInformation as FHComponentInformation,
-            ComponentType,
+            ComponentInformation as FHComponentInformation, ComponentType,
             FileHierarchy,
         },
-        LewpError,
-        LewpErrorKind,
+        LewpError, LewpErrorKind,
     },
     css_next::{
         cssparser::ToCss,
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},
             selectors::OurSelectorImpl,
-            CssRule,
-            CssRules,
-            StyleRule,
+            CssRule, CssRules, StyleRule,
         },
         selectors::parser::Selector,
         Stylesheet,
