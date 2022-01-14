@@ -12,3 +12,14 @@ pub struct ComponentInformation {
     /// The component type.
     pub kind: ComponentType,
 }
+
+impl ComponentInformation {
+    /// Creates the component information for a core event.
+    pub fn core(component_name: &str) -> Self {
+        Self {
+            id: "".to_string(),
+            level: Level::Core,
+            kind: ComponentType::Core(component_name.to_string()),
+        }
+    }
+}
