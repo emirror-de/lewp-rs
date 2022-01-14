@@ -27,8 +27,8 @@ use {
 /// Responsible for CSS that is stored for a given [FHComponent].
 ///
 /// Processes all files in the components directory and combines them into one
-/// CSS [Stylesheet]. The stylesheet is already isolated to the scope of the
-/// desired module.
+/// CSS [Stylesheet]. The resulting stylesheet is isolated to the scope of the
+/// module it belongs to.
 pub struct Component {
     fh: Rc<FileHierarchy>,
     component_information: Rc<FHComponentInformation>,
