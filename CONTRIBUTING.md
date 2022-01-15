@@ -23,6 +23,16 @@ This project follows [git flow](http://danielkummer.github.io/git-flow-cheatshee
 
 The commit messages **must** follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0).
 
+Available scopes are:
+
+* `css` - for the `lewp-css` crate
+
+* `selectors` - for `lewp-selectors` crate
+
+* `dom` - for `lewp-dom` crate
+
+* `lewp` - for the main crate
+
 ## Code conventions
 
 This project follows the standard [Rust naming conventions](https://rust-lang.github.io/api-guidelines/naming.html). Make sure that your code is formatted by `rustfmt` before committing.
