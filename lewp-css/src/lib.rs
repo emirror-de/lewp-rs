@@ -5,7 +5,9 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-//! # css
+//! # lewp-css
+//!
+//! *Forked version of [css](https://github.com/lemonrock/css)*
 //!
 //! A Rust library crate for parsing, manipulating and serializing CSS stylesheets.
 //! Makes use of existing CSS parser logic from Servo.
