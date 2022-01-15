@@ -21,30 +21,7 @@ This project follows [git flow](http://danielkummer.github.io/git-flow-cheatshee
 
 ## Commit messages
 
-### Headline
-
-The headline **must not** end with a period, exclamation or question mark as well as any other character that is not an alphabetic character or number. It **must** have the following structure.
-
-`{type}: {short headline explanation (limited to 80 characters)}`
-
-The `type` **must** be *lowercase*, the first character of the short headline *capitalized*.
-
-The following types are allowed:
-
-* `feat`, declares that a new feature that has been added
-* `refactor`, refactoring a feature or other parts of the code base
-* `fix`, a bugfix
-* `test`, everything related to tests
-* `docs`, documentation updates
-* `chore`, regular code maintenance
-
-For example:
-`feat: A new feature has been added`
-
-### Body
-
-* The commit body **must** be separated by a blank line from the headline.
-* Each paragraph must be capitalized
+The commit messages **must** follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0).
 
 ## Code conventions
 

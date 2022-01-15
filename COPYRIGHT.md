@@ -2,7 +2,7 @@
 
 ## Short version for non-lawyers:
 
-Copyright (c) `2021` `Lewin Probst, M.Sc.`
+Copyright (c) `2022` `Lewin Probst, M.Sc.`
 
 This project is licensed under the terms of either Apache 2.0 or MIT license at
 your option.
@@ -13,7 +13,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 ## Longer version:
 
-Copyright (c) `2021` `Lewin Probst, M.Sc.`
+Copyright (c) `2022` `Lewin Probst, M.Sc.`
 
 Copyrights in this project are retained by contributors. No copyright assignment
 is required to contribute to this project.
