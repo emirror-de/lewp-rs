@@ -41,5 +41,4 @@ mod error;
 pub mod fh;
 pub mod module;
 pub mod page;
-#[cfg(feature = "submodules")]
 pub mod submodule;

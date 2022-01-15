@@ -12,10 +12,6 @@ readme = "README.md"
 keywords = ["HTML5", "CSS", "JavaScript", "WASM", "modules"]
 categories = ["web-programming"]
 
-[features]
-full = ["submodules"]
-submodules = []
-
 [dependencies]
 serde = { version = "^1.0.130", features = ["derive"], optional = true }
 langtag = "^0.2.0"
