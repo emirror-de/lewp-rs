@@ -1,4 +1,4 @@
-# css-next - formerly known as css
+# lewp-css - formerly known as css
 
 ## Prelude
 
