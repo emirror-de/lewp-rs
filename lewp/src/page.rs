@@ -3,6 +3,7 @@
 use {
     crate::{
         config::PageConfig,
+        css::Register as CssRegister,
         dom::{Node, NodeCreator, Nodes, RcDom},
         module::{ModulePtr, Modules, RuntimeInformation},
         Charset, LanguageTag,
@@ -10,6 +11,7 @@ use {
     html5ever::{serialize, serialize::SerializeOpts},
     markup5ever_rcdom::SerializableHandle,
     std::rc::Rc,
+    std::sync::Arc,
 };
 
 /// Main trait of a page.
@@ -53,6 +55,17 @@ pub trait Page {
     /// This should contain all required logic for the resulting page, eg. adding
     /// modules, collecting data etc.
     fn run(&mut self);
+
+    /// *Optional:* A [register](crate::css::Register) holding all available CSS
+    /// for [modules](Module) and [pages](Page).
+    ///
+    /// If implemented, [lewp](crate) will automatically add the required tags to the
+    /// head of the page.
+    ///
+    /// *Defaults to None*
+    fn css_register(&self) -> Option<Arc<CssRegister>> {
+        None
+    }
 
     /// Assembles the `<head>` tag of the page.
     fn assemble_head(&self) -> Rc<Node> {
