@@ -53,6 +53,11 @@ impl Register {
 
     /// Collects, processes and caches all available CSS in the file hierarchy.
     pub fn load_process_components(&mut self) -> Result<(), LewpError> {
+        self.load_process_modules()?;
+        self.load_process_pages()
+    }
+
+    fn load_process_modules(&mut self) -> Result<(), LewpError> {
         let module_ids = self
             .fh
             .collect_component_ids(ComponentType::Css, Level::Module)?;
@@ -60,6 +65,24 @@ impl Register {
             let component_information = Rc::new(ComponentInformation {
                 id: id.clone(),
                 level: Level::Module,
+                kind: ComponentType::Css,
+            });
+            let c =
+                Component::new(component_information.clone(), self.fh.clone());
+            let c = ProcessedComponent::from(&c)?;
+            self.components.insert(component_information.clone(), c);
+        }
+        Ok(())
+    }
+
+    fn load_process_pages(&mut self) -> Result<(), LewpError> {
+        let page_ids = self
+            .fh
+            .collect_component_ids(ComponentType::Css, Level::Page)?;
+        for id in page_ids {
+            let component_information = Rc::new(ComponentInformation {
+                id: id.clone(),
+                level: Level::Page,
                 kind: ComponentType::Css,
             });
             let c =

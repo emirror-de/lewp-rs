@@ -5,6 +5,9 @@ mod entireness;
 mod processed_component;
 mod register;
 
+#[cfg(test)]
+mod test;
+
 pub use {
     component::Component,
     entireness::Entireness,

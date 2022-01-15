@@ -2,8 +2,8 @@ use {
     crate::{
         fh::{
             Component as FHComponent,
-            ComponentInformation as FHComponentInformation, ComponentType,
-            FileHierarchy,
+            ComponentInformation as FHComponentInformation, FileHierarchy,
+            Level,
         },
         LewpError, LewpErrorKind,
     },
@@ -17,14 +17,16 @@ use {
         Stylesheet,
     },
     selectors::parser::Selector,
-    std::{io::Read, path::PathBuf, rc::Rc},
+    std::{path::PathBuf, rc::Rc},
 };
 
 /// Responsible for CSS that is stored for a given [FHComponent].
 ///
 /// Processes all files in the components directory and combines them into one
 /// CSS [Stylesheet]. The resulting stylesheet is isolated to the scope of the
-/// module it belongs to.
+/// module it belongs to. If the stylesheet's [level](Level) is [Page](Level::Page),
+/// then the resulting stylesheet is *NOT* isolated as there is no reason for
+/// isolating a page wide CSS rule.
 pub struct Component {
     fh: Rc<FileHierarchy>,
     component_information: Rc<FHComponentInformation>,
@@ -55,6 +57,10 @@ impl FHComponent for Component {
                 ));
             }
         };
+        match &self.component_information.level {
+            Level::Page => return Ok(stylesheet), // there is no reason for pages to be isolated
+            _ => (),
+        }
         let stylesheet = self.isolate_stylesheet(stylesheet)?;
         Ok(stylesheet)
     }
@@ -136,7 +142,13 @@ impl Component {
         selector: &mut Selector<OurSelectorImpl>,
     ) -> Result<(), LewpError> {
         let mut old = String::new();
-        selector.to_css(&mut old);
+        if let Err(e) = selector.to_css(&mut old) {
+            return Err(LewpError::new(
+                LewpErrorKind::Css,
+                &format!("{:#?}", e),
+                self.component_information().clone(),
+            ));
+        };
         let new = match lewp_css::parse_css_selector(&format!(
             ".{} {}",
             self.id(),
@@ -153,53 +165,5 @@ impl Component {
         };
         *selector = new;
         Ok(())
-    }
-}
-
-#[test]
-fn isolate_css_module() {
-    use crate::fh::Level;
-
-    // get temporary directory
-    let dir = tempfile::tempdir().unwrap();
-    // base the file hierarchy to this directory
-    let fh = crate::fh::FileHierarchyBuilder::new()
-        .mountpoint(dir.path().to_path_buf())
-        .build();
-
-    // create path where the testfiles should be copied
-    let testfiles_destination = dir.path().join("modules");
-    let testfiles_source = "testfiles/modules";
-    let mut copy_options = fs_extra::dir::CopyOptions::new();
-    copy_options.copy_inside = true;
-    match fs_extra::dir::copy(
-        testfiles_source,
-        testfiles_destination,
-        &copy_options,
-    ) {
-        Err(msg) => panic!("{}", msg.to_string()),
-        Ok(_) => (),
-    };
-
-    let css = Component {
-        fh: Rc::new(fh),
-        component_information: Rc::new(FHComponentInformation {
-            id: String::from("hello-world"),
-            level: Level::Module,
-            kind: ComponentType::Css,
-        }),
-    };
-    let stylesheet = match css.content(()) {
-        Ok(c) => c,
-        Err(e) => panic!("{}", e),
-    };
-    assert_eq!(
-        stylesheet.to_css_string(true),
-        String::from(".hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")
-        );
-
-    match dir.close() {
-        Err(msg) => panic!("{}", msg.to_string()),
-        Ok(_) => (),
     }
 }
