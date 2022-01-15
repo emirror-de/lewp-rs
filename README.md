@@ -22,40 +22,41 @@ If you have questions, want to contribute or have any other type of request, you
 
 - [x] Skeleton to create website with by creating the DOM
 - [x] A webpage can have Modules
-    - [x] Each module is surrounded by a wrapper `div`
+  - [x] Each module is surrounded by a wrapper `div`
 - [x] A page is created with isolated modules (HTML only)
 - [x] Modules can have Modules, infinite loops are prevented
-    - [x] Submodules have `RuntimeInformation` available
+  - [x] Submodules have `RuntimeInformation` available
 - [x] `<head>` modules only
 - [x] The wrapping `div` tag can be disabled *(recommended only for `<head>` modules)*
 - [x] File hierarchy for CSS and JS is defined
-    - [ ] Prevent `/` in IDs
-    - [ ] Remove `..` in IDs
+  - [ ] Prevent `/` in IDs
+  - [ ] Remove `..` in IDs
 - [ ] CSS integration
-    - [x] Combining files is implemented
-    - [x] Minimization of CSS is implemented
-    - [ ] CSS links are automatically inserted into the HTML `<head>` tag if files are available
-    - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
-    - [ ] A CSS register is implemented that can be used as shared global querying instance for CSS files
+  - [x] Combining files is implemented
+  - [x] Minimization of CSS is implemented
+  - [x] Modules without CSS are skipped
+  - [ ] CSS links are automatically inserted into the HTML `<head>` tag if files are available
+  - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
+  - [ ] A CSS register is implemented that can be used as shared global querying instance for CSS files
 - [x] Modules are isolated (HTML, CSS)
 - [ ] Page specific CSS is possible
 - [ ] JavaScript integration
-    - [ ] Combining files is implemented
-    - [ ] Minimization is implemented
+  - [ ] Combining files is implemented
+  - [ ] Minimization is implemented
 - [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
 - [ ] JavaScript and CSS can be compiled into the binary
 - [ ] Add attributes to the container wrapping the module
 - [ ] Configuration using `.toml` files
-    - [ ] Modules
-    - [ ] Pages
+  - [ ] Modules
+  - [ ] Pages
 - [ ] Added [html5-picture](https://github.com/emirror-de/html5-picture) support
-    - [ ] Conversion of pictures on startup is possible
-    - [ ] API for a global register that holds all pictures and creates the HTML code
+  - [ ] Conversion of pictures on startup is possible
+  - [ ] API for a global register that holds all pictures and creates the HTML code
 - [ ] Provide an API for localization (l10n)
 - [ ] Provide an API for generic resources
 - [ ] Modules can have isolated folders for temporary files
-    - [ ] CSS attributes can be configured
+  - [ ] CSS attributes can be configured
 - [ ] Modules can send events to sub-modules
 
 ## 🤠 Contributing
