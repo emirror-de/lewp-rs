@@ -5,8 +5,7 @@ use {
         config::PageConfig,
         dom::{Node, NodeCreator, Nodes, RcDom},
         module::{ModulePtr, Modules, RuntimeInformation},
-        Charset,
-        LanguageTag,
+        Charset, LanguageTag,
     },
     html5ever::{serialize, serialize::SerializeOpts},
     markup5ever_rcdom::SerializableHandle,
@@ -15,10 +14,14 @@ use {
 
 /// Main trait of a page.
 pub trait Page {
-    /// Returns a reference to the modules added to the page.
+    /// Should point to a member of type [Modules] in the implementing struct.
+    ///
+    /// This is the main storage of the modules that are added to the page using
+    /// [add_module](Self::add_module).
     fn modules(&self) -> &Modules;
 
-    /// Returns a mutable reference to the modules added to the page.
+    /// The mutable version of the [modules](Self::modules) method. Is used by [add_module](Self::add_module) method
+    /// to add modules to the page while the [run](Self::run) method is being executed.
     fn modules_mut(&mut self) -> &mut Modules;
 
     /// Adds the module to the page. The page is rendered FIFO.
@@ -26,18 +29,18 @@ pub trait Page {
         self.modules_mut().push(module);
     }
 
-    /// Title of the page.
+    /// Title of the page. Will land in the `title` tag.
     fn title(&self) -> &str;
 
-    /// The page description.
+    /// The page description. Will land in a `meta` tag in the `head` of a page.
     fn description(&self) -> &str;
 
-    /// Language of the page.
+    /// Language of the page. Will be added as the `lang` attribute to the `doctype`.
     fn language(&self) -> LanguageTag {
         LanguageTag::parse("en-US").unwrap()
     }
 
-    /// Contains the charset of the HTML page.
+    /// Contains the charset of the HTML page. Will be added to the `head` of the page.
     fn charset(&self) -> Charset {
         Charset::Utf8
     }
@@ -47,6 +50,8 @@ pub trait Page {
 
     /// Executes the page. Main function that is able to collect and modify
     /// data as well as modules required for rendering.
+    /// This should contain all required logic for the resulting page, eg. adding
+    /// modules, collecting data etc.
     fn run(&mut self);
 
     /// Assembles the `<head>` tag of the page.
@@ -103,7 +108,7 @@ pub trait Page {
         dom
     }
 
-    /// Renders the page.
+    /// Renders the page. To a full valid HTML string.
     fn render(&self, modules: Vec<Nodes>) -> String {
         let mut bytes = vec![];
         let document: SerializableHandle =
