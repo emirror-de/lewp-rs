@@ -7,16 +7,16 @@ use {
         },
         LewpError, LewpErrorKind,
     },
-    css_next::{
+    lewp_css::{
         cssparser::ToCss,
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},
             selectors::OurSelectorImpl,
             CssRule, CssRules, StyleRule,
         },
-        selectors::parser::Selector,
         Stylesheet,
     },
+    selectors::parser::Selector,
     std::{io::Read, path::PathBuf, rc::Rc},
 };
 
@@ -137,7 +137,7 @@ impl Component {
     ) -> Result<(), LewpError> {
         let mut old = String::new();
         selector.to_css(&mut old);
-        let new = match css_next::parse_css_selector(&format!(
+        let new = match lewp_css::parse_css_selector(&format!(
             ".{} {}",
             self.id(),
             old
@@ -158,9 +158,7 @@ impl Component {
 
 #[test]
 fn isolate_css_module() {
-    use {crate::fh::Level, css_next::cssparser::ToCss};
-
-    let id = "hello-world";
+    use crate::fh::Level;
 
     // get temporary directory
     let dir = tempfile::tempdir().unwrap();

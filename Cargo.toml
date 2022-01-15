@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "lewp-selectors",
-    "lewp-css"
+    "lewp-css",
+    "lewp"
 ]
