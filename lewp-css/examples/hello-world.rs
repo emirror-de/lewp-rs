@@ -43,6 +43,7 @@ fn main() {
     // Don't write source-map and source-url comments if any are present in the stylesheet
     let include_source_urls = false;
 
+    // Example function that shows how to modify a parsed stylesheet
     recursive_modification(&mut stylesheet.rules);
 
     stylesheet
