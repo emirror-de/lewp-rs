@@ -3,15 +3,15 @@
 use {
     crate::{
         config::PageConfig,
-        css::Register as CssRegister,
+        css::{Entireness, Register as CssRegister},
         dom::{Node, NodeCreator, Nodes, RcDom},
+        fh::{ComponentInformation, ComponentType, Level},
         module::{ModulePtr, Modules, RuntimeInformation},
         Charset, LanguageTag,
     },
     html5ever::{serialize, serialize::SerializeOpts},
     markup5ever_rcdom::SerializableHandle,
-    std::rc::Rc,
-    std::sync::Arc,
+    std::{rc::Rc, sync::Arc},
 };
 
 /// Main trait of a page.
@@ -83,12 +83,39 @@ pub trait Page {
             .borrow_mut()
             .push(NodeCreator::description(self.description()));
 
+        // collector vec for all inline css styles
+        let mut inline_css = vec![];
+
         for module in self.modules() {
             let module = module.borrow();
             for head_tag in module.head_tags() {
                 head.children.borrow_mut().push(head_tag.clone());
             }
+            // collect all CSS
+            if let Some(r) = self.css_register() {
+                if let Some(css) = r.query(
+                    Rc::new(ComponentInformation {
+                        id: module.id().to_string(),
+                        level: Level::Module,
+                        kind: ComponentType::Css,
+                    }),
+                    Entireness::Full,
+                ) {
+                    inline_css.push(css.clone());
+                }
+            }
         }
+
+        // create a style tag for inline css
+        let node = NodeCreator::element("style", vec![]);
+        let css_text = NodeCreator::text(
+            &inline_css
+                .into_iter()
+                .fold(String::new(), |acc, e| format!("{}{}", acc, *e)),
+        );
+        node.children.borrow_mut().push(css_text);
+        head.children.borrow_mut().push(node);
+
         head
     }
 
