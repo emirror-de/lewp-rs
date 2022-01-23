@@ -27,6 +27,18 @@ pub fn address(children: Vec<Node>) -> Node {
     append_children(node, children)
 }
 
+/// Creates a new `area` tag node.
+pub fn area(shape: &str, coords: &str, alt: &str, href: &str) -> Node {
+    let mut node = basic_element("area");
+    node = node.attrs(vec![
+        ("shape", shape),
+        ("coords", coords),
+        ("alt", alt),
+        ("href", href),
+    ]);
+    node
+}
+
 /// Creates a new HTML document. It contains the doctype and html tag by default.
 pub fn document(language: LanguageTag, children: Vec<Node>) -> Document {
     let node = html(language, children);

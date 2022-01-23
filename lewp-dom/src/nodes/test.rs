@@ -38,6 +38,19 @@ fn address() {
 }
 
 #[test]
+fn area() {
+    use crate::{area, document, text, DocumentExt, LanguageTag};
+    let d = document(
+        LanguageTag::parse("en-US").unwrap(),
+        vec![area("rect", "250,0,250,0", "alt text", "/map")],
+    );
+    assert_eq!(
+        "<!DOCTYPE html><html lang=\"en\"><area shape=\"rect\" coords=\"250,0,250,0\" alt=\"alt text\" href=\"/map\"></html>",
+        d.into_html()
+    );
+}
+
+#[test]
 fn document() {
     use crate::{document, DocumentExt, LanguageTag};
     let d = document(LanguageTag::parse("en-US").unwrap(), vec![]);
