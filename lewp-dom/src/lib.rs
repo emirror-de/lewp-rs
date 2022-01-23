@@ -2,6 +2,12 @@
 
 //! Straightforward HTML document building.
 //!
+//! ## Write valid HTML documents
+//! lewp-dom panics during compilation if you append wrong elements to each other.
+//!
+//! ### Example
+//! **NEEDS TO BE WRITTEN**
+//!
 //! ## API example
 //!
 //! ```ignore
