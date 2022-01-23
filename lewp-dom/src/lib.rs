@@ -3,7 +3,9 @@
 //! Straightforward HTML document building.
 //!
 //! ## Write valid HTML documents
-//! lewp-dom panics during compilation if you append wrong elements to each other.
+//! When compiled in debug mode, lewp-dom sends errors to the log if
+//! not permitted content is appended to a node. See
+//! [https://developer.mozilla.org/en-US/docs/Web/HTML/Element] for specification.
 //!
 //! ### Example
 //! **NEEDS TO BE WRITTEN**
