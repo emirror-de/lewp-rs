@@ -85,7 +85,7 @@ pub trait NodeExt {
     /// set are being overridden.
     fn attrs(self, attributes: Vec<(&str, &str)>) -> Self;
     /// Appends the given [Vec]tor of [Node]s as children.
-    fn append_children(&mut self, node: &mut Vec<Node>);
+    fn append_children(&mut self, nodes: &mut Vec<Node>);
 }
 
 impl NodeExt for Node {
