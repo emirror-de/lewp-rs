@@ -48,6 +48,13 @@ pub fn div(children: Vec<Node>) -> Node {
     append_children(node, children)
 }
 
+/// Creates a text node.
+pub fn text(content: &str) -> Node {
+    rcdom::Node::new(NodeData::Text {
+        contents: RefCell::new(Tendril::from(content)),
+    })
+}
+
 /// Helper function to create a tag node.
 fn basic_element(tag_name: &str) -> Node {
     rcdom::Node::new(NodeData::Element {

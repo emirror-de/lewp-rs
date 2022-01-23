@@ -14,3 +14,16 @@ fn div() {
         d.into_html()
     );
 }
+
+#[test]
+fn text() {
+    use crate::{document, text, DocumentExt, LanguageTag};
+    let d = document(
+        LanguageTag::parse("en-US").unwrap(),
+        vec![text("A simple text test.")],
+    );
+    assert_eq!(
+        "<!DOCTYPE html><html lang=\"en\">A simple text test.</html>",
+        d.into_html()
+    );
+}
