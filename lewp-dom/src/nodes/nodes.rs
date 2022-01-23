@@ -14,6 +14,13 @@ pub fn a(children: Vec<Node>) -> Node {
     append_children(node, children)
 }
 
+/// Creates a new `abbr` tag node.
+pub fn abbr(abbreviation: &str, title: &str) -> Node {
+    let mut node = basic_element("abbr");
+    node = node.attr("title", title);
+    append_children(node, vec![text(abbreviation)])
+}
+
 /// Creates a new HTML document. It contains the doctype and html tag by default.
 pub fn document(language: LanguageTag, children: Vec<Node>) -> Document {
     let node = html(language, children);

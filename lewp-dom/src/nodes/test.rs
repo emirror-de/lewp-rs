@@ -12,6 +12,18 @@ fn a() {
 }
 
 #[test]
+fn abbr() {
+    use crate::{abbr, document, DocumentExt, LanguageTag};
+    let d = document(
+        LanguageTag::parse("en-US").unwrap(),
+        vec![abbr("CSS", "Cascading Stylesheets")],
+    );
+    assert_eq!(
+        "<!DOCTYPE html><html lang=\"en\"><abbr title=\"Cascading Stylesheets\">CSS</abbr></html>",
+        d.into_html()
+    );
+}
+#[test]
 fn document() {
     use crate::{document, DocumentExt, LanguageTag};
     let d = document(LanguageTag::parse("en-US").unwrap(), vec![]);
