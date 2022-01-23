@@ -23,6 +23,20 @@ fn abbr() {
         d.into_html()
     );
 }
+
+#[test]
+fn address() {
+    use crate::{address, document, text, DocumentExt, LanguageTag};
+    let d = document(
+        LanguageTag::parse("en-US").unwrap(),
+        vec![address(vec![text("My address.")])],
+    );
+    assert_eq!(
+        "<!DOCTYPE html><html lang=\"en\"><address>My address.</address></html>",
+        d.into_html()
+    );
+}
+
 #[test]
 fn document() {
     use crate::{document, DocumentExt, LanguageTag};
