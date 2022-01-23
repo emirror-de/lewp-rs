@@ -1,4 +1,17 @@
 #[test]
+fn a() {
+    use crate::{a, document, text, DocumentExt, LanguageTag};
+    let d = document(
+        LanguageTag::parse("en-US").unwrap(),
+        vec![a(vec![text("A simple text test.")])],
+    );
+    assert_eq!(
+        "<!DOCTYPE html><html lang=\"en\"><a href=\"#\">A simple text test.</a></html>",
+        d.into_html()
+    );
+}
+
+#[test]
 fn document() {
     use crate::{document, DocumentExt, LanguageTag};
     let d = document(LanguageTag::parse("en-US").unwrap(), vec![]);

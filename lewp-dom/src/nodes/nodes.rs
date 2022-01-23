@@ -7,6 +7,13 @@ use {
     std::cell::RefCell,
 };
 
+/// Creates a new `a` tag node. Defaults with `href="#"` attribute.
+pub fn a(children: Vec<Node>) -> Node {
+    let mut node = basic_element("a");
+    node = node.attr("href", "#");
+    append_children(node, children)
+}
+
 /// Creates a new HTML document. It contains the doctype and html tag by default.
 pub fn document(language: LanguageTag, children: Vec<Node>) -> Document {
     let node = html(language, children);
