@@ -88,6 +88,8 @@ pub trait NodeExt {
     fn append_children(&mut self, nodes: &mut Vec<Node>);
     /// Returns the attribute index if present.
     fn find_attribute(&self, attribute_name: &str) -> Option<usize>;
+    /// Checks if the given attribute matches the value.
+    fn attribute_eq(&self, attribute_name: &str, value: &str) -> bool;
 }
 
 impl NodeExt for Node {
@@ -133,6 +135,16 @@ impl NodeExt for Node {
         None
     }
 
+    fn attribute_eq(&self, attribute_name: &str, value: &str) -> bool {
+        if let Some(index) = self.find_attribute(attribute_name) {
+            let mut attrs = match &self.data {
+                NodeData::Element { attrs, .. } => attrs.borrow_mut(),
+                _ => return false,
+            };
+            return &*attrs[index].value == value;
+        }
+        false
+    }
 }
 
 #[test]
