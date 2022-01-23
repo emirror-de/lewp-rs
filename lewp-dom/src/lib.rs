@@ -86,6 +86,8 @@ pub trait NodeExt {
     fn attrs(self, attributes: Vec<(&str, &str)>) -> Self;
     /// Appends the given [Vec]tor of [Node]s as children.
     fn append_children(&mut self, nodes: &mut Vec<Node>);
+    /// Returns the attribute index if present.
+    fn find_attribute(&self, attribute_name: &str) -> Option<usize>;
 }
 
 impl NodeExt for Node {
@@ -114,6 +116,23 @@ impl NodeExt for Node {
     fn append_children(&mut self, nodes: &mut Vec<Node>) {
         self.children.borrow_mut().append(nodes);
     }
+
+    fn find_attribute(&self, attribute_name: &str) -> Option<usize> {
+        let attrs = match &self.data {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return None,
+        };
+        for (idx, attr) in attrs.borrow().iter().enumerate() {
+            if attr.name
+                != QualName::new(None, ns!(), LocalName::from(attribute_name))
+            {
+                continue;
+            }
+            return Some(idx);
+        }
+        None
+    }
+
 }
 
 #[test]
