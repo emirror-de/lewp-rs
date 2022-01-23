@@ -48,6 +48,7 @@ pub fn div(children: Vec<Node>) -> Node {
     append_children(node, children)
 }
 
+/// Helper function to create a tag node.
 fn basic_element(tag_name: &str) -> Node {
     rcdom::Node::new(NodeData::Element {
         name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
@@ -57,6 +58,7 @@ fn basic_element(tag_name: &str) -> Node {
     })
 }
 
+/// Appends all children to the given parent node.
 fn append_children(parent: Node, children: Vec<Node>) -> Node {
     let mut children = children;
     let mut parent = parent;
