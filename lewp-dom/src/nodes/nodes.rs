@@ -24,13 +24,9 @@ pub fn document(language: LanguageTag, children: Vec<Node>) -> Document {
     dom
 }
 
-fn html(language: LanguageTag, children: Vec<Node>) -> Node {
-    let mut html = rcdom::Node::new(NodeData::Element {
-        name: QualName::new(None, ns!(html), LocalName::from("html")),
-        attrs: RefCell::new(vec![]),
-        template_contents: None,
-        mathml_annotation_xml_integration_point: false,
-    });
+/// Creates an `html` tag. automatically created when using [document].
+pub fn html(language: LanguageTag, children: Vec<Node>) -> Node {
+    let mut html = basic_element("html");
 
     // process language
     let language = match language.language() {
@@ -48,14 +44,17 @@ fn html(language: LanguageTag, children: Vec<Node>) -> Node {
 
 /// Creates a new `div` tag node.
 pub fn div(children: Vec<Node>) -> Node {
-    let node = rcdom::Node::new(NodeData::Element {
-        name: QualName::new(None, ns!(html), LocalName::from("div")),
+    let node = basic_element("div");
+    append_children(node, children)
+}
+
+fn basic_element(tag_name: &str) -> Node {
+    rcdom::Node::new(NodeData::Element {
+        name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
         attrs: RefCell::new(vec![]),
         template_contents: None,
         mathml_annotation_xml_integration_point: false,
-    });
-
-    append_children(node, children)
+    })
 }
 
 fn append_children(parent: Node, children: Vec<Node>) -> Node {
