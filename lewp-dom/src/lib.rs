@@ -98,6 +98,10 @@ pub trait NodeExt {
     fn attrs(self, attributes: Vec<(&str, &str)>) -> Self;
     /// Appends the given [Vec]tor of [Node]s as children.
     fn append_children(&mut self, nodes: &mut Vec<Node>);
+    /// Validates the given children recursively.
+    ///
+    /// Throws warnings in the log if children contains nodes that are not allowed.
+    fn validate(&self, children: &Vec<Node>);
     /// Returns the attribute index if present.
     fn find_attribute(&self, attribute_name: &str) -> Option<usize>;
     /// Checks if the given attribute matches the value.
@@ -128,7 +132,15 @@ impl NodeExt for Node {
     }
 
     fn append_children(&mut self, nodes: &mut Vec<Node>) {
+        #[cfg(debug_assertions)]
+        self.validate(&nodes);
         self.children.borrow_mut().append(nodes);
+    }
+
+    fn validate(&self, children: &Vec<Node>) {
+        for child in children {
+            nodes::validator::validate(&self, &child);
+        }
     }
 
     fn find_attribute(&self, attribute_name: &str) -> Option<usize> {
