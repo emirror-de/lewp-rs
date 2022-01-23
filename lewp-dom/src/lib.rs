@@ -52,6 +52,18 @@ use {
 
 pub use {langtag::LanguageTag, nodes::*};
 
+/// Contains the actual error message that can be printed on screen.
+pub type ErrorMessage = String;
+
+/// Describes the possible errors that can occur.
+pub enum DomError {
+    /// Validation errors. First node is the parent, second the child
+    /// (could also be a subchild).
+    Validation(ErrorMessage, Node, Node),
+    /// Raised when the node is not supported.
+    Unsupported(ErrorMessage, Node),
+}
+
 /// An HTML document.
 pub type Document = RcDom;
 
