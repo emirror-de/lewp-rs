@@ -7,7 +7,7 @@ use {
 mod lists;
 
 /// Checks recursively if the child is valid inside parent.
-pub fn validate(parent: &Node, child: &Node) -> Result<(), DomError> {
+pub fn validate(parent: &Node, child: Node) -> Result<(), DomError> {
     let tag_name = match extract_tag_name(&parent)? {
         Some(t) => t,
         None => return Ok(()),
@@ -17,7 +17,7 @@ pub fn validate(parent: &Node, child: &Node) -> Result<(), DomError> {
         _ => {
             return Err(DomError::Unsupported(
                 format!("Unsupported parent node given!"),
-                parent.clone(),
+                (*parent).clone(),
             ))
         }
     };
@@ -34,7 +34,7 @@ fn extract_tag_name(node: &Node) -> Result<Option<String>, DomError> {
         QualName { local, .. } => Ok(Some(local.to_string())),
         _ => Err(DomError::Unsupported(
             format!("Unknown error during the extraction of the tag name!"),
-            node.clone(),
+            (*node).clone(),
         )),
     }
 }
@@ -80,7 +80,13 @@ fn a(child: &Node) -> Result<(), DomError> {
         "menu" => child.attribute_eq("type", "toolbar"),
         "object" => child.find_attribute("usemap").is_some(),
         "video" => child.find_attribute("controls").is_some(),
-        _ => return Ok(()),
+        _ => {
+            if child.find_attribute("tabindex").is_some() {
+                true
+            } else {
+                return Ok(());
+            }
+        }
     };
     if not_allowed {
         log_error("a", &tag_name);

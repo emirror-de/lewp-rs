@@ -1,5 +1,10 @@
 use {
-    crate::{Document, Node, NodeExt},
+    crate::{
+        html::{nodes::Anchor, TypedNode},
+        Document,
+        Node,
+        NodeExt,
+    },
     html5ever::{namespace_url, ns, tendril::Tendril, LocalName, QualName},
     langtag::LanguageTag,
     log::error,
@@ -8,7 +13,7 @@ use {
 };
 
 /// Creates a new `a` tag node. Defaults with `href="#"` attribute.
-pub fn a(children: Vec<Node>) -> Node {
+pub fn a(children: Vec<Node>) -> Anchor {
     let mut node = basic_element("a");
     node = node.attr("href", "#");
     append_children(node, children)
@@ -24,6 +29,12 @@ pub fn abbr(abbreviation: &str, title: &str) -> Node {
 /// Creates a new `address` tag node.
 pub fn address(children: Vec<Node>) -> Node {
     let mut node = basic_element("address");
+    append_children(node, children)
+}
+
+/// Creates a new `audio` tag node.
+pub fn audio(children: Vec<Node>) -> Node {
+    let mut node = basic_element("audio");
     append_children(node, children)
 }
 
@@ -52,7 +63,7 @@ pub fn document(language: LanguageTag, children: Vec<Node>) -> Document {
     });
 
     dom.document.children.borrow_mut().push(doctype);
-    dom.document.children.borrow_mut().push(node);
+    dom.document.children.borrow_mut().push(node.clone());
     dom
 }
 
@@ -84,16 +95,6 @@ pub fn div(children: Vec<Node>) -> Node {
 pub fn text(content: &str) -> Node {
     rcdom::Node::new(NodeData::Text {
         contents: RefCell::new(Tendril::from(content)),
-    })
-}
-
-/// Helper function to create a tag node.
-fn basic_element(tag_name: &str) -> Node {
-    rcdom::Node::new(NodeData::Element {
-        name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
-        attrs: RefCell::new(vec![]),
-        template_contents: None,
-        mathml_annotation_xml_integration_point: false,
     })
 }
 

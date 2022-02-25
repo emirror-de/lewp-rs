@@ -68,6 +68,16 @@ fn div() {
 }
 
 #[test]
+fn audio() {
+    use crate::{audio, document, DocumentExt, LanguageTag};
+    let d = document(LanguageTag::parse("en-US").unwrap(), vec![audio(vec![])]);
+    assert_eq!(
+        "<!DOCTYPE html><html lang=\"en\"><audio></audio></html>",
+        d.into_html()
+    );
+}
+
+#[test]
 fn text() {
     use crate::{document, text, DocumentExt, LanguageTag};
     let d = document(
