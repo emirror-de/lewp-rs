@@ -1,19 +1,14 @@
 //! Traits and data structures for modules that have submodules.
 use {
     crate::{
-        dom::Nodes,
-        fh::{Component, ComponentInformation, ComponentType, Level},
+        fh::{ComponentInformation, ComponentType, Level},
         module::{Module, ModulePtr, Modules, RuntimeInformation},
         LewpError,
         LewpErrorKind,
     },
+    lewp_html::Nodes,
     std::rc::Rc,
 };
-
-//mod render;
-//mod runtime;
-
-//pub use {render::Render, runtime::Runtime};
 
 /// Enables management of submodules.
 pub trait SubModule: Module {

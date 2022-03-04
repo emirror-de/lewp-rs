@@ -4,7 +4,7 @@ use {
         fh::{FileHierarchy, Level},
         LewpError,
     },
-    std::{path::PathBuf, rc::Rc},
+    std::rc::Rc,
 };
 
 /// A lewp component. Anything inside the file hierarchy is a component (Files, Folders, Modules,

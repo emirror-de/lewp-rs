@@ -4,12 +4,13 @@ use {
     crate::{
         config::PageConfig,
         css::{Entireness, Register as CssRegister},
-        dom::{Node, NodeCreator, Nodes, RcDom},
         fh::{ComponentInformation, ComponentType, Level},
         module::{ModulePtr, Modules, RuntimeInformation},
-        Charset, LanguageTag,
+        Charset,
+        LanguageTag,
     },
     html5ever::{serialize, serialize::SerializeOpts},
+    lewp_html::{api::*, Document, Node, Nodes},
     markup5ever_rcdom::SerializableHandle,
     std::{rc::Rc, sync::Arc},
 };
@@ -68,29 +69,29 @@ pub trait Page {
     }
 
     /// Assembles the `<head>` tag of the page.
-    fn assemble_head(&self) -> Rc<Node> {
-        let head = NodeCreator::element("head", vec![]);
-        head.children
-            .borrow_mut()
-            .push(NodeCreator::charset(&self.charset()));
+    fn assemble_head(&self) -> Node {
+        let mut head_children = vec![
+            charset(&self.charset()),
+            title(self.title()),
+            description(self.description()),
+        ];
         if self.config().viewport_tag {
-            head.children.borrow_mut().push(NodeCreator::viewport());
+            head_children.push(viewport())
         }
-        head.children
-            .borrow_mut()
-            .push(NodeCreator::title(self.title()));
-        head.children
-            .borrow_mut()
-            .push(NodeCreator::description(self.description()));
 
         // collector vec for all inline css styles
         let mut inline_css = vec![];
 
         for module in self.modules() {
             let module = module.borrow();
-            for head_tag in module.head_tags() {
-                head.children.borrow_mut().push(head_tag.clone());
-            }
+            // add all head tags for module first
+            let mut module_head_tags = module
+                .head_tags()
+                .iter()
+                .map(|tag| tag.clone())
+                .collect::<Vec<Node>>();
+            head_children.append(&mut module_head_tags);
+
             // collect all CSS
             if let Some(r) = self.css_register() {
                 if let Some(css) = r.query(
@@ -105,47 +106,35 @@ pub trait Page {
                 }
             }
         }
+        let inline_css = &inline_css
+            .into_iter()
+            .fold(String::new(), |acc, e| format!("{}{}", acc, *e));
 
         // create a style tag for inline css
-        let node = NodeCreator::element("style", vec![]);
-        let css_text = NodeCreator::text(
-            &inline_css
-                .into_iter()
-                .fold(String::new(), |acc, e| format!("{}{}", acc, *e)),
-        );
-        node.children.borrow_mut().push(css_text);
-        head.children.borrow_mut().push(node);
+        if !inline_css.is_empty() {
+            head_children.push(style(text(inline_css)));
+        }
 
-        head
+        head(head_children)
     }
 
     /// Assembles the `<body>` tag of the page.
-    fn assemble_body(&self, modules: Vec<Nodes>) -> Rc<Node> {
-        let body = NodeCreator::element("body", vec![]);
+    fn assemble_body(&self, modules: Vec<Nodes>) -> Node {
+        //let body = NodeCreator::element("body", vec![]);
+        let mut body_children = vec![];
         for module in modules {
             for node in module {
-                body.children.borrow_mut().push(node);
+                body_children.push(node);
             }
         }
-        body
+        body(body_children)
     }
 
-    /// Assembles the full page and returns it as [RcDom].
-    fn assemble_full(&self, modules: Vec<Nodes>) -> RcDom {
-        let dom = RcDom::default();
-        let doctype = NodeCreator::doctype_html();
-
-        let html = NodeCreator::html(self.language());
-
+    /// Assembles the full page and returns it as [Document].
+    fn assemble_full(&self, modules: Vec<Nodes>) -> Document {
         let head = self.assemble_head();
         let body = self.assemble_body(modules);
-
-        html.children.borrow_mut().push(head);
-        html.children.borrow_mut().push(body);
-
-        dom.document.children.borrow_mut().push(doctype);
-        dom.document.children.borrow_mut().push(html);
-        dom
+        document(self.language(), head, body)
     }
 
     /// Renders the page. To a full valid HTML string.

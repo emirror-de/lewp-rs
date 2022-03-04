@@ -1,7 +1,4 @@
-use {
-    crate::fh::{Component, ComponentInformation},
-    std::rc::Rc,
-};
+use {crate::fh::ComponentInformation, std::rc::Rc};
 
 /// List of error kinds that occur within lewp.
 #[derive(Debug)]

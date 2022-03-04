@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        dom::{NodeCreator, NodeExt, Nodes},
+        html::{api::*, NodeExt, Nodes, Script},
         module::{Module, Modules, RuntimeInformation},
         page::Page,
         LewpError,
@@ -32,12 +32,7 @@ impl HeadOnly {
             \"I have been added using JavaScript.\"
             });",
         );
-        let script = NodeCreator::element(
-            "script",
-            vec![NodeCreator::attribute("defer", "defer")],
-        );
-        script.add_text(&content);
-        vec![script]
+        vec![script(Script::Inline(&content)).attr("defer", "defer")]
     }
 }
 
@@ -62,10 +57,7 @@ impl Module for HeadOnly {
     }
 
     fn view(&self) -> Nodes {
-        vec![NodeCreator::element(
-            "div",
-            vec![NodeCreator::attribute("id", "head-only")],
-        )]
+        vec![div(vec![]).attr("id", "head-only")]
     }
 }
 

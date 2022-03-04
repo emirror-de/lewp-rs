@@ -1,7 +1,10 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        dom::{NodeCreator, Nodes},
+        html::{
+            api::{h1, text},
+            Nodes,
+        },
         module::{Module, Modules, RuntimeInformation},
         page::Page,
         Charset,
@@ -48,14 +51,23 @@ impl Module for HelloWorld {
     }
 
     fn view(&self) -> Nodes {
-        let headline = NodeCreator::headline(1, &self.data, vec![]);
-        vec![headline]
+        vec![h1(vec![text(&self.data)])]
     }
 }
 
 struct HelloWorldPage {
     modules: Modules,
     config: PageConfig,
+}
+
+impl HelloWorldPage {
+    /// Creates a new page.
+    pub fn new(config: PageConfig) -> Self {
+        Self {
+            modules: vec![],
+            config,
+        }
+    }
 }
 
 impl Page for HelloWorldPage {
@@ -86,16 +98,14 @@ impl Page for HelloWorldPage {
         &self.config
     }
 
-    fn run(&mut self) {}
+    fn run(&mut self) {
+        let module = HelloWorld::new();
+        self.add_module(module.into_module_ptr());
+    }
 }
 
 fn main() {
-    let module = HelloWorld::new();
-    let mut page = HelloWorldPage {
-        modules: vec![],
-        config: PageConfig::new(),
-    };
-    page.add_module(module.into_module_ptr());
+    let mut page = HelloWorldPage::new(PageConfig::new());
     let dom = page.build();
     println!("{}", dom);
 }

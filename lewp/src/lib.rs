@@ -31,12 +31,12 @@ pub use {
     charsets::Charset,
     error::{LewpError, LewpErrorKind},
     langtag::LanguageTag,
+    lewp_html as html,
     page::Page,
 };
 
 pub mod config;
 pub mod css;
-pub mod dom;
 mod error;
 pub mod fh;
 pub mod module;

@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::ModuleConfig,
-        dom::{NodeCreator, Nodes},
+        html::{api::*, Nodes},
         module::{Module, RuntimeInformation},
         LewpError,
     },
@@ -45,8 +45,7 @@ impl Module for HelloWorld {
     }
 
     fn view(&self) -> Nodes {
-        let headline = NodeCreator::headline(1, &self.data, vec![]);
-        vec![headline]
+        vec![h1(vec![text(&self.data)])]
     }
 }
 

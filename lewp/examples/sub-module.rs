@@ -10,11 +10,11 @@ mod modules {
     use {
         lewp::{
             config::ModuleConfig,
-            dom::{NodeCreator, Nodes},
             module::{Module, Modules, RuntimeInformation},
             submodule::SubModule,
             LewpError,
         },
+        lewp_html::{api::*, Nodes},
         std::rc::Rc,
     };
 
@@ -65,8 +65,7 @@ mod modules {
         }
 
         fn view(&self) -> Nodes {
-            let headline = NodeCreator::headline(1, &self.data, vec![]);
-            let mut view = vec![headline];
+            let mut view = vec![h1(vec![text(&self.data)])];
             // see Render trait in submodule for more rendering methods
             self.render_submodules(&mut view);
             view
@@ -133,20 +132,13 @@ mod modules {
 
         fn view(&self) -> Nodes {
             let headline = match self.current_headline {
-                Some(v) => NodeCreator::headline(2, &self.data[v], vec![]),
-                None => NodeCreator::headline(
-                    2,
-                    "This module did not run yet!",
-                    vec![],
-                ),
+                Some(v) => h2(vec![text(&self.data[v])]),
+                None => h2(vec![text("This module did not run yet!")]),
             };
-            let p = NodeCreator::paragraph(
-                &format!(
-                    "Has been executed {} times before!",
-                    self.execution_count
-                ),
-                vec![],
-            );
+            let p = p(vec![text(&format!(
+                "Has been executed {} times before!",
+                self.execution_count
+            ))]);
             vec![headline, p]
         }
     }

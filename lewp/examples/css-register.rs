@@ -2,7 +2,7 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         css::{Register as CssRegister, RegisterOptions},
-        dom::{NodeCreator, Nodes},
+        html::{api::*, Nodes},
         module::{Module, Modules, RuntimeInformation},
         page::Page,
         Charset,
@@ -49,9 +49,7 @@ impl Module for HelloWorld {
     }
 
     fn view(&self) -> Nodes {
-        let headline = NodeCreator::headline(1, &self.data, vec![]);
-        let br = NodeCreator::element("br", vec![]);
-        vec![headline, br]
+        vec![h1(vec![text(&self.data)]), br()]
     }
 }
 

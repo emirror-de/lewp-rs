@@ -1,10 +1,7 @@
 use {
     super::{ModulePtr, RuntimeInformation},
-    crate::{
-        config::ModuleConfig,
-        dom::{NodeCreator, Nodes},
-        LewpError,
-    },
+    crate::{config::ModuleConfig, LewpError},
+    lewp_html::{api::div, NodeExt, Nodes},
     std::{cell::RefCell, rc::Rc},
 };
 
@@ -36,21 +33,13 @@ pub trait Module {
 
     /// Renders as DOM nodes.
     fn render(&self) -> Nodes {
-        let module_dom = self.view();
-        if !self.config().skip_wrapper {
-            let wrapper = NodeCreator::element(
-                "div",
-                vec![
-                    NodeCreator::attribute("class", self.id()),
-                    NodeCreator::attribute("data-lewp-component", "module"),
-                ],
-            );
-            for node in module_dom {
-                wrapper.children.borrow_mut().push(node);
-            }
-            return vec![wrapper];
+        if self.config().skip_wrapper {
+            return self.view();
         }
-        module_dom
+        vec![div(self.view()).attrs(vec![
+            ("class", self.id()),
+            ("data-lewp-component", "module"),
+        ])]
     }
 
     /// Executes the module. Main function that is able to collect and modify

@@ -1,10 +1,7 @@
 use {
     super::{Component, Entireness, ProcessedComponent},
     crate::{
-        fh::{
-            Component as FHComponent, ComponentInformation, ComponentType,
-            FileHierarchy, Level,
-        },
+        fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
         LewpError,
     },
     std::{collections::HashMap, rc::Rc, sync::Arc},

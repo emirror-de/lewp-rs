@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        dom::{NodeCreator, Nodes},
+        html::{api::*, Nodes},
         module::{Module, Modules, RuntimeInformation},
         page::Page,
         Charset,
@@ -58,8 +58,7 @@ impl Module for HelloWorld {
     }
 
     fn view(&self) -> Nodes {
-        let headline = NodeCreator::headline(1, &self.data, vec![]);
-        vec![headline]
+        vec![h1(vec![text(&self.data)])]
     }
 }
 
@@ -99,8 +98,8 @@ impl Page for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><div class=\"hello-world\" data-lewp-component=\"module\"><h1>hello-world</h1></div></body></html>";
-const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"></head><body><h1>hello-world</h1></body></html>";
+const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><div class=\"hello-world\" data-lewp-component=\"module\"><h1>hello-world</h1></div></body></html>";
+const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1>hello-world</h1></body></html>";
 
 #[test]
 fn hello_world_with_module_wrapper() {

@@ -10,7 +10,7 @@ mod modules {
     use {
         lewp::{
             config::ModuleConfig,
-            dom::{NodeCreator, Nodes},
+            html::{api::*, Nodes},
             module::{Module, Modules, RuntimeInformation},
             submodule::SubModule,
             LewpError,
@@ -77,8 +77,7 @@ mod modules {
         }
 
         fn view(&self) -> Nodes {
-            let headline = NodeCreator::headline(1, &self.data, vec![]);
-            let mut view = vec![headline];
+            let mut view = vec![h1(vec![text(&self.data)])];
             // see Render trait in submodule for more rendering methods
             self.render_submodules(&mut view);
             view
