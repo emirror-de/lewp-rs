@@ -1,5 +1,5 @@
 use {
-    crate::{BrowsingContext, Document, Node, NodeExt, Nodes, Script},
+    crate::{BrowsingContext, Charset, Document, Node, NodeExt, Nodes, Script},
     html5ever::{namespace_url, ns, tendril::Tendril, LocalName, QualName},
     langtag::LanguageTag,
     rcdom::NodeData,
@@ -362,4 +362,25 @@ pub fn text(text: &str) -> Node {
     rcdom::Node::new(NodeData::Text {
         contents: RefCell::new(Tendril::from(text)),
     })
+}
+
+/// Creates a `<meta>` charset tag node.
+pub fn charset(charset: &Charset) -> Node {
+    meta().attr("charset", &charset.to_string())
+}
+
+/// Creates a `<meta>` tag node with description.
+pub fn description(description: &str) -> Node {
+    meta().attrs(vec![("name", "description"), ("content", description)])
+}
+
+/// Creates a `<meta>` viewport tag node.
+pub fn viewport() -> Node {
+    meta().attrs(vec![
+        ("name", "viewport"),
+        (
+            "content",
+            "width=device-width, initial-scale=1.0, user-scalable=no",
+        ),
+    ])
 }

@@ -45,6 +45,7 @@ mod node_ext;
 mod types;
 
 pub use {
+    charsets::Charset,
     document::Document,
     document_ext::DocumentExt,
     langtag::LanguageTag,
