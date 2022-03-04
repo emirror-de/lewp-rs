@@ -363,27 +363,3 @@ pub fn text(text: &str) -> Node {
         contents: RefCell::new(Tendril::from(text)),
     })
 }
-
-// API
-// document(
-//     html(
-//         LanguageTag::parse("de-DE").unwrap(),
-//         head(vec![
-//                 base("/base", BrowsingContext::Blank),
-//                 link("href", "rel", "type")
-//                     .attr("media", "print")
-//             ]
-//         ),
-//         body(),
-//     )
-// )
-//
-// document(
-//     html(
-//         LanguageTag::parse("de-DE").unwrap(),
-//         head(
-//             base("/base", BrowsingContext::Blank)
-//         ),
-//         body(),
-//     )
-// )
