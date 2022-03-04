@@ -1,0 +1,32 @@
+[package]
+name = "lewp"
+version = "0.3.0"
+authors = ["Lewin Probst <info@emirror.de>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source."
+homepage = "https://github.com/emirror-de/lewp-rs"
+documentation = "https://docs.rs/lewp"
+repository = "https://github.com/emirror-de/lewp-rs"
+readme = "README.md"
+keywords = ["HTML5", "CSS", "JavaScript", "WASM", "modules"]
+categories = ["web-programming"]
+
+[dependencies]
+lewp-css = { version = "^0.1.22", path = "../lewp-css" }
+lewp-html = { version = "0.1", path = "../lewp-html" }
+selectors = { version = "0.23.1", path = "../lewp-selectors", package = "lewp-selectors" }
+serde = { version = "^1.0.130", features = ["derive"], optional = true }
+langtag = "^0.2.0"
+log = "^0.4.14"
+html5ever = "^0.25.1"
+markup5ever_rcdom = "^0.1.0"
+charsets = "^0.2.0"
+walkdir = "^2.3.2"
+pathdiff = "^0.2.1"
+glob = "0.3.0"
+
+[dev-dependencies]
+rand = "0.8.4"
+tempfile = "^3.2.0"
+fs_extra = "^1.2.0"

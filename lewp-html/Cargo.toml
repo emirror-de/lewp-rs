@@ -1,0 +1,22 @@
+[package]
+name = "lewp-html"
+version = "0.1.0"
+authors = ["Lewin Probst <info@emirror.de>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Straightforward HTML document building. Write your HTML with full algorithmic power instead of creating messy and confusing templates that contain typing errors."
+homepage = "https://github.com/emirror-de/lewp-rs"
+documentation = "https://docs.rs/lewp-html"
+repository = "https://github.com/emirror-de/lewp-rs"
+readme = "README.md"
+keywords = ["HTML5", "CSS", "JavaScript", "modules"]
+categories = ["web-programming"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rcdom = { version = "0.1", package = "markup5ever_rcdom" }
+html5ever = { version = "0.25" }
+langtag = "0.2"
+log = "0.4"
+charsets = "0.2"
