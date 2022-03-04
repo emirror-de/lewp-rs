@@ -1,12 +1,10 @@
 # lewp-html
 
+![Version](https://img.shields.io/crates/v/lewp-html?style=flat-square) [![Documentation](https://img.shields.io/docsrs/lewp-html?style=flat-square)](https://docs.rs/lewp) ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp-html?style=flat-square) [![](https://img.shields.io/discord/855726181142495242?color=154683&label=discord&style=flat-square)](https://discord.gg/nx7YtsjEbT)
+
 Straightforward HTML document building. Write your HTML with the full power
 of a programming language instead of creating messy and confusing
 templates that contain typing errors.
-
-![]()
-
-![]()
 
 ## 📦 Features
 
