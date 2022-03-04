@@ -140,8 +140,6 @@ api_children_only! {
     bdo, "bdo"
     /// [span](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-span-element)
     span, "span"
-    /// [br](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-br-element)
-    br, "br"
     /// [wbr](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-wbr-element)
     wbr, "wbr"
     /// [ins](https://html.spec.whatwg.org/dev/edits.html#the-ins-element)
@@ -307,6 +305,11 @@ pub fn link(type_: &str, href: &str) -> Node {
 /// without attributes.
 pub fn meta() -> Node {
     new_element("meta", vec![])
+}
+
+/// Creates a [br](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-br-element) element.
+pub fn br() -> Node {
+    new_element("br", vec![])
 }
 
 /// Creates a [style](https://html.spec.whatwg.org/dev/semantics.html#the-style-element) element.
