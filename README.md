@@ -60,7 +60,6 @@ lewp generates a highly optimized HTML web page and provides automatic handling 
   - [x] Minimization of CSS is implemented
   - [x] Modules without CSS are skipped
   - [x] CSS links are automatically inserted into the HTML `<head>` tag if files are available
-  - [ ] 
   - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
   - [x] A CSS register is implemented that can be used as shared global querying instance for CSS files
 - [x] Modules are isolated (HTML, CSS)
