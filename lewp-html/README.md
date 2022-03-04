@@ -8,11 +8,11 @@ templates that contain typing errors.
 
 ## 📦 Features
 
-* Clean API
+* [x] Clean API
 
-* Valid HTML creation
+* [x] Valid HTML creation
 
-* Useful methods for attribute and node interaction
+* [x] Useful methods for attribute and node interaction
 
 ## ❓ How to use?
 
