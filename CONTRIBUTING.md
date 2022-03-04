@@ -2,7 +2,7 @@
 
 Thanks for choosing to contribute to `lewp-rs`! You can find a few details about the contributing standards that `lewp-rs` follows.
 
-*A pull request template is currently in progress, until then please add as much as information to the PR as you can about the changes you made*
+*A pull request template is currently in progress, until released please add as much as information to the PR as you can about the changes you made*
 
 ## Testing
 
@@ -29,7 +29,7 @@ Available scopes are:
 
 * `selectors` - for `lewp-selectors` crate
 
-* `dom` - for `lewp-dom` crate
+* `html` - for `lewp-html` crate
 
 * `lewp` - for the main crate
 
