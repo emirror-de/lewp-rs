@@ -5,14 +5,13 @@ use {
     html5ever::{
         namespace_url,
         ns,
-        serialize::{serialize, SerializeOpts},
         tendril::Tendril,
         Attribute,
         LocalName,
         QualName,
     },
-    rcdom::{NodeData, RcDom, SerializableHandle},
-    std::{cell::RefCell, ops::Deref, rc::Rc},
+    rcdom::NodeData,
+    std::cell::RefCell,
 };
 
 /// Methods for easy interaction with a `DOM` [Node].
@@ -24,14 +23,10 @@ where
     fn children(&self) -> &RefCell<Vec<Node>>;
     /// The [NodeData].
     fn data(&self) -> &rcdom::NodeData;
-    /// The [ContentCategories](rcdom::ContentCategory).
-    fn categories(&self) -> Vec<rcdom::ContentCategory>;
     /// Appends the given children to the node.
     fn append_children(&self, children: Vec<Node>);
     /// Appends the given child to the node.
     fn append_child(&self, child: Node);
-    ///// The children of this node.
-    //fn children<T: NodeExt>(&self) -> &RefCell<Vec<T>>;
     /// Returns the tag name as string if available.
     fn tag_name(&self) -> Option<String> {
         match &self.data() {

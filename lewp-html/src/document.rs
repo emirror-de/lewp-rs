@@ -1,20 +1,11 @@
 //! Document definition.
 
 use {
-    html5ever::{
-        namespace_url,
-        ns,
-        serialize::{serialize, SerializeOpts},
-        tendril::Tendril,
-        Attribute,
-        LocalName,
-        QualName,
-    },
-    rcdom::{NodeData, RcDom, SerializableHandle},
-    std::{cell::RefCell, ops::Deref, rc::Rc},
+    html5ever::serialize::{serialize, SerializeOpts},
+    rcdom::{RcDom, SerializableHandle},
 };
 
-/// An HTML document.
+/// An HTML5 document.
 pub type Document = RcDom;
 
 impl crate::DocumentExt for Document {
