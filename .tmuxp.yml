@@ -1,8 +1,0 @@
-session_name: cargo
-windows:
-  - window_name: watcher
-    layout: even-horizontal
-    panes:
-      - cargo watch -x 'clippy --no-deps --all-features'
-      - cargo watch -x 'test --all-features'
-      - cargo watch -x 'doc --all-features'

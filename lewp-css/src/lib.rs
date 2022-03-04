@@ -7,7 +7,7 @@
 
 //! # lewp-css
 //!
-//! *Forked version of [css](https://github.com/lemonrock/css)*
+//! *Forked version and continued version of [css](https://github.com/lemonrock/css)*
 //!
 //! A Rust library crate for parsing, manipulating and serializing CSS stylesheets.
 //! Makes use of existing CSS parser logic from Servo.
@@ -88,6 +88,8 @@ mod stylesheet;
 mod stylesheet_error;
 
 pub use {
-    custom_parse_error::CustomParseError, parse_css_selector::*,
-    stylesheet::Stylesheet, stylesheet_error::*,
+    custom_parse_error::CustomParseError,
+    parse_css_selector::*,
+    stylesheet::Stylesheet,
+    stylesheet_error::*,
 };

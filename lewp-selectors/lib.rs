@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+//! Forked version of the selectors crate. With additions required by [lewp](https://docs.rs/lewp).
+
 // Make |cargo bench| work.
 #![cfg_attr(feature = "bench", feature(test))]
 
@@ -30,6 +32,8 @@ pub mod sink;
 mod tree;
 pub mod visitor;
 
-pub use crate::nth_index_cache::NthIndexCache;
-pub use crate::parser::{Parser, SelectorImpl, SelectorList};
-pub use crate::tree::{Element, OpaqueElement};
+pub use crate::{
+    nth_index_cache::NthIndexCache,
+    parser::{Parser, SelectorImpl, SelectorList},
+    tree::{Element, OpaqueElement},
+};
