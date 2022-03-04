@@ -1,6 +1,4 @@
 #![deny(missing_docs)]
-//! ![](https://raw.githubusercontent.com/emirror-de/lewp-rs/main/logo/lewp-transparent-background.inkscape.png)
-//!
 //! ----------------
 //!
 //! ![Version](https://img.shields.io/crates/v/lewp?style=flat-square)
@@ -23,9 +21,123 @@
 //! * Module based development, truly isolated
 //! * Build the DOM completely in Rust
 //!
-//! ## Examples
+//! ## Hello world! example
 //!
-//! Please find examples in the `examples` folder in the repository.
+//! ```
+//! use {
+//!     lewp::{
+//!         config::{ModuleConfig, PageConfig},
+//!         html::{
+//!             api::{h1, text},
+//!             Nodes,
+//!         },
+//!         Module, Modules, RuntimeInformation,
+//!         Page,
+//!         Charset,
+//!         LanguageTag,
+//!         LewpError,
+//!     },
+//!     std::rc::Rc,
+//! };
+//!
+//! // This is one of your modules the webpage is build with.
+//! struct HelloWorld {
+//!     config: ModuleConfig,
+//!     head_tags: Nodes,
+//!     data: String,
+//! }
+//!
+//! impl HelloWorld {
+//!     pub fn new() -> Self {
+//!         Self {
+//!             config: ModuleConfig::new(),
+//!             head_tags: vec![],
+//!             data: String::from("hello-world"),
+//!         }
+//!     }
+//! }
+//!
+//! // The [Module] trait is required for [lewp] to know it is a module. :-)
+//! impl Module for HelloWorld {
+//!     fn head_tags(&self) -> &Nodes {
+//!         &self.head_tags
+//!     }
+//!
+//!     fn id(&self) -> &str {
+//!         "hello-world"
+//!     }
+//!
+//!     fn config(&self) -> &ModuleConfig {
+//!         &self.config
+//!     }
+//!
+//!     fn run(
+//!         &mut self,
+//!         _runtime_info: Rc<RuntimeInformation>,
+//!     ) -> Result<(), LewpError> {
+//!         Ok(())
+//!     }
+//!
+//!     fn view(&self) -> Nodes {
+//!         vec![h1(vec![text(&self.data)])]
+//!     }
+//! }
+//!
+//! // This struct defines the actual page. The containing members are
+//! // required because they define the base on which [lewp] is working on.
+//! struct HelloWorldPage {
+//!     modules: Modules,
+//!     config: PageConfig,
+//! }
+//!
+//! impl HelloWorldPage {
+//!     /// Creates a new page.
+//!     pub fn new(config: PageConfig) -> Self {
+//!         Self {
+//!             modules: vec![],
+//!             config,
+//!         }
+//!     }
+//! }
+//!
+//! impl Page for HelloWorldPage {
+//!     fn modules(&self) -> &Modules {
+//!         &self.modules
+//!     }
+//!     fn modules_mut(&mut self) -> &mut Modules {
+//!         &mut self.modules
+//!     }
+//!
+//!     fn title(&self) -> &str {
+//!         "Hello World from lewp!"
+//!     }
+//!
+//!     fn description(&self) -> &str {
+//!         "My first page using lewp!"
+//!     }
+//!
+//!     fn language(&self) -> LanguageTag {
+//!         LanguageTag::parse("de-DE").unwrap()
+//!     }
+//!
+//!     fn charset(&self) -> Charset {
+//!         Charset::Utf8
+//!     }
+//!
+//!     fn config(&self) -> &PageConfig {
+//!         &self.config
+//!     }
+//!
+//!     fn run(&mut self) {
+//!         self.add_module(HelloWorld::new().into_module_ptr());
+//!     }
+//! }
+//!
+//! fn main() {
+//!     let mut page = HelloWorldPage::new(PageConfig::new());
+//!     println!("{}", page.build());
+//! }
+//! ```
 
 pub use {
     charsets::Charset,
