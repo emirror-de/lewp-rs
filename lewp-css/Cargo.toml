@@ -4,7 +4,7 @@
 
 [package]
 name = "lewp-css"
-description = "Forked and continued version of css. Domain model for CSS Stylesheets. Allowing effective minification and transformations such as autoprefixing and removal by other crates. Updated and maintained version for lewp."
+description = "Domain model for CSS Stylesheets. Allowing effective minification and transformations such as autoprefixing and removal by other crates. Updated and maintained version for lewp."
 keywords = ["css"]
 license = "MPL-2.0"
 authors = ["Lewin Probst <info@emirror.de>", "Raphael Cohn <raphael.cohn@stormmq.com>"]
