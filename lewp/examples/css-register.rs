@@ -5,7 +5,9 @@ use {
         dom::{NodeCreator, Nodes},
         module::{Module, Modules, RuntimeInformation},
         page::Page,
-        Charset, LanguageTag, LewpError,
+        Charset,
+        LanguageTag,
+        LewpError,
     },
     std::{rc::Rc, sync::Arc},
 };
@@ -48,7 +50,8 @@ impl Module for HelloWorld {
 
     fn view(&self) -> Nodes {
         let headline = NodeCreator::headline(1, &self.data, vec![]);
-        vec![headline]
+        let br = NodeCreator::element("br", vec![]);
+        vec![headline, br]
     }
 }
 
