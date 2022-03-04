@@ -15,7 +15,7 @@ categories = ["web-programming"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rcdom = { version = "0.1", package = "markup5ever_rcdom", path = "../../html5ever/rcdom" }
-html5ever = { version = "0.25", path = "../../html5ever/html5ever" }
+rcdom = { version = "0.1", package = "markup5ever_rcdom" }
+html5ever = { version = "0.25" }
 langtag = "0.2"
 log = "0.4"
