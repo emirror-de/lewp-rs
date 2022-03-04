@@ -17,7 +17,7 @@ It also adds the following crates as dependencies:
 * Introduced the lewp file hierarchy, see the `fh` module for more information
 * A module wrapper now has the attribute `data-lewp-component` set to `module` instead of a `lewp-module` class attribute
 * The `Component` trait has been added to the file hierarchy. It is now possible to have custom components that deliver content to the website.
-* The `CSS` component has been added. It is now possible to store CSS files in the module folder of the file hierarchy. The files are parsed using the `css-next` crate.
+* The `CSS` component has been added. It is now possible to store CSS files in the module folder of the file hierarchy. The files are parsed using the `lewp-css` crate.
 * Only CSS files that are stored directly in the according folder are being used. There is intentionally no recursive processing to make sure the components stay small and maintainable.
 * CSS files are now isolated. Every selector of the parsed CSS stylesheet gets the module id added. Therefore modules cannot interfere each others styles any longer.
 * The new dependency `lewp_html` adds a clean API for creating the DOM.
