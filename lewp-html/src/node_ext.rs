@@ -89,4 +89,107 @@ where
         }
         false
     }
+
+    /// Adds `value` to the `class` attribute. Adds the `class` attribute if
+    /// it is not present.
+    fn add_class(&self, class_value: &str) {
+        let attribute_index = self.find_attribute("class");
+        let attrs = match self.data() {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        match attribute_index {
+            None => {
+                attrs.push(Attribute {
+                    name: QualName::new(None, ns!(), LocalName::from("class")),
+                    value: Tendril::from(class_value),
+                });
+            }
+            Some(index) => {
+                let value = String::from(attrs[index].value.clone());
+                let mut value = value.split(' ').collect::<Vec<_>>();
+                if value.contains(&class_value) {
+                    return;
+                }
+                value.push(class_value);
+                attrs[index].value = Tendril::from(value.join(" "));
+            }
+        };
+    }
+
+    /// Removes the given `value` from the `class` attribute.
+    fn remove_class(&self, class_value: &str) {
+        let attribute_index = self.find_attribute("class");
+        let attrs = match self.data() {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        if let Some(index) = attribute_index {
+            let value = String::from(attrs[index].value.clone());
+            let mut value = value.split(' ').collect::<Vec<_>>();
+            value.retain(|x| x != &class_value);
+            attrs[index].value = Tendril::from(value.join(" "));
+        };
+    }
+
+    /// True if `value` is available in `class` attribute.
+    fn has_class(&self, class_value: &str) -> bool {
+        let attribute_index = self.find_attribute("class");
+        let attrs = match self.data() {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return false,
+        };
+        let attrs = attrs.borrow();
+        match attribute_index {
+            None => false,
+            Some(index) => {
+                attrs[index].value.split(' ').any(|x| x == class_value)
+            }
+        }
+    }
+
+    /// Toggles the given `value` of the `class` attribute. Creates the class
+    /// attribute if not set yet.
+    fn toggle_class(&self, class_value: &str) {
+        let attribute_index = self.find_attribute("class");
+        let attrs = match self.data() {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        match attribute_index {
+            None => {
+                attrs.push(Attribute {
+                    name: QualName::new(None, ns!(), LocalName::from("class")),
+                    value: Tendril::from(class_value),
+                });
+            }
+            Some(index) => {
+                let value = String::from(attrs[index].value.clone());
+                let mut value = value.split(' ').collect::<Vec<_>>();
+                if value.contains(&class_value) {
+                    return;
+                }
+                value.push(class_value);
+                attrs[index].value = Tendril::from(value.join(" "));
+            }
+        };
+    }
+
+    /// Removes the attribute with the given `name`. Does nothing
+    /// if the attribute does not exist. This method does not compare its
+    /// values.
+    fn remove_attribute(&self, name: &str) {
+        let attribute_index = self.find_attribute(name);
+        let attrs = match self.data() {
+            NodeData::Element { attrs, .. } => attrs,
+            _ => return,
+        };
+        let mut attrs = attrs.borrow_mut();
+        if let Some(index) = attribute_index {
+            attrs.remove(index);
+        };
+    }
 }
