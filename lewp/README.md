@@ -13,10 +13,10 @@ If you have questions, want to contribute or have any other type of request, you
 ## 📦 Features
 
 - [x] Build your HTML website fully from Rust source
-- [x] No additional fancy markup or language
+- [x] No additional fancy markup or language, just a clean API
 - [x] Never touch confusing templates again
 - [x] Always serve correct, minimized HTML5
-- [x] Develop your Website as fully isolated modules, in HTML, CSS and JavaScript
+- [x] Develop your Website as fully isolated modules
 
 ## 🚌 Roadmap
 
@@ -35,9 +35,10 @@ If you have questions, want to contribute or have any other type of request, you
   - [x] Combining files is implemented
   - [x] Minimization of CSS is implemented
   - [x] Modules without CSS are skipped
-  - [ ] CSS links are automatically inserted into the HTML `<head>` tag if files are available
+  - [x] CSS links are automatically inserted into the HTML `<head>` tag if files are available
+  - [ ] 
   - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
-  - [ ] A CSS register is implemented that can be used as shared global querying instance for CSS files
+  - [x] A CSS register is implemented that can be used as shared global querying instance for CSS files
 - [x] Modules are isolated (HTML, CSS)
 - [ ] Page specific CSS is possible
 - [ ] JavaScript integration

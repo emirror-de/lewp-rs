@@ -4,6 +4,14 @@
 
 This release brings several new features.
 
+It also adds the following crates as dependencies:
+
+* `lewp-selectors`, a forked version of the `selectors` crate
+
+* `lewp-css`, continued `css` crate
+
+* `lewp-html`
+
 ### 📦 New features
 
 * Introduced the lewp file hierarchy, see the `fh` module for more information
@@ -12,6 +20,7 @@ This release brings several new features.
 * The `CSS` component has been added. It is now possible to store CSS files in the module folder of the file hierarchy. The files are parsed using the `css-next` crate.
 * Only CSS files that are stored directly in the according folder are being used. There is intentionally no recursive processing to make sure the components stay small and maintainable.
 * CSS files are now isolated. Every selector of the parsed CSS stylesheet gets the module id added. Therefore modules cannot interfere each others styles any longer.
+* The new dependency `lewp_html` adds a clean API for creating the DOM.
 
 ### 🐛 Bugfixes
 
