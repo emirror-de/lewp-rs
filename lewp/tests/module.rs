@@ -2,8 +2,9 @@ use {
     lewp::{
         config::ModuleConfig,
         html::{api::*, Nodes},
-        module::{Module, RuntimeInformation},
         LewpError,
+        Module,
+        RuntimeInformation,
     },
     std::rc::Rc,
 };

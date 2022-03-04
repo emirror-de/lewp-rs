@@ -1,19 +1,15 @@
-use lewp::{
-    config::PageConfig,
-    module::{Module, Modules},
-    page::Page,
-    Charset,
-    LanguageTag,
-};
+use lewp::{config::PageConfig, Charset, LanguageTag, Module, Modules, Page};
 
 mod modules {
     use {
         lewp::{
             config::ModuleConfig,
             html::{api::*, Nodes},
-            module::{Module, Modules, RuntimeInformation},
-            submodule::SubModule,
             LewpError,
+            Module,
+            Modules,
+            RuntimeInformation,
+            SubModule,
         },
         std::rc::Rc,
     };

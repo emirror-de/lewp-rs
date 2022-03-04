@@ -5,11 +5,13 @@ use {
             api::{h1, text},
             Nodes,
         },
-        module::{Module, Modules, RuntimeInformation},
-        page::Page,
         Charset,
         LanguageTag,
         LewpError,
+        Module,
+        Modules,
+        Page,
+        RuntimeInformation,
     },
     std::rc::Rc,
 };
@@ -99,13 +101,11 @@ impl Page for HelloWorldPage {
     }
 
     fn run(&mut self) {
-        let module = HelloWorld::new();
-        self.add_module(module.into_module_ptr());
+        self.add_module(HelloWorld::new().into_module_ptr());
     }
 }
 
 fn main() {
     let mut page = HelloWorldPage::new(PageConfig::new());
-    let dom = page.build();
-    println!("{}", dom);
+    println!("{}", page.build());
 }

@@ -2,11 +2,13 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         html::{api::*, Nodes},
-        module::{Module, Modules, RuntimeInformation},
-        page::Page,
         Charset,
         LanguageTag,
         LewpError,
+        Module,
+        Modules,
+        Page,
+        RuntimeInformation,
     },
     std::rc::Rc,
 };

@@ -31,14 +31,20 @@ pub use {
     charsets::Charset,
     error::{LewpError, LewpErrorKind},
     langtag::LanguageTag,
-    lewp_html as html,
+    module::*,
     page::Page,
+    submodule::SubModule,
 };
+
+/// Re-export of the [lewp_html] crate.
+pub mod html {
+    pub use lewp_html::*;
+}
 
 pub mod config;
 pub mod css;
 mod error;
 pub mod fh;
-pub mod module;
-pub mod page;
-pub mod submodule;
+pub(crate) mod module;
+mod page;
+pub(crate) mod submodule;
