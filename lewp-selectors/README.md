@@ -1,7 +1,7 @@
 rust-selectors
 ==============
 
-*This is a forked version of [selectors](https://github.com/servo/servo), with adjustments to be used by lewp. It gets regularly syncronized with the original version. This version might get deprecated if all additions have be merged and published in the original repository.*
+*This is a forked version of [selectors](https://github.com/servo/servo), with adjustments required by lewp. It gets regularly syncronized with the original version. This version might get deprecated if all additions have be merged and published in the original repository.*
 
 * [![Build Status](https://travis-ci.com/servo/rust-selectors.svg?branch=master)](
   https://travis-ci.com/servo/rust-selectors)
