@@ -32,7 +32,24 @@ lewp generates a highly optimized HTML web page and provides automatic handling 
 
 ❗ ***lewp is not a webserver.*** It is a framework that supports you in structuring your algorithms bringing them perfectly in line with your view, without letting your code get messy! It perfectly integrates with frameworks like [rocket](https://rocket.rs) or [actix-web](https://actix.rs).
 
+## 🥅 Project goals
 
+1. ***Simplfying*** the creation of web pages ***without mixing programming languages*** or 
+   putting logic into your HTML (like it is done in templates)
+
+2. Creating ***modularized websites*** with ***truly isolated*** and ***reusable*** 
+   components/modules, eg. automatically ***namespaced CSS*** and ***JavaScript*** (not
+   implemented yet)
+
+3. Providing a** file hierarchy*** that is ***consistently throughout your project*** and can be ***shared*** between different projects
+
+4. Getting the*** best of both*** worlds, ***server*** side and ***client side*** rendering
+
+5. ***minimization*** of ***page loading*** times (especially FCP and TTI)
+
+6. ***Removing*** initial setup ***HTML boilerplate*** code creation by the developer (the base
+   skeleton with html, head and required meta, body tags are created by 
+   lewp)
 
 ## 📦 Features
 
