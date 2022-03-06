@@ -8,12 +8,50 @@ use {
 };
 
 /// Options for the Register.
-pub struct RegisterOptions {}
+pub struct RegisterOptions {
+    uri_path_prefix: String,
+    autoload: bool,
+}
 
 impl RegisterOptions {
-    /// Creates a new RegisterOptions instance.
+    /// Creates a [RegisterOptions] instance with `uri_path_prefix` set to `/resources/css` and
+    /// `autoload` to `true`.
     pub fn new() -> Self {
-        Self {}
+        Self {
+            uri_path_prefix: "/resources/css".to_string(),
+            autoload: true,
+        }
+    }
+
+    /// Returns the autoload value.
+    pub fn autoload(&self) -> bool {
+        self.autoload
+    }
+
+    /// Returns the uri_path_prefix value.
+    pub fn uri_path_prefix(&self) -> &str {
+        &self.uri_path_prefix
+    }
+
+    /// If set to true, the components will be loaded automatically on instantiation of the
+    /// register.
+    pub fn set_autoload(mut self, autoload: bool) -> Self {
+        self.autoload = autoload;
+        self
+    }
+
+    /// Sets the uri_path_prefix, usually the mountpoint of all CSS on the webserver.
+    ///
+    /// See [Self::new]
+    pub fn set_uri_path_prefix(mut self, prefix: &str) -> Self {
+        self.uri_path_prefix = prefix.to_string();
+        self
+    }
+}
+
+impl Default for RegisterOptions {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -30,12 +68,19 @@ pub struct Register {
 
 impl Register {
     /// Creates a new Register instance.
-    pub fn new(fh: FileHierarchy, options: RegisterOptions) -> Self {
-        Self {
+    pub fn new(
+        fh: FileHierarchy,
+        options: RegisterOptions,
+    ) -> Result<Self, LewpError> {
+        let mut register = Self {
             fh: Arc::new(fh),
             options,
             components: HashMap::new(),
+        };
+        if register.options.autoload() {
+            register.load_process_components()?
         }
+        Ok(register)
     }
 
     /// Queries the CSS of the given component using the given options.
@@ -92,7 +137,9 @@ impl Register {
 }
 
 impl Default for Register {
+    /// Creates a CssRegister with a default [FileHierarchy] and [RegisterOptions].
     fn default() -> Self {
-        Self::new(FileHierarchy::new(), RegisterOptions::new())
+        Self::new(FileHierarchy::default(), RegisterOptions::default())
+            .expect("Default CSS register instantiation should always work! If not, check your FileHierarchy setup first!")
     }
 }
