@@ -4,7 +4,7 @@ use {
         fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
         LewpError,
     },
-    std::{collections::HashMap, rc::Rc, sync::Arc},
+    std::{collections::HashMap, sync::Arc},
 };
 
 /// Options for the Register.
@@ -23,16 +23,16 @@ impl RegisterOptions {
 /// variable. It loads all components available in the given file hierarchy and
 /// keeps them in memory, as long as this instance is available.
 pub struct Register {
-    fh: Rc<FileHierarchy>,
+    fh: Arc<FileHierarchy>,
     options: RegisterOptions,
-    components: HashMap<Rc<ComponentInformation>, ProcessedComponent>,
+    components: HashMap<Arc<ComponentInformation>, ProcessedComponent>,
 }
 
 impl Register {
     /// Creates a new Register instance.
     pub fn new(fh: FileHierarchy, options: RegisterOptions) -> Self {
         Self {
-            fh: Rc::new(fh),
+            fh: Arc::new(fh),
             options,
             components: HashMap::new(),
         }
@@ -41,7 +41,7 @@ impl Register {
     /// Queries the CSS of the given component using the given options.
     pub fn query(
         &self,
-        component_information: Rc<ComponentInformation>,
+        component_information: Arc<ComponentInformation>,
         entity: Entireness,
     ) -> Option<Arc<String>> {
         let ref_css = self.components.get(&component_information)?;
@@ -59,7 +59,7 @@ impl Register {
             .fh
             .collect_component_ids(ComponentType::Css, Level::Module)?;
         for id in module_ids {
-            let component_information = Rc::new(ComponentInformation {
+            let component_information = Arc::new(ComponentInformation {
                 id: id.clone(),
                 level: Level::Module,
                 kind: ComponentType::Css,
@@ -77,7 +77,7 @@ impl Register {
             .fh
             .collect_component_ids(ComponentType::Css, Level::Page)?;
         for id in page_ids {
-            let component_information = Rc::new(ComponentInformation {
+            let component_information = Arc::new(ComponentInformation {
                 id: id.clone(),
                 level: Level::Page,
                 kind: ComponentType::Css,

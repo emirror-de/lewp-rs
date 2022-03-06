@@ -95,7 +95,7 @@ pub trait Page {
             // collect all CSS
             if let Some(r) = self.css_register() {
                 if let Some(css) = r.query(
-                    Rc::new(ComponentInformation {
+                    Arc::new(ComponentInformation {
                         id: module.id().to_string(),
                         level: Level::Module,
                         kind: ComponentType::Css,
@@ -149,7 +149,7 @@ pub trait Page {
     /// Executes all implemented functions and renders the page afterwards.
     fn build(&mut self) -> String {
         self.run();
-        let runtime_information = Rc::new(RuntimeInformation::new());
+        let runtime_information = Arc::new(RuntimeInformation::new());
         let mut modules_rendered_dom = vec![];
         // all modules
         for module in self.modules() {

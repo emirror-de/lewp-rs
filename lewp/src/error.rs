@@ -1,4 +1,4 @@
-use {crate::fh::ComponentInformation, std::rc::Rc};
+use {crate::fh::ComponentInformation, std::sync::Arc};
 
 /// List of error kinds that occur within lewp.
 #[derive(Debug)]
@@ -27,11 +27,11 @@ pub struct LewpError {
     /// The error message.
     pub message: String,
     /// The component where the error has been occurred.
-    pub source_component: Rc<ComponentInformation>,
+    pub source_component: Arc<ComponentInformation>,
 }
 
-impl From<Rc<ComponentInformation>> for LewpError {
-    fn from(meta: Rc<ComponentInformation>) -> Self {
+impl From<Arc<ComponentInformation>> for LewpError {
+    fn from(meta: Arc<ComponentInformation>) -> Self {
         Self {
             kind: LewpErrorKind::FileHierarchyComponent,
             message: String::from("Unspecified error occured!"),
@@ -45,7 +45,7 @@ impl LewpError {
     pub fn new(
         kind: LewpErrorKind,
         message: &str,
-        meta: Rc<ComponentInformation>,
+        meta: Arc<ComponentInformation>,
     ) -> Self {
         Self {
             kind,
@@ -55,7 +55,7 @@ impl LewpError {
     }
     /// Creates a [LewpError] instance with the given message.
     pub fn from_with_message(
-        meta: Rc<ComponentInformation>,
+        meta: Arc<ComponentInformation>,
         message: &str,
     ) -> Self {
         Self {

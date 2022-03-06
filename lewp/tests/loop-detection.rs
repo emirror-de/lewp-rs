@@ -11,7 +11,7 @@ mod modules {
             RuntimeInformation,
             SubModule,
         },
-        std::rc::Rc,
+        std::sync::Arc,
     };
 
     pub struct Header {
@@ -65,7 +65,7 @@ mod modules {
 
         fn run(
             &mut self,
-            runtime_information: Rc<RuntimeInformation>,
+            runtime_information: Arc<RuntimeInformation>,
         ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information)?;

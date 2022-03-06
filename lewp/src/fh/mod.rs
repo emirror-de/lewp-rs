@@ -4,7 +4,7 @@ use {
     crate::{LewpError, LewpErrorKind},
     std::{
         path::{Path, PathBuf},
-        rc::Rc,
+        sync::Arc,
     },
 };
 
@@ -159,13 +159,13 @@ impl FileHierarchy {
                     message: String::from(
                         "Error converting filepath to string!",
                     ),
-                    source_component: Rc::new(ComponentInformation::core(
+                    source_component: Arc::new(ComponentInformation::core(
                         "get_component_ids",
                     )),
                 })
             }
         };
-        log::trace!("filepath: {:#?}", filepath);
+        log::trace!("filepath: {:#?}", filepath.to_string());
         // glob it!
         let glob_paths = match glob::glob(&filepath) {
             Ok(paths) => paths,
@@ -173,7 +173,7 @@ impl FileHierarchy {
                 return Err(LewpError {
                     kind: LewpErrorKind::FileHierarchy,
                     message: format!("Error during glob call: {}", e),
-                    source_component: Rc::new(ComponentInformation::core(
+                    source_component: Arc::new(ComponentInformation::core(
                         "get_component_ids",
                     )),
                 })
@@ -218,7 +218,7 @@ impl FileHierarchy {
                             "Error during glob call: {}",
                             e.into_error()
                         ),
-                        source_component: Rc::new(ComponentInformation::core(
+                        source_component: Arc::new(ComponentInformation::core(
                             "get_component_ids",
                         )),
                     })
@@ -247,7 +247,7 @@ impl FileHierarchy {
                             "Could not extract file name from parent of PathBuf: {:#?}",
                             p
                         ),
-                        source_component: Rc::new(ComponentInformation::core(
+                        source_component: Arc::new(ComponentInformation::core(
                             "extract_component_ids_from_pathbuf",
                         )),
                     })
@@ -260,7 +260,7 @@ impl FileHierarchy {
                             "Could not extract parent from PathBuf: {:#?}",
                             p
                         ),
-                        source_component: Rc::new(ComponentInformation::core(
+                        source_component: Arc::new(ComponentInformation::core(
                             "extract_component_ids_from_pathbuf",
                         )),
                     })
@@ -275,7 +275,7 @@ impl FileHierarchy {
                         "Could not create String from OsStr: {:#?}",
                         os_str
                     ),
-                    source_component: Rc::new(ComponentInformation::core(
+                    source_component: Arc::new(ComponentInformation::core(
                         "extract_component_ids_from_pathbuf",
                     )),
                 })
@@ -309,7 +309,7 @@ impl FileHierarchy {
                     "Given input is not a folder: {}",
                     subfolder.display()
                 ),
-                source_component: Rc::new(ComponentInformation::core(
+                source_component: Arc::new(ComponentInformation::core(
                     "collect_foldernames",
                 )),
             });
@@ -322,7 +322,7 @@ impl FileHierarchy {
                     return Err(LewpError {
                         kind: LewpErrorKind::FileHierarchy,
                         message: msg.to_string(),
-                        source_component: Rc::new(ComponentInformation::core(
+                        source_component: Arc::new(ComponentInformation::core(
                             "collect_foldernames",
                         )),
                     });
@@ -357,17 +357,17 @@ mod tests {
             Level,
         },
         crate::LewpError,
-        std::rc::Rc,
+        std::sync::Arc,
     };
     struct Css {
         id: String,
-        fh: Rc<FileHierarchy>,
+        fh: Arc<FileHierarchy>,
     }
     impl Component for Css {
         type Content = ();
         type ContentParameter = ();
-        fn component_information(&self) -> Rc<ComponentInformation> {
-            Rc::new(ComponentInformation {
+        fn component_information(&self) -> Arc<ComponentInformation> {
+            Arc::new(ComponentInformation {
                 id: self.id.clone(),
                 level: Level::Module,
                 kind: ComponentType::Css,
@@ -379,18 +379,18 @@ mod tests {
         ) -> Result<Self::Content, LewpError> {
             Ok(())
         }
-        fn file_hierarchy(&self) -> Rc<FileHierarchy> {
+        fn file_hierarchy(&self) -> Arc<FileHierarchy> {
             self.fh.clone()
         }
     }
     struct Js {
-        fh: Rc<FileHierarchy>,
+        fh: Arc<FileHierarchy>,
     }
     impl Component for Js {
         type Content = ();
         type ContentParameter = ();
-        fn component_information(&self) -> Rc<ComponentInformation> {
-            Rc::new(ComponentInformation {
+        fn component_information(&self) -> Arc<ComponentInformation> {
+            Arc::new(ComponentInformation {
                 id: "hello-world".to_string(),
                 level: Level::Page,
                 kind: ComponentType::JavaScript,
@@ -402,14 +402,14 @@ mod tests {
         ) -> Result<Self::Content, LewpError> {
             Ok(())
         }
-        fn file_hierarchy(&self) -> Rc<FileHierarchy> {
+        fn file_hierarchy(&self) -> Arc<FileHierarchy> {
             self.fh.clone()
         }
     }
 
     #[test]
     fn folder_name_generation() {
-        let fh = Rc::new(FileHierarchy::new());
+        let fh = Arc::new(FileHierarchy::new());
         let css = Css {
             id: String::from("module-id"),
             fh: fh.clone(),
@@ -436,7 +436,7 @@ mod tests {
     #[test]
     fn collect_filenames() {
         use std::path::PathBuf;
-        let fh = Rc::new(
+        let fh = Arc::new(
             FileHierarchyBuilder::new()
                 .mountpoint(PathBuf::from("testfiles"))
                 .build(),
@@ -461,7 +461,7 @@ mod tests {
     #[test]
     fn collect_foldernames() {
         use std::path::PathBuf;
-        let fh = Rc::new(
+        let fh = Arc::new(
             FileHierarchyBuilder::new()
                 .mountpoint(PathBuf::from("testfiles"))
                 .build(),
@@ -484,7 +484,7 @@ mod tests {
     #[test]
     fn collect_component_ids() {
         use std::path::PathBuf;
-        let fh = Rc::new(
+        let fh = Arc::new(
             FileHierarchyBuilder::new()
                 .mountpoint(PathBuf::from("testfiles"))
                 .build(),

@@ -2,22 +2,26 @@ use {
     crate::{
         fh::{
             Component as FHComponent,
-            ComponentInformation as FHComponentInformation, FileHierarchy,
+            ComponentInformation as FHComponentInformation,
+            FileHierarchy,
             Level,
         },
-        LewpError, LewpErrorKind,
+        LewpError,
+        LewpErrorKind,
     },
     lewp_css::{
         cssparser::ToCss,
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},
             selectors::OurSelectorImpl,
-            CssRule, CssRules, StyleRule,
+            CssRule,
+            CssRules,
+            StyleRule,
         },
         Stylesheet,
     },
     selectors::parser::Selector,
-    std::{path::PathBuf, rc::Rc},
+    std::{path::PathBuf, sync::Arc},
 };
 
 /// Responsible for CSS that is stored for a given [FHComponent].
@@ -28,8 +32,8 @@ use {
 /// then the resulting stylesheet is *NOT* isolated as there is no reason for
 /// isolating a page wide CSS rule.
 pub struct Component {
-    fh: Rc<FileHierarchy>,
-    component_information: Rc<FHComponentInformation>,
+    fh: Arc<FileHierarchy>,
+    component_information: Arc<FHComponentInformation>,
 }
 
 impl FHComponent for Component {
@@ -37,7 +41,7 @@ impl FHComponent for Component {
     type Content = Stylesheet;
     type ContentParameter = ();
 
-    fn component_information(&self) -> Rc<FHComponentInformation> {
+    fn component_information(&self) -> Arc<FHComponentInformation> {
         self.component_information.clone()
     }
 
@@ -65,7 +69,7 @@ impl FHComponent for Component {
         Ok(stylesheet)
     }
 
-    fn file_hierarchy(&self) -> Rc<FileHierarchy> {
+    fn file_hierarchy(&self) -> Arc<FileHierarchy> {
         self.fh.clone()
     }
 }
@@ -73,8 +77,8 @@ impl FHComponent for Component {
 impl Component {
     /// Creates a new CSS component
     pub fn new(
-        component_information: Rc<FHComponentInformation>,
-        fh: Rc<FileHierarchy>,
+        component_information: Arc<FHComponentInformation>,
+        fh: Arc<FileHierarchy>,
     ) -> Self {
         Self {
             fh,

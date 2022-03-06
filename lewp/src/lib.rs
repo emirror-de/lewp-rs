@@ -37,7 +37,7 @@
 //!         LanguageTag,
 //!         LewpError,
 //!     },
-//!     std::rc::Rc,
+//!     std::sync::Arc,
 //! };
 //!
 //! // This is one of your modules the webpage is build with.
@@ -73,7 +73,7 @@
 //!
 //!     fn run(
 //!         &mut self,
-//!         _runtime_info: Rc<RuntimeInformation>,
+//!         _runtime_info: Arc<RuntimeInformation>,
 //!     ) -> Result<(), LewpError> {
 //!         Ok(())
 //!     }

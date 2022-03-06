@@ -11,7 +11,7 @@ mod modules {
             SubModule,
         },
         lewp_html::{api::*, Nodes},
-        std::rc::Rc,
+        std::sync::Arc,
     };
 
     pub struct Header {
@@ -53,7 +53,7 @@ mod modules {
 
         fn run(
             &mut self,
-            runtime_information: Rc<RuntimeInformation>,
+            runtime_information: Arc<RuntimeInformation>,
         ) -> Result<(), LewpError> {
             // See Runtime trait in submodule for more run methods
             self.run_submodules(runtime_information)?;
@@ -116,7 +116,7 @@ mod modules {
 
         fn run(
             &mut self,
-            runtime_information: Rc<RuntimeInformation>,
+            runtime_information: Arc<RuntimeInformation>,
         ) -> Result<(), LewpError> {
             use rand::Rng;
             let mut rng = rand::thread_rng();

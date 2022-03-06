@@ -1,15 +1,21 @@
 use {
     crate::{
         css::{
-            Component, Entireness, ProcessedComponent, Register,
+            Component,
+            Entireness,
+            ProcessedComponent,
+            Register,
             RegisterOptions,
         },
         fh::{
-            self, Component as FHComponent, ComponentInformation,
-            ComponentType, Level,
+            self,
+            Component as FHComponent,
+            ComponentInformation,
+            ComponentType,
+            Level,
         },
     },
-    std::rc::Rc,
+    std::sync::Arc,
 };
 
 #[test]
@@ -29,12 +35,12 @@ fn css_components_and_register() {
             .sort(),
         vec!["sitemap"].sort()
     );
-    let component_information = Rc::new(ComponentInformation {
+    let component_information = Arc::new(ComponentInformation {
         id: "sitemap".to_string(),
         level: Level::Page,
         kind: ComponentType::Css,
     });
-    let c = Component::new(component_information.clone(), Rc::new(fh));
+    let c = Component::new(component_information.clone(), Arc::new(fh));
     let parsed_component = ProcessedComponent::from(&c).unwrap();
     println!(
         "Parsed render critical: {:#?}",
@@ -44,8 +50,7 @@ fn css_components_and_register() {
     let fh = fh::FileHierarchyBuilder::new()
         .mountpoint(std::path::PathBuf::from("./testfiles"))
         .build();
-    let mut r = Register::new(fh, RegisterOptions {});
-    r.load_process_components().unwrap();
+    let r = Register::new(fh, RegisterOptions::default()).unwrap();
     let css = r
         .query(component_information.clone(), Entireness::Full)
         .unwrap();
@@ -78,12 +83,12 @@ fn isolate_css_module() {
     };
 
     let css = Component::new(
-        Rc::new(ComponentInformation {
+        Arc::new(ComponentInformation {
             id: String::from("hello-world"),
             level: Level::Module,
             kind: ComponentType::Css,
         }),
-        Rc::new(fh),
+        Arc::new(fh),
     );
     let stylesheet = match css.content(()) {
         Ok(c) => c,

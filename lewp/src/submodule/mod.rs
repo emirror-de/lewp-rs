@@ -7,7 +7,7 @@ use {
         LewpErrorKind,
     },
     lewp_html::Nodes,
-    std::rc::Rc,
+    std::sync::Arc,
 };
 
 /// Enables management of submodules.
@@ -118,7 +118,7 @@ pub trait SubModule: Module {
     /// Runs all submodules in order as they are returned in [Self::submodules].
     fn run_submodules(
         &mut self,
-        runtime_information: Rc<RuntimeInformation>,
+        runtime_information: Arc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         for module in self.submodules() {
             let mut module = module.borrow_mut();
@@ -148,7 +148,7 @@ pub trait SubModule: Module {
                 });
             }
         };
-        module.run(Rc::new(RuntimeInformation::new()))?;
+        module.run(Arc::new(RuntimeInformation::new()))?;
         Ok(())
     }
 
@@ -163,7 +163,7 @@ pub trait SubModule: Module {
             if module.id() != id {
                 continue;
             }
-            module.run(Rc::new(RuntimeInformation::new()))?;
+            module.run(Arc::new(RuntimeInformation::new()))?;
             return Ok(());
         }
         Err(LewpError {
@@ -185,14 +185,14 @@ pub trait SubModule: Module {
             if module.id() != id {
                 continue;
             }
-            module.run(Rc::new(RuntimeInformation::new()))?;
+            module.run(Arc::new(RuntimeInformation::new()))?;
         }
         Ok(())
     }
 
     /// Returns the meta information for this submodule.
-    fn component_information(&self) -> Rc<ComponentInformation> {
-        Rc::new(ComponentInformation {
+    fn component_information(&self) -> Arc<ComponentInformation> {
+        Arc::new(ComponentInformation {
             id: self.id().to_string(),
             level: Level::Module,
             kind: ComponentType::Module,

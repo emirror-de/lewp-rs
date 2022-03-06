@@ -2,7 +2,7 @@ use {
     super::{ModulePtr, RuntimeInformation},
     crate::{config::ModuleConfig, LewpError},
     lewp_html::{api::div, NodeExt, Nodes},
-    std::{cell::RefCell, rc::Rc},
+    std::{cell::RefCell, rc::Rc, sync::Arc},
 };
 
 /// Defines a web page module.
@@ -46,6 +46,6 @@ pub trait Module {
     /// data required for rendering.
     fn run(
         &mut self,
-        runtime_info: Rc<RuntimeInformation>,
+        runtime_info: Arc<RuntimeInformation>,
     ) -> Result<(), LewpError>;
 }

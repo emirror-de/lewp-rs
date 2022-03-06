@@ -4,7 +4,7 @@ use {
         fh::{FileHierarchy, Level},
         LewpError,
     },
-    std::rc::Rc,
+    std::sync::Arc,
 };
 
 /// A lewp component. Anything inside the file hierarchy is a component (Files, Folders, Modules,
@@ -17,9 +17,9 @@ pub trait Component {
 
     /// Returns the ComponentInformation instance. Required eg. for passing information to
     /// LewpError.
-    fn component_information(&self) -> Rc<ComponentInformation>;
+    fn component_information(&self) -> Arc<ComponentInformation>;
     /// Returns a reference to the file hierarchy instance attached to this component.
-    fn file_hierarchy(&self) -> Rc<FileHierarchy>;
+    fn file_hierarchy(&self) -> Arc<FileHierarchy>;
     /// Implementation of acquiring the content for this type of component.
     fn content(
         &self,

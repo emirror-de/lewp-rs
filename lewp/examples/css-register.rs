@@ -11,7 +11,7 @@ use {
         Page,
         RuntimeInformation,
     },
-    std::{rc::Rc, sync::Arc},
+    std::sync::Arc,
 };
 
 struct HelloWorld {
@@ -45,7 +45,7 @@ impl Module for HelloWorld {
 
     fn run(
         &mut self,
-        _runtime_info: Rc<RuntimeInformation>,
+        _runtime_info: Arc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
@@ -104,8 +104,8 @@ fn main() {
         .mountpoint(std::path::PathBuf::from("./lewp/testfiles"))
         .build();
 
-    let mut css_register = CssRegister::new(fh, RegisterOptions::new());
-    css_register.load_process_components().unwrap();
+    let mut css_register =
+        CssRegister::new(fh, RegisterOptions::default()).unwrap();
     let css_register = Arc::new(css_register);
 
     let mut page = HelloWorldPage {
