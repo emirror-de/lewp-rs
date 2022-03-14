@@ -85,12 +85,7 @@ pub trait Page {
         for module in self.modules() {
             let module = module.borrow();
             // add all head tags for module first
-            let mut module_head_tags = module
-                .head_tags()
-                .iter()
-                .map(|tag| tag.clone())
-                .collect::<Vec<Node>>();
-            head_children.append(&mut module_head_tags);
+            head_children.append(&mut module.head_tags().clone());
 
             // collect all CSS
             if let Some(r) = self.css_register() {
