@@ -5,12 +5,12 @@ use {
         config::PageConfig,
         css::{Entireness, Register as CssRegister},
         fh::{ComponentInformation, ComponentType, Level},
+        html::{api::*, Document, Node, Nodes},
         module::{ModulePtr, Modules, RuntimeInformation},
         Charset,
         LanguageTag,
     },
     html5ever::{serialize, serialize::SerializeOpts},
-    lewp_html::{api::*, Document, Node, Nodes},
     markup5ever_rcdom::SerializableHandle,
     std::{rc::Rc, sync::Arc},
 };
@@ -30,6 +30,11 @@ pub trait Page {
     /// Adds the module to the page. The page is rendered FIFO.
     fn add_module(&mut self, module: ModulePtr) {
         self.modules_mut().push(module);
+    }
+
+    /// Borrows the head tags that are specific for this page.
+    fn head_tags(&self) -> &Option<Nodes> {
+        &None
     }
 
     /// Title of the page. Will land in the `title` tag.
@@ -78,6 +83,12 @@ pub trait Page {
         if self.config().viewport_tag {
             head_children.push(viewport())
         }
+
+        // add all page specific head tags
+        match self.head_tags() {
+            Some(h) => head_children.append(&mut h.clone()),
+            None => (),
+        };
 
         // collector vec for all inline css styles
         let mut inline_css = vec![];
