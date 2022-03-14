@@ -2,16 +2,16 @@
 
 /// Various config values for adjusting the modules behavior.
 pub struct ModuleConfig {
-    /// If true, the module gets rendered without a wrapping `<div>` tag.
-    pub skip_wrapper: bool,
+    /// If true, the module gets wrapped by a `<div>` tag.
+    ///
+    /// **Default value:** false.
+    pub wrapper: bool,
 }
 
 impl ModuleConfig {
     /// Creates a new instance with default values.
     pub fn new() -> Self {
-        Self {
-            skip_wrapper: false,
-        }
+        Self { wrapper: false }
     }
 }
 

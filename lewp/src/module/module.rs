@@ -33,13 +33,21 @@ pub trait Module {
 
     /// Renders as DOM nodes.
     fn render(&self) -> Nodes {
-        if self.config().skip_wrapper {
-            return self.view();
-        }
-        vec![div(self.view()).attrs(vec![
-            ("class", self.id()),
-            ("data-lewp-component", "module"),
-        ])]
+        let view = if self.config().wrapper {
+            vec![div(self.view())]
+        } else {
+            self.view()
+        };
+        match view.first() {
+            Some(f) => {
+                f.borrow_attrs(vec![
+                    ("class", self.id()),
+                    ("data-lewp-component", "module"),
+                ]);
+            }
+            None => (),
+        };
+        view
     }
 
     /// Executes the module. Main function that is able to collect and modify
