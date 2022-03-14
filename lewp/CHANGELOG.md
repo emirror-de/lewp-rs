@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.4.0
+
+### 📦 New features
+
+* *(html)* Added `borrow_attr` and `borrow_attrs` to `NodeExt` that are not self consuming compared to their `attr` and `attrs` equivalents
+
+### 📈 Changes
+
+### 🐛 Bugfixes
+
+### 🔨 Breaking changes
+
 ## v0.3.0
 
 This release brings several new features.
