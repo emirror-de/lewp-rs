@@ -8,9 +8,13 @@
 
 ### 📈 Changes
 
+* *(lewp)* The module `div` wrapper is now disabled by default.
+
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes
+
+* *(lewp)* Renamed `skip_wrapper` to `wrapper` in `ModuleConfig`
 
 ## v0.3.0
 
