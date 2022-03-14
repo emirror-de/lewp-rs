@@ -96,6 +96,20 @@ pub trait Page {
         // collector vec for all inline css styles
         let mut inline_css = vec![];
 
+        // add page css
+        if let Some(r) = self.css_register() {
+            if let Some(css) = r.query(
+                Arc::new(ComponentInformation {
+                    id: self.id().to_string(),
+                    level: Level::Page,
+                    kind: ComponentType::Css,
+                }),
+                Entireness::Full,
+            ) {
+                inline_css.push(css.clone());
+            }
+        }
+
         for module in self.modules() {
             let module = module.borrow();
             // add all head tags for module first

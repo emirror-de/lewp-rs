@@ -7,6 +7,7 @@
 * *(html)* Added `borrow_attr` and `borrow_attrs` to `NodeExt` that are not self consuming compared to their `attr` and `attrs` equivalents
 * *(lewp)* Pages now can have head tags. The `head_tags` method has been added to the `Page` trait
 * *(lewp)* Pages now need to have method `id(&self) -> &str` implemented to identify resources that are used by that page
+* *(lewp)* Page CSS files are now added as inline style using the `css::Register`
 
 ### 📈 Changes
 
