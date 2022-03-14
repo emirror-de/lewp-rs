@@ -52,6 +52,22 @@ where
         }
         self
     }
+    /// Adds an Attribute with given name and value to the node without consuming self.
+    ///
+    /// If the attribute is already present, it will be overridden.
+    fn borrow_attr(&self, name: &str, value: &str) {
+        {
+            let attrs = match &self.data() {
+                NodeData::Element { attrs, .. } => attrs,
+                _ => return,
+            };
+            let mut attrs = attrs.borrow_mut();
+            attrs.push(Attribute {
+                name: QualName::new(None, ns!(), LocalName::from(name)),
+                value: Tendril::from(value),
+            });
+        }
+    }
     /// Adds a list of attributes to the node.
     ///
     /// The attributes are tuples of name and value. Attributes that are already
@@ -61,6 +77,15 @@ where
             self = self.attr(attr.0, attr.1);
         }
         self
+    }
+    /// Adds a list of attributes to the node without consuming self.
+    ///
+    /// The attributes are tuples of name and value. Attributes that are already
+    /// set are being overridden.
+    fn borrow_attrs(&self, attributes: Vec<(&str, &str)>) {
+        for attr in attributes {
+            self.borrow_attr(attr.0, attr.1);
+        }
     }
     /// Returns the attribute index if present.
     fn find_attribute(&self, attribute_name: &str) -> Option<usize> {
