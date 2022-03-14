@@ -41,9 +41,9 @@ lewp generates a highly optimized HTML web page and provides automatic handling 
    components/modules, eg. automatically ***namespaced CSS*** and ***JavaScript*** (not
    implemented yet)
 
-3. Providing a** file hierarchy*** that is ***consistently throughout your project*** and can be ***shared*** between different projects
+3. Providing a ***file hierarchy*** that is ***consistently throughout your project*** and can be ***shared*** between different projects
 
-4. Getting the*** best of both*** worlds, ***server*** side and ***client side*** rendering
+4. Getting the ***best of both*** worlds, ***server*** side and ***client side*** rendering
 
 5. ***minimization*** of ***page loading*** times (especially FCP and TTI)
 
