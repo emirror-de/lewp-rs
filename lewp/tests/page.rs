@@ -101,11 +101,12 @@ impl Page for HelloWorldPage {
 }
 
 const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><div class=\"hello-world\" data-lewp-component=\"module\"><h1>hello-world</h1></div></body></html>";
-const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1>hello-world</h1></body></html>";
+const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1 class=\"hello-world\" data-lewp-component=\"module\">hello-world</h1></body></html>";
 
 #[test]
 fn hello_world_with_module_wrapper() {
-    let module = HelloWorld::new();
+    let module_config = ModuleConfig { wrapper: true };
+    let module = HelloWorld::from(module_config);
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),
@@ -117,8 +118,7 @@ fn hello_world_with_module_wrapper() {
 
 #[test]
 fn hello_world_skipped_wrapper() {
-    let module_config = ModuleConfig { skip_wrapper: true };
-    let module = HelloWorld::from(module_config);
+    let module = HelloWorld::new();
     let mut page = HelloWorldPage {
         modules: vec![],
         config: PageConfig::new(),

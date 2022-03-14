@@ -157,7 +157,7 @@ impl Page for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><div class=\"header\" data-lewp-component=\"module\"><h1>hello-world</h1><div class=\"random-headline\" data-lewp-component=\"module\"><h2>Changed during run!</h2></div></div></body></html>";
+const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1 class=\"header\" data-lewp-component=\"module\">hello-world</h1><h2 class=\"random-headline\" data-lewp-component=\"module\">Changed during run!</h2></body></html>";
 
 #[test]
 fn submodule() {

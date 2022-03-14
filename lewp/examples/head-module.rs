@@ -19,7 +19,7 @@ struct HeadOnly {
 impl HeadOnly {
     pub fn new() -> Self {
         let mut config = ModuleConfig::new();
-        config.skip_wrapper = true;
+        config.wrapper = true;
         Self {
             config,
             head_tags: Self::create_head_tags(),
