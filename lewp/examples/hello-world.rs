@@ -73,6 +73,10 @@ impl HelloWorldPage {
 }
 
 impl Page for HelloWorldPage {
+    fn id(&self) -> &str {
+        "helloworldpage"
+    }
+
     fn modules(&self) -> &Modules {
         &self.modules
     }

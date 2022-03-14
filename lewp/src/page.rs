@@ -32,6 +32,9 @@ pub trait Page {
         self.modules_mut().push(module);
     }
 
+    /// Unique page id.
+    fn id(&self) -> &str;
+
     /// Borrows the head tags that are specific for this page.
     fn head_tags(&self) -> &Option<Nodes> {
         &None
