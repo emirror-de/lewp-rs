@@ -62,8 +62,6 @@ api_children_only! {
     address, "address"
     /// [p](https://html.spec.whatwg.org/dev/grouping-content.html#the-p-element)
     p, "p"
-    /// [hr](https://html.spec.whatwg.org/dev/grouping-content.html#the-hr-element)
-    hr, "hr"
     /// [pre](https://html.spec.whatwg.org/dev/grouping-content.html#the-pre-element)
     pre, "pre"
     /// [blockquote](https://html.spec.whatwg.org/dev/grouping-content.html#the-blockquote-element)
@@ -310,6 +308,11 @@ pub fn meta() -> Node {
 /// Creates a [br](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-br-element) element.
 pub fn br() -> Node {
     new_element("br", vec![])
+}
+
+/// Creates a [hr](https://html.spec.whatwg.org/dev/grouping-content.html#the-hr-element) element.
+pub fn hr() -> Node {
+    new_element("hr", vec![])
 }
 
 /// Creates a [style](https://html.spec.whatwg.org/dev/semantics.html#the-style-element) element.

@@ -13,6 +13,7 @@
 ### 🔨 Breaking changes
 
 - Changed input parameter of `img` tag method, now receiving `src: Path`, `title: &str` and `alt: &str` as required arguments.
+- `hr` method does not take any arguments any longer.
 
 ## v0.1.0
 
