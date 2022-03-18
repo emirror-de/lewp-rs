@@ -3,7 +3,7 @@ use {
     html5ever::{namespace_url, ns, tendril::Tendril, LocalName, QualName},
     langtag::LanguageTag,
     rcdom::NodeData,
-    std::cell::RefCell,
+    std::{cell::RefCell, path::Path},
 };
 
 /// Defines an element that only takes children as input variable.
@@ -332,8 +332,12 @@ pub fn data(value: &str, children: Nodes) -> Node {
 }
 
 /// Creates an [img](https://html.spec.whatwg.org/dev/embedded-content.html#the-img-element) element.
-pub fn img(src: &str, children: Nodes) -> Node {
-    new_element("img", children).attr("src", src)
+pub fn img(src: &Path, title: &str, alt: &str) -> Node {
+    new_element("img", vec![]).attrs(vec![
+        ("src", &format!("{}", src.display())),
+        ("alt", alt),
+        ("title", title),
+    ])
 }
 
 /// Creates an [param](https://html.spec.whatwg.org/dev/iframe-embed-object.html#the-param-element) element.
