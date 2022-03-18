@@ -10,8 +10,8 @@ pub enum ComponentType {
     /// A module.
     Module,
     /// A custom defined component. The String attached is also used as folder
-    /// name, therefore all whitespaces are replaced by hyphens and everything
-    /// is converted to lowercase.
+    /// name, therefore all whitespaces are replaced by hyphens, all dots and
+    /// slashes are removed and everything is converted to lowercase.
     Plugin(String),
 }
 
@@ -32,7 +32,11 @@ impl ComponentType {
             Css => String::from("css"),
             JavaScript => String::from("js"),
             Module => String::from("module"),
-            Plugin(s) => s.replace(" ", "-").to_lowercase(),
+            Plugin(s) => s
+                .replace(" ", "-")
+                .replace(".", "")
+                .replace("/", "")
+                .to_lowercase(),
         }
     }
 }
