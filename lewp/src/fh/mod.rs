@@ -14,7 +14,7 @@ mod level;
 
 pub use {
     builder::FileHierarchyBuilder,
-    component::{Component, ComponentInformation, ComponentType},
+    component::{Component, ComponentInformation, ComponentType, ResourceType},
     level::Level,
 };
 

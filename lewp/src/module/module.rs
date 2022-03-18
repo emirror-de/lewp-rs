@@ -215,7 +215,11 @@ pub trait Module {
     /// Parameters:
     ///
     /// **idx**: The index of the module in [Self::submodules].
-    fn run_submodule(&mut self, idx: usize) -> Result<(), LewpError> {
+    fn run_submodule(
+        &mut self,
+        idx: usize,
+        runtime_information: Arc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         let submodules = match self.submodules() {
             None => return Ok(()),
             Some(modules) => modules,
@@ -233,7 +237,7 @@ pub trait Module {
                 });
             }
         };
-        module.run(Arc::new(RuntimeInformation::new()))?;
+        module.run(runtime_information.clone())?;
         Ok(())
     }
 
@@ -242,7 +246,11 @@ pub trait Module {
     /// Parameters:
     ///
     /// **id**: The unique identifier of the module.
-    fn run_submodule_id(&mut self, id: &str) -> Result<(), LewpError> {
+    fn run_submodule_id(
+        &mut self,
+        id: &str,
+        runtime_information: Arc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         let modules = match self.submodules() {
             None => return Ok(()),
             Some(modules) => modules,
@@ -252,7 +260,7 @@ pub trait Module {
             if module.id() != id {
                 continue;
             }
-            module.run(Arc::new(RuntimeInformation::new()))?;
+            module.run(runtime_information.clone())?;
             return Ok(());
         }
         Err(LewpError {
@@ -268,7 +276,11 @@ pub trait Module {
     /// Parameters:
     ///
     /// **id**: The unique identifier of the modules to be run.
-    fn run_submodule_id_all(&mut self, id: &str) -> Result<(), LewpError> {
+    fn run_submodule_id_all(
+        &mut self,
+        id: &str,
+        runtime_information: Arc<RuntimeInformation>,
+    ) -> Result<(), LewpError> {
         let modules = match self.submodules() {
             None => return Ok(()),
             Some(modules) => modules,
@@ -278,7 +290,7 @@ pub trait Module {
             if module.id() != id {
                 continue;
             }
-            module.run(Arc::new(RuntimeInformation::new()))?;
+            module.run(runtime_information.clone())?;
         }
         Ok(())
     }

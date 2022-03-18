@@ -1,3 +1,5 @@
+use super::ResourceType;
+
 /// Possible component types of the file hierarchy.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ComponentType {
@@ -9,6 +11,8 @@ pub enum ComponentType {
     JavaScript,
     /// A module.
     Module,
+    /// Resources that are stored in the file hierarchy.
+    Resource(ResourceType),
     /// A custom defined component. The String attached is also used as folder
     /// name, therefore all whitespaces are replaced by hyphens, all dots and
     /// slashes are removed and everything is converted to lowercase.
@@ -21,6 +25,9 @@ impl ComponentType {
         match self {
             Self::Css => Some(String::from("css")),
             Self::JavaScript => Some(String::from("js")),
+            Self::Resource(t) => match t {
+                ResourceType::Text => Some(String::from("txt")),
+            },
             _ => None,
         }
     }
@@ -32,6 +39,9 @@ impl ComponentType {
             Css => String::from("css"),
             JavaScript => String::from("js"),
             Module => String::from("module"),
+            Resource(t) => match t {
+                ResourceType::Text => String::from("text"),
+            },
             Plugin(s) => s
                 .replace(" ", "-")
                 .replace(".", "")

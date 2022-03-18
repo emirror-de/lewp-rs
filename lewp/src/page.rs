@@ -4,7 +4,7 @@ use {
     crate::{
         config::PageConfig,
         css::{Entireness, Register as CssRegister},
-        fh::{ComponentInformation, ComponentType, Level},
+        fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
         html::{api::*, Document, Node, Nodes},
         module::{ModulePtr, Modules, RuntimeInformation},
         Charset,
@@ -76,6 +76,16 @@ pub trait Page {
         None
     }
 
+    /// *Optional:* The [FileHierarchy] where the page is working on.
+    ///
+    /// If implemented, [lewp](crate) will automatically query your resources
+    /// from the given file hierarchy.
+    ///
+    /// *Defaults to None*
+    fn file_hierarchy(&self) -> Option<Arc<FileHierarchy>> {
+        None
+    }
+
     /// Runs through the given modules and returns a list containing all module
     /// ids including all submodule ids.
     ///
@@ -111,6 +121,7 @@ pub trait Page {
                 // skip css if already processed
                 continue;
             }
+            log::debug!("Removing id: {}", module.id());
             // remove the id from the processed array
             required_module_ids.retain(|e| e != module.id());
 
@@ -261,7 +272,8 @@ pub trait Page {
     /// Executes all implemented functions and renders the page afterwards.
     fn build(&mut self) -> String {
         self.run();
-        let runtime_information = Arc::new(RuntimeInformation::new());
+        let runtime_information =
+            Arc::new(RuntimeInformation::new(self.file_hierarchy()));
         let mut modules_rendered_dom = vec![];
         // all modules
         for module in self.modules() {

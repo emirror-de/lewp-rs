@@ -162,4 +162,5 @@ mod error;
 pub mod fh;
 pub(crate) mod module;
 mod page;
+pub mod resources;
 //mod web_adapter;
