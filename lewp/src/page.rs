@@ -36,8 +36,8 @@ pub trait Page {
     fn id(&self) -> &str;
 
     /// Borrows the head tags that are specific for this page.
-    fn head_tags(&self) -> &Option<Nodes> {
-        &None
+    fn head_tags(&self) -> Option<&Nodes> {
+        None
     }
 
     /// Title of the page. Will land in the `title` tag.
@@ -76,6 +76,78 @@ pub trait Page {
         None
     }
 
+    /// Runs through the given modules and returns a list containing all module
+    /// ids including all submodule ids.
+    ///
+    /// The list items are unique, so the ids do only occur once.
+    fn collect_required_module_ids(&self, modules: &Modules) -> Vec<String> {
+        let mut required_ids = vec![];
+        for module in modules {
+            let module = module.borrow();
+            required_ids.push(module.id().to_string());
+            if let Some(submodules) = module.submodules() {
+                let mut sub_ids = self.collect_required_module_ids(&submodules);
+                required_ids.append(&mut sub_ids);
+            }
+        }
+        required_ids.dedup();
+        required_ids
+    }
+
+    /// Runs recursively through the given modules and collects a list of [Nodes]
+    /// that are required in the `<head>` tag to run all those modules.
+    fn collect_head_tags(
+        &self,
+        modules: &Modules,
+        required_module_ids: &mut Vec<String>,
+    ) -> Nodes {
+        let mut head_tags = Nodes::new();
+        let mut inline_css = vec![];
+
+        for module in modules {
+            let module = module.borrow();
+
+            if !required_module_ids.contains(&module.id().to_string()) {
+                // skip css if already processed
+                continue;
+            }
+            // remove the id from the processed array
+            required_module_ids.retain(|e| e != module.id());
+
+            // add all head tags for module first
+            head_tags.append(&mut module.head_tags().clone());
+
+            // collect all CSS
+            if let Some(r) = self.css_register() {
+                if let Some(css) = r.query(
+                    Arc::new(ComponentInformation {
+                        id: module.id().to_string(),
+                        level: Level::Module,
+                        kind: ComponentType::Css,
+                    }),
+                    Entireness::Full,
+                ) {
+                    inline_css.push(css.clone());
+                }
+            }
+            // add submodule head tags if available
+            if let Some(submodules) = module.submodules() {
+                let mut subs =
+                    self.collect_head_tags(&submodules, required_module_ids);
+                head_tags.append(&mut subs);
+            }
+        }
+        let inline_css = &inline_css
+            .into_iter()
+            .fold(String::new(), |acc, e| format!("{}{}", acc, *e));
+
+        // create a style tag for inline css
+        if !inline_css.is_empty() {
+            head_tags.push(style(text(inline_css)));
+        }
+        head_tags
+    }
+
     /// Assembles the `<head>` tag of the page.
     fn assemble_head(&self) -> Node {
         let mut head_children = vec![
@@ -94,7 +166,7 @@ pub trait Page {
         };
 
         // collector vec for all inline css styles
-        let mut inline_css = vec![];
+        //let mut inline_css = vec![];
 
         // add page css
         if let Some(r) = self.css_register() {
@@ -106,37 +178,54 @@ pub trait Page {
                 }),
                 Entireness::Full,
             ) {
-                inline_css.push(css.clone());
-            }
-        }
-
-        for module in self.modules() {
-            let module = module.borrow();
-            // add all head tags for module first
-            head_children.append(&mut module.head_tags().clone());
-
-            // collect all CSS
-            if let Some(r) = self.css_register() {
-                if let Some(css) = r.query(
-                    Arc::new(ComponentInformation {
-                        id: module.id().to_string(),
-                        level: Level::Module,
-                        kind: ComponentType::Css,
-                    }),
-                    Entireness::Full,
-                ) {
-                    inline_css.push(css.clone());
+                let css = format!("{}", css);
+                // create a style tag for inline css
+                if !css.is_empty() {
+                    head_children.push(style(text(&css)));
                 }
             }
         }
-        let inline_css = &inline_css
-            .into_iter()
-            .fold(String::new(), |acc, e| format!("{}{}", acc, *e));
 
-        // create a style tag for inline css
-        if !inline_css.is_empty() {
-            head_children.push(style(text(inline_css)));
-        }
+        // contains all ids of the modules that have already been processed
+        // to prevent duplicate tags/inserts
+        let mut module_ids_to_process =
+            self.collect_required_module_ids(&self.modules());
+        let mut head_tags =
+            self.collect_head_tags(&self.modules(), &mut module_ids_to_process);
+        head_children.append(&mut head_tags);
+
+        //for module in self.modules() {
+        //    let module = module.borrow();
+        //    if !module_ids_to_process.contains(&module.id().to_string()) {
+        //        continue;
+        //    }
+        //    processed_module_ids.push(module.id().to_string());
+
+        //    // add all head tags for module first
+        //    head_children.append(&mut module.head_tags().clone());
+
+        //    // collect all CSS
+        //    if let Some(r) = self.css_register() {
+        //        if let Some(css) = r.query(
+        //            Arc::new(ComponentInformation {
+        //                id: module.id().to_string(),
+        //                level: Level::Module,
+        //                kind: ComponentType::Css,
+        //            }),
+        //            Entireness::Full,
+        //        ) {
+        //            inline_css.push(css.clone());
+        //        }
+        //    }
+        //}
+        //let inline_css = &inline_css
+        //    .into_iter()
+        //    .fold(String::new(), |acc, e| format!("{}{}", acc, *e));
+
+        //// create a style tag for inline css
+        //if !inline_css.is_empty() {
+        //    head_children.push(style(text(inline_css)));
+        //}
 
         head(head_children)
     }

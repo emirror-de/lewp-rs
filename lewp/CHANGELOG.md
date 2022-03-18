@@ -4,20 +4,20 @@
 
 ### 📦 New features
 
-* *(html)* Added `borrow_attr` and `borrow_attrs` to `NodeExt` that are not self consuming compared to their `attr` and `attrs` equivalents
-* *(lewp)* Pages now can have head tags. The `head_tags` method has been added to the `Page` trait
-* *(lewp)* Pages now need to have method `id(&self) -> &str` implemented to identify resources that are used by that page
-* *(lewp)* Page CSS files are now added as inline style using the `css::Register`
+* Integrated `lewp-html` version `0.2.0`
+* Pages now can have head tags. The `head_tags` method has been added to the `Page` trait
+* Pages now need to have method `id(&self) -> &str` implemented to identify resources that are used by that page
+* Page CSS files are now added as inline style using the `css::Register`
 
 ### 📈 Changes
 
-* *(lewp)* The module `div` wrapper is now disabled by default.
+* The module `div` wrapper is now disabled by default.
 
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes
 
-* *(lewp)* Renamed `skip_wrapper` to `wrapper` in `ModuleConfig`
+* Renamed `skip_wrapper` to `wrapper` in `ModuleConfig`
 
 ## v0.3.0
 

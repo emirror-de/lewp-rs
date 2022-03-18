@@ -101,6 +101,10 @@
 //! }
 //!
 //! impl Page for HelloWorldPage {
+//!     fn id(&self) -> &str {
+//!         "helloworldpage"
+//!     }
+//!
 //!     fn modules(&self) -> &Modules {
 //!         &self.modules
 //!     }
@@ -145,7 +149,6 @@ pub use {
     langtag::LanguageTag,
     module::*,
     page::Page,
-    submodule::SubModule,
 };
 
 /// Re-export of the [lewp_html] crate.
@@ -159,4 +162,4 @@ mod error;
 pub mod fh;
 pub(crate) mod module;
 mod page;
-pub(crate) mod submodule;
+//mod web_adapter;

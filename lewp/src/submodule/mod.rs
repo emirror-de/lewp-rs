@@ -190,7 +190,7 @@ pub trait SubModule: Module {
         Ok(())
     }
 
-    /// Returns the meta information for this submodule.
+    /// Returns the meta information for this module.
     fn component_information(&self) -> Arc<ComponentInformation> {
         Arc::new(ComponentInformation {
             id: self.id().to_string(),
