@@ -15,13 +15,13 @@
 
 ### 📈 Changes
 
-* The module `div` wrapper is now disabled by default.
-
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes
 
-* Renamed `skip_wrapper` to `wrapper` in `ModuleConfig`
+* The `div` wrapper of the module has been removed completely
+* `ModuleConfig::skip_wrapper` has been removed
+* `Module::view` method now returns `Node` instead of `Nodes`
 
 ## v0.3.0
 

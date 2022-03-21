@@ -3,17 +3,12 @@
 use {crate::fh::FileHierarchy, std::sync::Arc};
 
 /// Various config values for adjusting the modules behavior.
-pub struct ModuleConfig {
-    /// If true, the module gets wrapped by a `<div>` tag.
-    ///
-    /// **Default value:** false.
-    pub wrapper: bool,
-}
+pub struct ModuleConfig {}
 
 impl ModuleConfig {
     /// Creates a new instance with default values.
     pub fn new() -> Self {
-        Self { wrapper: false }
+        Self {}
     }
 }
 
@@ -27,7 +22,7 @@ impl Default for ModuleConfig {
 pub struct PageConfig {
     /// Creates a default viewport tag and appends it on rendering.
     pub viewport_tag: bool,
-    /// The file hierarchy where the module is working on.
+    /// The file hierarchy where the page is working on.
     pub fh: Option<Arc<FileHierarchy>>,
 }
 

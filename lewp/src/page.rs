@@ -232,26 +232,24 @@ pub trait Page {
     }
 
     /// Assembles the `<body>` tag of the page.
-    fn assemble_body(&self, modules: Vec<Nodes>) -> Node {
+    fn assemble_body(&self, modules: Nodes) -> Node {
         //let body = NodeCreator::element("body", vec![]);
         let mut body_children = vec![];
         for module in modules {
-            for node in module {
-                body_children.push(node);
-            }
+            body_children.push(module);
         }
         body(body_children)
     }
 
     /// Assembles the full page and returns it as [Document].
-    fn assemble_full(&self, modules: Vec<Nodes>) -> Document {
+    fn assemble_full(&self, modules: Nodes) -> Document {
         let head = self.assemble_head();
         let body = self.assemble_body(modules);
         document(self.language(), head, body)
     }
 
     /// Renders the page. To a full valid HTML string.
-    fn render(&self, modules: Vec<Nodes>) -> String {
+    fn render(&self, modules: Nodes) -> String {
         let mut bytes = vec![];
         let document: SerializableHandle =
             self.assemble_full(modules).document.into();
@@ -263,7 +261,7 @@ pub trait Page {
     fn build(&mut self) -> String {
         self.run();
         let runtime_information =
-            Arc::new(RuntimeInformation::new(self.file_hierarchy()));
+            Arc::new(RuntimeInformation::new(self.config()));
         let mut modules_rendered_dom = vec![];
         // all modules
         for module in self.modules() {

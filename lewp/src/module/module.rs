@@ -7,7 +7,7 @@ use {
         LewpErrorKind,
         Modules,
     },
-    lewp_html::{api::div, NodeExt, Nodes},
+    lewp_html::{api::div, Node, NodeExt, Nodes},
     std::{cell::RefCell, rc::Rc, sync::Arc},
 };
 
@@ -35,24 +35,15 @@ pub trait Module {
     }
 
     /// Constructs the view of the module.
-    fn view(&self) -> Nodes;
+    fn view(&self) -> Node;
 
     /// Renders as DOM nodes.
-    fn render(&self) -> Nodes {
-        let view = if self.config().wrapper {
-            vec![div(self.view())]
-        } else {
-            self.view()
-        };
-        match view.first() {
-            Some(f) => {
-                f.borrow_attrs(vec![
-                    ("class", self.id()),
-                    ("data-lewp-component", "module"),
-                ]);
-            }
-            None => (),
-        };
+    fn render(&self) -> Node {
+        let view = self.view();
+        view.borrow_attrs(vec![
+            ("class", self.id()),
+            ("data-lewp-component", "module"),
+        ]);
         view
     }
 
@@ -103,7 +94,7 @@ pub trait Module {
             Some(modules) => modules,
         };
         for module in submodules {
-            parent_module_view.append(&mut module.borrow().render());
+            parent_module_view.push(module.borrow().render());
         }
     }
 
@@ -134,7 +125,7 @@ pub trait Module {
                 });
             }
         };
-        parent_module_view.append(&mut module.render());
+        parent_module_view.push(module.render());
         Ok(())
     }
 
@@ -157,7 +148,7 @@ pub trait Module {
             if module.id() != id {
                 continue;
             }
-            parent_module_view.append(&mut module.render());
+            parent_module_view.push(module.render());
             return Ok(());
         }
         Err(LewpError {
@@ -188,7 +179,7 @@ pub trait Module {
             if module.id() != id {
                 continue;
             }
-            parent_module_view.append(&mut module.render());
+            parent_module_view.push(module.render());
         }
         Ok(())
     }
