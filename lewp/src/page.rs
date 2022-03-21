@@ -76,16 +76,6 @@ pub trait Page {
         None
     }
 
-    /// *Optional:* The [FileHierarchy] where the page is working on.
-    ///
-    /// If implemented, [lewp](crate) will automatically query your resources
-    /// from the given file hierarchy.
-    ///
-    /// *Defaults to None*
-    fn file_hierarchy(&self) -> Option<Arc<FileHierarchy>> {
-        None
-    }
-
     /// Runs through the given modules and returns a list containing all module
     /// ids including all submodule ids.
     ///

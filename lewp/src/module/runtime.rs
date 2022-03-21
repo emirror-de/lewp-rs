@@ -1,37 +1,30 @@
 //! Runtime traits and structs of a module.
 
 use {
-    crate::{fh::FileHierarchy, LewpError},
+    crate::{config::PageConfig, fh::FileHierarchy, LewpError},
     std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc},
 };
 
 /// Contains runtime information of a module.
-pub struct RuntimeInformation {
+pub struct RuntimeInformation<'a> {
     /// Information about how often a module has been executed.
     module_execution_count: RefCell<HashMap<String, u32>>,
     /// The id of the previously executed module. Set to None if it is the first module that is
     /// being executed.
     previous_module_id: RefCell<Option<String>>,
-    /// The file hierarchy where the module is working on.
-    pub fh: Option<Arc<FileHierarchy>>,
+    /// The page configuration.
+    pub page_config: &'a PageConfig,
 }
 
-impl RuntimeInformation {
+impl<'a> RuntimeInformation<'a> {
     /// Creates a new instance with default values.
-    pub fn new(fh: Option<Arc<FileHierarchy>>) -> Self {
+    pub fn new(page_config: &'a PageConfig) -> Self {
         Self {
             module_execution_count: RefCell::new(HashMap::<String, u32>::new()),
             previous_module_id: RefCell::new(None),
-            fh,
+            page_config,
         }
     }
-
-    /*
-    /// Sets the file hierarchy.
-    pub fn set_file_hierarchy(&mut self, fh: Arc<FileHierarchy>) {
-        self.fh = Some(fh);
-    }
-    */
 
     /// Increases the execution count for the given module id by 1.
     pub fn increase_execution_count(&self, id: &str) {
@@ -58,11 +51,5 @@ impl RuntimeInformation {
     /// Sets the id of the module that run previously.
     pub fn set_previous_module_id(&self, module_id: &str) {
         *self.previous_module_id.borrow_mut() = Some(module_id.to_string());
-    }
-}
-
-impl Default for RuntimeInformation {
-    fn default() -> Self {
-        Self::new(None)
     }
 }

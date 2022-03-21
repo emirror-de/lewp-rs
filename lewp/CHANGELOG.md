@@ -9,8 +9,9 @@
 * Pages now need to have method `id(&self) -> &str` implemented to identify resources that are used by that page
 * Page CSS files are now added as inline style using the `css::Register`
 * Added `fh::ResourceType` that is able to query resources from the file hierarchy (Currently only textfiles)
-* `RuntimeInformation` now inlcude the file hierarchy instance when `Page::file_hierarchy` method is implemented.
+* `RuntimeInformation` now inlcudes a reference to the page config instance
 * `RuntimeInformation` are now passed to submodules
+* `PageConfig` now contains the member `fh: Option<Arc<FileHierarchy>>` to enable access to the file hierarchy for modules
 
 ### 📈 Changes
 
