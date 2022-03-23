@@ -14,12 +14,6 @@ use {
     std::{path::PathBuf, sync::Arc},
 };
 
-pub struct TextParameter {
-    level_id: String,
-    level: Level,
-    file_id: String,
-}
-
 /// Enables interactions with text files in the file hierarchy.
 pub struct Text {
     fh: Arc<FileHierarchy>,
@@ -29,7 +23,7 @@ pub struct Text {
 impl FHComponent for Text {
     /// The actual content of the text file.
     type Content = String;
-    /// The file name.
+    /// The file name relative to the level's "text" folder without file extension.
     type ContentParameter = String;
 
     fn component_information(&self) -> Arc<FHComponentInformation> {
@@ -40,7 +34,7 @@ impl FHComponent for Text {
         &self,
         params: Self::ContentParameter,
     ) -> Result<Self::Content, LewpError> {
-        let mut filename = self.fh.folder(self);
+        let mut filename = self.folder_name();
         filename.push(params);
         let extension = match ComponentType::Resource(ResourceType::Text).extension() {
             Some(e) => e,

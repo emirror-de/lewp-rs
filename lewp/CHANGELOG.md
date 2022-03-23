@@ -15,6 +15,8 @@
 
 ### 📈 Changes
 
+* `Component` trait contains a `folder_name` method that can be used to get the correct folder in the file hierarchy based on the given `ComponentInformation`
+
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes

@@ -4,7 +4,7 @@ use {
         fh::{FileHierarchy, Level},
         LewpError,
     },
-    std::sync::Arc,
+    std::{path::PathBuf, sync::Arc},
 };
 
 /// A lewp component. Anything inside the file hierarchy is a component (Files, Folders, Modules,
@@ -37,5 +37,12 @@ pub trait Component {
     /// The component type.
     fn kind(&self) -> ComponentType {
         self.component_information().kind.clone()
+    }
+    /// Returns the folder name of the component according to the file hierarchy.
+    fn folder_name(&self) -> PathBuf
+    where
+        Self: Sized,
+    {
+        self.file_hierarchy().folder(self)
     }
 }
