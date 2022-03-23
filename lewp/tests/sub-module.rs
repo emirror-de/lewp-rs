@@ -4,12 +4,11 @@ mod modules {
     use {
         lewp::{
             config::ModuleConfig,
-            html::{api::*, Nodes},
+            html::{api::*, Node, NodeExt, Nodes},
             LewpError,
             Module,
             Modules,
             RuntimeInformation,
-            SubModule,
         },
         std::sync::Arc,
     };
@@ -60,21 +59,21 @@ mod modules {
             Ok(())
         }
 
-        fn view(&self) -> Nodes {
-            let mut view = vec![h1(vec![text(&self.data)])];
+        fn view(&self) -> Node {
+            let mut view = div(vec![h1(vec![text(&self.data)])]);
+            let mut submodules = vec![];
             // see Render trait in submodule for more rendering methods
-            self.render_submodules(&mut view);
+            self.render_submodules(&mut submodules);
+            view.append_children(submodules);
             view
         }
-    }
 
-    impl SubModule for Header {
-        fn submodules(&self) -> &Modules {
-            &self.children
+        fn submodules(&self) -> Option<&Modules> {
+            Some(&self.children)
         }
 
-        fn submodules_mut(&mut self) -> &mut Modules {
-            &mut self.children
+        fn submodules_mut(&mut self) -> Option<&mut Modules> {
+            Some(&mut self.children)
         }
     }
 
@@ -115,8 +114,8 @@ mod modules {
             Ok(())
         }
 
-        fn view(&self) -> Nodes {
-            vec![h2(vec![text(&self.data)])]
+        fn view(&self) -> Node {
+            h2(vec![text(&self.data)])
         }
     }
 }
@@ -161,14 +160,14 @@ impl Page for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1 class=\"header\" data-lewp-component=\"module\">hello-world</h1><h2 class=\"random-headline\" data-lewp-component=\"module\">Changed during run!</h2></body></html>";
+const SUBMODULE_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>lewp sub-module demonstration!</title><meta name=\"description\" content=\"lewp can have sub-modules!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><div class=\"header\" data-lewp-component=\"module\"><h1>hello-world</h1><h2 class=\"random-headline\" data-lewp-component=\"module\">Changed during run!</h2></div></body></html>";
 
 #[test]
 fn submodule() {
     let module = modules::Header::new();
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(),
+        config: PageConfig::new(None),
     };
     page.add_module(module.into_module_ptr());
     let dom = page.build();

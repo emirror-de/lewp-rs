@@ -3,6 +3,7 @@ use {
         config::{ModuleConfig, PageConfig},
         html::{
             api::{h1, text},
+            Node,
             Nodes,
         },
         Charset,
@@ -52,8 +53,8 @@ impl Module for HelloWorld {
         Ok(())
     }
 
-    fn view(&self) -> Nodes {
-        vec![h1(vec![text(&self.data)])]
+    fn view(&self) -> Node {
+        h1(vec![text(&self.data)])
     }
 }
 
@@ -110,6 +111,6 @@ impl Page for HelloWorldPage {
 }
 
 fn main() {
-    let mut page = HelloWorldPage::new(PageConfig::new());
+    let mut page = HelloWorldPage::new(PageConfig::new(None));
     println!("{}", page.build());
 }

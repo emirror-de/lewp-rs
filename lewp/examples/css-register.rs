@@ -2,7 +2,7 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         css::{Register as CssRegister, RegisterOptions},
-        html::{api::*, Nodes},
+        html::{api::*, Node, Nodes},
         Charset,
         LanguageTag,
         LewpError,
@@ -50,8 +50,8 @@ impl Module for HelloWorld {
         Ok(())
     }
 
-    fn view(&self) -> Nodes {
-        vec![h1(vec![text(&self.data)]), br()]
+    fn view(&self) -> Node {
+        h1(vec![text(&self.data)])
     }
 }
 
@@ -108,13 +108,13 @@ fn main() {
         .mountpoint(std::path::PathBuf::from("./lewp/testfiles"))
         .build();
 
-    let mut css_register =
+    let css_register =
         CssRegister::new(fh, RegisterOptions::default()).unwrap();
     let css_register = Arc::new(css_register);
 
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(),
+        config: PageConfig::new(None),
         css_register,
     };
     let dom = page.build();

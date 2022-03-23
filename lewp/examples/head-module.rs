@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        html::{api::*, NodeExt, Nodes, Script},
+        html::{api::*, Node, NodeExt, Nodes, Script},
         LewpError,
         Module,
         Modules,
@@ -19,7 +19,6 @@ struct HeadOnly {
 impl HeadOnly {
     pub fn new() -> Self {
         let mut config = ModuleConfig::new();
-        config.wrapper = true;
         Self {
             config,
             head_tags: Self::create_head_tags(),
@@ -58,8 +57,8 @@ impl Module for HeadOnly {
         Ok(())
     }
 
-    fn view(&self) -> Nodes {
-        vec![div(vec![]).attr("id", "head-only")]
+    fn view(&self) -> Node {
+        div(vec![]).attr("id", "head-only")
     }
 }
 
@@ -101,7 +100,7 @@ impl Page for HelloWorldPage {
 fn main() {
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(),
+        config: PageConfig::new(None),
     };
     let dom = page.build();
     println!("{}", dom);

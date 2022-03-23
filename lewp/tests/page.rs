@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        html::{api::*, Nodes},
+        html::{api::*, Node, Nodes},
         Charset,
         LanguageTag,
         LewpError,
@@ -59,8 +59,8 @@ impl Module for HelloWorld {
         Ok(())
     }
 
-    fn view(&self) -> Nodes {
-        vec![h1(vec![text(&self.data)])]
+    fn view(&self) -> Node {
+        h1(vec![text(&self.data)])
     }
 }
 
@@ -104,30 +104,17 @@ impl Page for HelloWorldPage {
     fn run(&mut self) {}
 }
 
-const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><div class=\"hello-world\" data-lewp-component=\"module\"><h1>hello-world</h1></div></body></html>";
-const HELLO_WORLD_RESULT_SKIPPED_WRAPPER: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1 class=\"hello-world\" data-lewp-component=\"module\">hello-world</h1></body></html>";
+const HELLO_WORLD_RESULT: &str = "<!DOCTYPE html><html lang=\"de\"><head><meta charset=\"utf-8\"><title>Hello World from lewp!</title><meta name=\"description\" content=\"My first page using lewp!\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"></head><body><h1 class=\"hello-world\" data-lewp-component=\"module\">hello-world</h1></body></html>";
 
 #[test]
-fn hello_world_with_module_wrapper() {
-    let module_config = ModuleConfig { wrapper: true };
+fn hello_world_page() {
+    let module_config = ModuleConfig {};
     let module = HelloWorld::from(module_config);
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(),
+        config: PageConfig::new(None),
     };
     page.add_module(module.into_module_ptr());
     let html_string = page.build();
     assert_eq!(HELLO_WORLD_RESULT, html_string);
-}
-
-#[test]
-fn hello_world_skipped_wrapper() {
-    let module = HelloWorld::new();
-    let mut page = HelloWorldPage {
-        modules: vec![],
-        config: PageConfig::new(),
-    };
-    page.add_module(module.into_module_ptr());
-    let html_string = page.build();
-    assert_eq!(HELLO_WORLD_RESULT_SKIPPED_WRAPPER, html_string);
 }

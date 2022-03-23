@@ -8,9 +8,8 @@ mod modules {
             Module,
             Modules,
             RuntimeInformation,
-            SubModule,
         },
-        lewp_html::{api::*, Nodes},
+        lewp_html::{api::*, Node, NodeExt, Nodes},
         std::sync::Arc,
     };
 
@@ -60,21 +59,21 @@ mod modules {
             Ok(())
         }
 
-        fn view(&self) -> Nodes {
-            let mut view = vec![h1(vec![text(&self.data)])];
+        fn view(&self) -> Node {
+            let mut view = div(vec![h1(vec![text(&self.data)])]);
+            let mut submodules = vec![];
             // see Render trait in submodule for more rendering methods
-            self.render_submodules(&mut view);
+            self.render_submodules(&mut submodules);
+            view.append_children(submodules);
             view
         }
-    }
 
-    impl SubModule for Header {
-        fn submodules(&self) -> &Modules {
-            &self.children
+        fn submodules(&self) -> Option<&Modules> {
+            Some(&self.children)
         }
 
-        fn submodules_mut(&mut self) -> &mut Modules {
-            &mut self.children
+        fn submodules_mut(&mut self) -> Option<&mut Modules> {
+            Some(&mut self.children)
         }
     }
 
@@ -126,7 +125,7 @@ mod modules {
             Ok(())
         }
 
-        fn view(&self) -> Nodes {
+        fn view(&self) -> Node {
             let headline = match self.current_headline {
                 Some(v) => h2(vec![text(&self.data[v])]),
                 None => h2(vec![text("This module did not run yet!")]),
@@ -135,7 +134,7 @@ mod modules {
                 "Has been executed {} times before!",
                 self.execution_count
             ))]);
-            vec![headline, p]
+            div(vec![headline, p])
         }
     }
 }
@@ -184,7 +183,7 @@ fn main() {
     let module = modules::Header::new();
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(),
+        config: PageConfig::new(None),
     };
     page.add_module(module.into_module_ptr());
     let dom = page.build();

@@ -1,7 +1,7 @@
 use {
     lewp::{
-        config::ModuleConfig,
-        html::{api::*, Nodes},
+        config::{ModuleConfig, PageConfig},
+        html::{api::*, Node, Nodes},
         LewpError,
         Module,
         RuntimeInformation,
@@ -45,15 +45,16 @@ impl Module for HelloWorld {
         Ok(())
     }
 
-    fn view(&self) -> Nodes {
-        vec![h1(vec![text(&self.data)])]
+    fn view(&self) -> Node {
+        h1(vec![text(&self.data)])
     }
 }
 
 #[test]
 fn hello_world() {
     let mut module = HelloWorld::new();
-    match module.run(Arc::new(RuntimeInformation::new())) {
+    match module.run(Arc::new(RuntimeInformation::new(&PageConfig::new(None))))
+    {
         _ => (),
     }
 }

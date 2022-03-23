@@ -30,6 +30,7 @@
 //!         html::{
 //!             api::{h1, text},
 //!             Nodes,
+//!             Node,
 //!         },
 //!         Module, Modules, RuntimeInformation,
 //!         Page,
@@ -78,8 +79,8 @@
 //!         Ok(())
 //!     }
 //!
-//!     fn view(&self) -> Nodes {
-//!         vec![h1(vec![text(&self.data)])]
+//!     fn view(&self) -> Node {
+//!         h1(vec![text(&self.data)])
 //!     }
 //! }
 //!
@@ -138,7 +139,7 @@
 //! }
 //!
 //! fn main() {
-//!     let mut page = HelloWorldPage::new(PageConfig::new());
+//!     let mut page = HelloWorldPage::new(PageConfig::new(None));
 //!     println!("{}", page.build());
 //! }
 //! ```

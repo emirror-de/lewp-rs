@@ -4,12 +4,11 @@ mod modules {
     use {
         lewp::{
             config::ModuleConfig,
-            html::{api::*, Nodes},
+            html::{api::*, Node, NodeExt, Nodes},
             LewpError,
             Module,
             Modules,
             RuntimeInformation,
-            SubModule,
         },
         std::sync::Arc,
     };
@@ -72,21 +71,21 @@ mod modules {
             Ok(())
         }
 
-        fn view(&self) -> Nodes {
-            let mut view = vec![h1(vec![text(&self.data)])];
+        fn view(&self) -> Node {
+            let mut view = div(vec![h1(vec![text(&self.data)])]);
+            let mut submodules = vec![];
             // see Render trait in submodule for more rendering methods
-            self.render_submodules(&mut view);
+            self.render_submodules(&mut submodules);
+            view.append_children(submodules);
             view
         }
-    }
 
-    impl SubModule for Header {
-        fn submodules(&self) -> &Modules {
-            &self.children
+        fn submodules(&self) -> Option<&Modules> {
+            Some(&self.children)
         }
 
-        fn submodules_mut(&mut self) -> &mut Modules {
-            &mut self.children
+        fn submodules_mut(&mut self) -> Option<&mut Modules> {
+            Some(&mut self.children)
         }
     }
 }
@@ -136,7 +135,7 @@ fn loop_detection() {
     let module = modules::Header::new();
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(),
+        config: PageConfig::new(None),
     };
     page.add_module(module.into_module_ptr());
     page.build();
