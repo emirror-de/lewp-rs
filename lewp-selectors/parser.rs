@@ -2,27 +2,45 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-use crate::attr::{AttrSelectorOperator, AttrSelectorWithOptionalNamespace};
-use crate::attr::{NamespaceConstraint, ParsedAttrSelectorOperation};
-use crate::attr::{ParsedCaseSensitivity, SELECTOR_WHITESPACE};
-use crate::bloom::BLOOM_HASH_MASK;
-use crate::builder::{SelectorBuilder, SelectorFlags, SpecificityAndFlags};
-use crate::context::QuirksMode;
-use crate::sink::Push;
 pub use crate::visitor::SelectorVisitor;
-use cssparser::parse_nth;
-use cssparser::{
-    BasicParseError, BasicParseErrorKind, ParseError, ParseErrorKind,
+use {
+    crate::{
+        attr::{
+            AttrSelectorOperator,
+            AttrSelectorWithOptionalNamespace,
+            NamespaceConstraint,
+            ParsedAttrSelectorOperation,
+            ParsedCaseSensitivity,
+            SELECTOR_WHITESPACE,
+        },
+        bloom::BLOOM_HASH_MASK,
+        builder::{SelectorBuilder, SelectorFlags, SpecificityAndFlags},
+        context::QuirksMode,
+        sink::Push,
+    },
+    cssparser::{
+        parse_nth,
+        BasicParseError,
+        BasicParseErrorKind,
+        CowRcStr,
+        Delimiter,
+        ParseError,
+        ParseErrorKind,
+        Parser as CssParser,
+        SourceLocation,
+        ToCss,
+        Token,
+    },
+    precomputed_hash::PrecomputedHash,
+    servo_arc::ThinArc,
+    smallvec::SmallVec,
+    std::{
+        borrow::{Borrow, Cow},
+        fmt::{self, Debug},
+        iter::Rev,
+        slice,
+    },
 };
-use cssparser::{CowRcStr, Delimiter, SourceLocation};
-use cssparser::{Parser as CssParser, ToCss, Token};
-use precomputed_hash::PrecomputedHash;
-use servo_arc::ThinArc;
-use smallvec::SmallVec;
-use std::borrow::{Borrow, Cow};
-use std::fmt::{self, Debug};
-use std::iter::Rev;
-use std::slice;
 
 /// A trait that represents a pseudo-element.
 pub trait PseudoElement: Sized + ToCss {
@@ -250,7 +268,7 @@ pub trait Parser<'i> {
 
     /// Whether to parse the `:where` pseudo-class.
     fn parse_is_and_where(&self) -> bool {
-        false
+        true
     }
 
     /// The error recovery that selector lists inside :is() and :where() have.
@@ -2611,14 +2629,17 @@ where
 // NB: pub module in order to access the DummyParser
 #[cfg(test)]
 pub mod tests {
-    use super::*;
-    use crate::builder::SelectorFlags;
-    use crate::parser;
-    use cssparser::{
-        serialize_identifier, Parser as CssParser, ParserInput, ToCss,
+    use {
+        super::*,
+        crate::{builder::SelectorFlags, parser},
+        cssparser::{
+            serialize_identifier,
+            Parser as CssParser,
+            ParserInput,
+            ToCss,
+        },
+        std::{collections::HashMap, fmt},
     };
-    use std::collections::HashMap;
-    use std::fmt;
 
     #[derive(Clone, Debug, Eq, PartialEq)]
     pub enum PseudoClass {
