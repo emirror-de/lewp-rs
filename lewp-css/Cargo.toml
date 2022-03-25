@@ -16,7 +16,7 @@ include = ["README.md", "LICENSE", "COPYRIGHT", "src/**/*.rs", "build.rs", "Carg
 readme = "README.md"
 publish = true
 edition = "2021"
-version = "0.1.22"
+version = "0.2.0"
 
 [profile.release]
 opt-level = 3
