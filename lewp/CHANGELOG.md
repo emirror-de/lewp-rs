@@ -26,6 +26,7 @@
 * The `div` wrapper of the module has been removed completely
 * `ModuleConfig::skip_wrapper` has been removed
 * `Module::view` method now returns `Node` instead of `Nodes`
+* `css_register` method has been removed from the `Page` trait, because it is stored in the `PageConfig` from now on
 
 ## v0.3.0
 
