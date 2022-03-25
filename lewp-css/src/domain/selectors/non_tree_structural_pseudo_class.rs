@@ -48,6 +48,7 @@ pub enum NonTreeStructuralPseudoClass {
     focus_within,
     in_range,
     invalid,
+    is(DeduplicatedSelectors),
     fullscreen(Option<VendorPrefix>),
     hover,
     indeterminate,
@@ -67,6 +68,7 @@ pub enum NonTreeStructuralPseudoClass {
     target,
     valid,
     visited,
+    where_(DeduplicatedSelectors),
 
     /// -servo- only
     case_sensitive_type_attr(Option<VendorPrefix>, Atom),
@@ -251,6 +253,19 @@ impl ToCss for NonTreeStructuralPseudoClass {
             dest.write_char(')')
         }
 
+        #[inline(always)]
+        fn write_with_value<W: fmt::Write, T: ToCss>(
+            dest: &mut W,
+            classWithoutColon: &str,
+            value: &T,
+        ) -> fmt::Result {
+            dest.write_char(':')?;
+            dest.write_str(classWithoutColon)?;
+            dest.write_char('(')?;
+            value.to_css(dest)?;
+            dest.write_char(')')
+        }
+
         match &*self {
             Self::active => write(dest, ":active"),
 
@@ -304,6 +319,8 @@ impl ToCss for NonTreeStructuralPseudoClass {
 
             Self::invalid => write(dest, ":invalid"),
 
+            Self::is(ref value) => write_with_value(dest, "is", value),
+
             Self::lang(ref languages) => {
                 dest.write_str(":lang(")?;
                 languages.to_css(dest)?;
@@ -343,6 +360,8 @@ impl ToCss for NonTreeStructuralPseudoClass {
             Self::valid => write(dest, ":valid"),
 
             Self::visited => write(dest, ":visited"),
+
+            Self::where_(ref value) => write_with_value(dest, "where", value),
 
             // -servo- only
             Self::case_sensitive_type_attr(ref vendorPrefix, ref value) => {
@@ -778,6 +797,9 @@ impl NonTreeStructuralPseudoClass {
 
             "lang" => Ok(lang(Self::parse_lang(input)?)),
 
+            "where" => Ok(Self::where_(ourSelectorParser.parse_internal(input, OurSelectorExt::is_false_if_any_selector_is_simple_and_only_uses_the_descendant_combinator)?)),
+
+            "is" => Ok(Self::is(ourSelectorParser.parse_internal(input, OurSelectorExt::is_false_if_any_selector_is_simple_and_only_uses_the_descendant_combinator)?)),
 
             // -servo- only
 

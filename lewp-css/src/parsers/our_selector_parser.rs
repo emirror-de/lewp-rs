@@ -26,11 +26,7 @@ use {
         ToCss,
     },
     ordermap::OrderMap,
-    selectors::{
-        Parser,
-        SelectorImpl,
-        SelectorList,
-    },
+    selectors::{Parser, SelectorImpl, SelectorList},
     std::{collections::HashMap, rc::Rc},
 };
 

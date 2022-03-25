@@ -4,6 +4,7 @@
 use {
     super::{
         ColorBitDepth,
+        ColorScheme,
         MediaColorGamut,
         MediaColorIndex,
         MediaGrid,
@@ -19,6 +20,7 @@ use {
         MonochromeBitDepth,
         Range,
         Ratio,
+        ReducedMotion,
     },
     crate::domain::{
         expressions::CalculablePropertyValue,
@@ -85,4 +87,10 @@ pub enum MediaExpressionKind {
 
     /// <https://compat.spec.whatwg.org/#css-media-queries-webkit-transform-3d>
     Transform3D(MediaTransform3D),
+
+    /// <https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme>
+    PrefersColorScheme(ColorScheme),
+
+    /// <https://drafts.csswg.org/mediaqueries-5/#prefers-reduced-motion>
+    PrefersReducedMotion(ReducedMotion),
 }

@@ -5,6 +5,7 @@
 //use ::either::Either::*;
 
 mod color_bit_depth;
+mod color_scheme;
 mod device;
 mod media_at_rule;
 mod media_color_gamut;
@@ -29,9 +30,11 @@ mod monochrome_bit_depth;
 mod qualifier;
 mod range;
 mod ratio;
+mod reduced_motion;
 
 pub use {
     color_bit_depth::ColorBitDepth,
+    color_scheme::ColorScheme,
     device::Device,
     media_at_rule::MediaAtRule,
     media_color_gamut::MediaColorGamut,
@@ -56,4 +59,5 @@ pub use {
     qualifier::Qualifier,
     range::Range,
     ratio::Ratio,
+    reduced_motion::ReducedMotion,
 };

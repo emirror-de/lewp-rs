@@ -26,6 +26,7 @@ pub enum PseudoElement {
     backdrop(Option<VendorPrefix>),
     before,
     cue,
+    file_selector_button,
     first_letter,
     first_line,
     marker,
@@ -120,6 +121,9 @@ pub enum PseudoElement {
 
     /// -moz- only
     inline_table(Option<VendorPrefix>),
+
+    /// -moz- only
+    list_bullet(Option<VendorPrefix>),
 
     /// -moz- only
     page(Option<VendorPrefix>),
@@ -219,6 +223,18 @@ pub enum PseudoElement {
 
     /// -webkit- only (not documented on MDN on 7th November 2017)
     search_decoration(Option<VendorPrefix>),
+
+    /// -webkit- and -moz-
+    color_swatch_wrapper(Option<VendorPrefix>),
+
+    /// -webkit- and -moz-
+    color_swatch(Option<VendorPrefix>),
+
+    /// -webkit- only
+    calendar_picker_indicator(Option<VendorPrefix>),
+
+    /// -webkit- only
+    details_marker(Option<VendorPrefix>),
 }
 
 impl ToCss for self::PseudoElement {
@@ -255,6 +271,8 @@ impl ToCss for self::PseudoElement {
             before => write(dest, "::before"),
 
             cue => write(dest, "::cue"),
+
+            file_selector_button => write(dest, "::file-selector-button"),
 
             first_letter => write(dest, "::first-letter"),
 
@@ -429,6 +447,10 @@ impl ToCss for self::PseudoElement {
                 write_with_vendor_prefix(dest, vendorPrefix, "inline-table")
             }
 
+            list_bullet(ref vendorPrefix) => {
+                write_with_vendor_prefix(dest, vendorPrefix, "list-bullet")
+            }
+
             page(ref vendorPrefix) => {
                 write_with_vendor_prefix(dest, vendorPrefix, "page")
             }
@@ -600,6 +622,26 @@ impl ToCss for self::PseudoElement {
                 vendorPrefix,
                 "search-decoration",
             ),
+
+            color_swatch_wrapper(ref vendorPrefix) => write_with_vendor_prefix(
+                dest,
+                vendorPrefix,
+                "color-swatch-wrapper",
+            ),
+
+            color_swatch(ref vendorPrefix) => {
+                write_with_vendor_prefix(dest, vendorPrefix, "color-swatch")
+            }
+            calendar_picker_indicator(ref vendorPrefix) => {
+                write_with_vendor_prefix(
+                    dest,
+                    vendorPrefix,
+                    "calendar-picker-indicator",
+                )
+            }
+            details_marker(ref vendorPrefix) => {
+                write_with_vendor_prefix(dest, vendorPrefix, "details-marker")
+            }
         }
     }
 }
@@ -616,6 +658,7 @@ impl PseudoElement {
             before => false,
             backdrop(..) => false,
             cue => false,
+            file_selector_button => false,
             first_letter => false,
             first_line => false,
             progress_bar(..) => true,
@@ -636,7 +679,8 @@ impl PseudoElement {
         >,
     ) -> Option<VendorPrefix> {
         applyVendorPrefixToPseudoElements
-            .get(&pseudoElementName).cloned()
+            .get(&pseudoElementName)
+            .cloned()
     }
 
     //noinspection SpellCheckingInspection
@@ -662,6 +706,8 @@ impl PseudoElement {
             "before" => Ok(before),
 
             "cue" => Ok(cue),
+
+            "file-selector-button" => Ok(file_selector_button),
 
             "first-letter" => Ok(first_letter),
 
@@ -789,6 +835,8 @@ impl PseudoElement {
 
             "-moz-inline-table" => Ok(inline_table(Some(moz))),
 
+            "-moz-list-bullet" => Ok(list_bullet(Some(moz))),
+
             "-moz-page" => Ok(page(Some(moz))),
 
             "-moz-page-sequence" => Ok(page_sequence(Some(moz))),
@@ -832,8 +880,18 @@ impl PseudoElement {
 
             "-moz-tree-row" => Ok(tree_row(Some(moz))),
 
+            "-moz-color-swatch" => Ok(color_swatch(Some(moz))),
+
 
             // -webkit- only
+
+            "-webkit-calendar-picker-indicator" => Ok(calendar_picker_indicator(Some(webkit))),
+
+            "-webkit-color-swatch-wrapper" => Ok(color_swatch_wrapper(Some(webkit))),
+
+            "-webkit-color-swatch" => Ok(color_swatch(Some(webkit))),
+
+            "-webkit-details-marker" => Ok(details_marker(Some(webkit))),
 
             "-webkit-file-upload-button" => Ok(file_upload_button(Some(webkit))),
 

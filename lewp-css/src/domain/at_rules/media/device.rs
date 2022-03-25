@@ -91,4 +91,10 @@ pub trait Device {
 
     /// <https://compat.spec.whatwg.org/#css-media-queries-webkit-transform-3d>
     fn transform3DMatches(&self, transform3D: &MediaTransform3D) -> bool;
+
+    /// No Spec found
+    fn prefers_color_scheme(&self, color_scheme: &ColorScheme) -> bool;
+
+    /// No Spec found
+    fn prefers_reduced_motion(&self, reduced_motion: &ReducedMotion) -> bool;
 }

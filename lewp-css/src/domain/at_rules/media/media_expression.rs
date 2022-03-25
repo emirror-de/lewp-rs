@@ -3,7 +3,7 @@
 
 use {
     crate::{parsers::{Parse, ParserContext}, CustomParseError, domain::units::{Unit,LengthUnit}},
-    super::{MediaExpressionKind::{self, *}, Ratio, MediaResolution, MediaGrid, ColorBitDepth, MediaOrientation, MediaScan, MediaUpdate, MediaOverflowBlock, MediaOverflowInline, MediaColorGamut, MediaPointer, MediaHover, MediaTransform3D, Device, MediaColorIndex, MonochromeBitDepth},
+    super::{MediaExpressionKind::{self, *}, Ratio, MediaResolution, MediaGrid, ColorBitDepth, MediaOrientation, MediaScan, MediaUpdate, MediaOverflowBlock, MediaOverflowInline, MediaColorGamut, MediaPointer, MediaHover, MediaTransform3D, Device, MediaColorIndex, MonochromeBitDepth, ColorScheme, ReducedMotion},
     super::Range::*,
     cssparser::{ParseError, Parser, ToCss},
     std::fmt,
@@ -94,6 +94,10 @@ impl ToCss for MediaExpression
 			AnyHover(ref value) => write(dest, "any-hover", value),
 			
 			Transform3D(ref value) => write(dest, "-webkit-transform-3d", value),
+			
+			PrefersColorScheme(ref value) => write(dest, "prefers-color-scheme", value),
+			
+			PrefersReducedMotion(ref value) => write(dest, "prefers-reduced-motion", value),
 		}
 	}
 }
@@ -188,6 +192,10 @@ impl MediaExpression
 						
 						"-webkit-transform-3d" => Transform3D(MediaTransform3D::parse(context, input)?),
 						
+						"prefers-color-scheme" => PrefersColorScheme(ColorScheme::parse(input)?),
+						
+						"prefers-reduced-motion" => PrefersReducedMotion(ReducedMotion::parse(input)?),
+						
 						"min-device-width" | "max-device-width" | "device-width" | "min-device-height" | "max-device-height" | "device-height" | "min-device-aspect-ratio" | "max-device-aspect-ratio" | "device-aspect-ratio" => return Err(ParseError::from(CustomParseError::DeprecatedMediaQueryExpression(name.clone()))),
 						
 						_ => return Err(ParseError::from(CustomParseError::UnsupportedMediaQueryExpression(name.clone())))
@@ -241,6 +249,10 @@ impl MediaExpression
 			AnyHover(ref hover) => device.anyHoverMatches(hover),
 			
 			Transform3D(ref transform3D) => device.transform3DMatches(transform3D),
+			
+			PrefersColorScheme(ref prefers_color_scheme) => device.prefers_color_scheme(prefers_color_scheme),
+			
+			PrefersReducedMotion(ref prefers_reduced_motion) => device.prefers_reduced_motion(prefers_reduced_motion),
 		}
 	}
 }
