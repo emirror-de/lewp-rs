@@ -38,7 +38,7 @@ quick-error = "1.2.1"
 smallvec = "1.7.0"
 servo_arc = "0.1.1"
 
-selectors = { version = "0.23.1", path = "../lewp-selectors", package = "lewp-selectors" }
+selectors = { version = "0.24", path = "../lewp-selectors", package = "lewp-selectors" }
 
 [build-dependencies]
 phf_codegen = "0.7.18"
