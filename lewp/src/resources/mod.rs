@@ -1,5 +1,6 @@
 //! Contains access to resources in the file hierarchy.
 
+mod image;
 mod text;
 
-pub use text::Text;
+pub use {image::Image, text::Text};

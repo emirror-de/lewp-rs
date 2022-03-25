@@ -4,4 +4,6 @@
 pub enum ResourceType {
     /// A text file.
     Text,
+    /// A image file.
+    Image,
 }

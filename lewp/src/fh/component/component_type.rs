@@ -27,6 +27,7 @@ impl ComponentType {
             Self::JavaScript => Some(String::from("js")),
             Self::Resource(t) => match t {
                 ResourceType::Text => Some(String::from("txt")),
+                ResourceType::Image => None,
             },
             _ => None,
         }
@@ -41,6 +42,7 @@ impl ComponentType {
             Module => String::from("module"),
             Resource(t) => match t {
                 ResourceType::Text => String::from("text"),
+                ResourceType::Image => String::from("images"),
             },
             Plugin(s) => s
                 .replace(" ", "-")
