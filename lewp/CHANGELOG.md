@@ -12,10 +12,12 @@
 * `RuntimeInformation` now inlcudes a reference to the page config instance
 * `RuntimeInformation` are now passed to submodules
 * `PageConfig` now contains the member `fh: Option<Arc<FileHierarchy>>` to enable access to the file hierarchy for modules
+* `Lewp` struct has been introduced, enabling a shared global file hierarchy and css register
 
 ### 📈 Changes
 
 * `Component` trait contains a `folder_name` method that can be used to get the correct folder in the file hierarchy based on the given `ComponentInformation`
+* `PageOptions` now contains a file hierarchy and a css register as `Option`
 
 ### 🐛 Bugfixes
 

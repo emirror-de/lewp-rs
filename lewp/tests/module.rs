@@ -53,7 +53,7 @@ impl Module for HelloWorld {
 #[test]
 fn hello_world() {
     let mut module = HelloWorld::new();
-    match module.run(Rc::new(RuntimeInformation::new(&PageConfig::new(None)))) {
+    match module.run(Rc::new(RuntimeInformation::new(&PageConfig::default()))) {
         _ => (),
     }
 }

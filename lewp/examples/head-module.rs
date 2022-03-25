@@ -100,7 +100,7 @@ impl Page for HelloWorldPage {
 fn main() {
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(None),
+        config: PageConfig::default(),
     };
     let dom = page.build();
     println!("{}", dom);

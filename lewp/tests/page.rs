@@ -112,7 +112,7 @@ fn hello_world_page() {
     let module = HelloWorld::from(module_config);
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(None),
+        config: PageConfig::default(),
     };
     page.add_module(module.into_module_ptr());
     let html_string = page.build();

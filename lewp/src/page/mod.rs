@@ -65,17 +65,6 @@ pub trait Page {
     /// modules, collecting data etc.
     fn run(&mut self);
 
-    /// *Optional:* A [register](crate::css::Register) holding all available CSS
-    /// for [modules](Module) and [pages](Page).
-    ///
-    /// If implemented, [lewp](crate) will automatically add the required tags to the
-    /// head of the page.
-    ///
-    /// *Defaults to None*
-    fn css_register(&self) -> Option<Arc<CssRegister>> {
-        None
-    }
-
     /// Runs through the given modules and returns a list containing all module
     /// ids including all submodule ids.
     ///
@@ -119,7 +108,7 @@ pub trait Page {
             head_tags.append(&mut module.head_tags().clone());
 
             // collect all CSS
-            if let Some(r) = self.css_register() {
+            if let Some(r) = &self.config().css_register {
                 if let Some(css) = r.query(
                     Arc::new(ComponentInformation {
                         id: module.id().to_string(),
@@ -170,7 +159,7 @@ pub trait Page {
         //let mut inline_css = vec![];
 
         // add page css
-        if let Some(r) = self.css_register() {
+        if let Some(r) = &self.config().css_register {
             if let Some(css) = r.query(
                 Arc::new(ComponentInformation {
                     id: self.id().to_string(),

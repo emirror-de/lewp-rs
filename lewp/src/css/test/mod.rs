@@ -50,7 +50,7 @@ fn css_components_and_register() {
     let fh = fh::FileHierarchyBuilder::new()
         .mountpoint(std::path::PathBuf::from("./testfiles"))
         .build();
-    let r = Register::new(fh, RegisterOptions::default()).unwrap();
+    let r = Register::new(Arc::new(fh), RegisterOptions::default()).unwrap();
     let css = r
         .query(component_information.clone(), Entireness::Full)
         .unwrap();

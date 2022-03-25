@@ -183,7 +183,7 @@ fn main() {
     let module = modules::Header::new();
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(None),
+        config: PageConfig::default(),
     };
     page.add_module(module.into_module_ptr());
     let dom = page.build();

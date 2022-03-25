@@ -69,11 +69,11 @@ pub struct Register {
 impl Register {
     /// Creates a new Register instance.
     pub fn new(
-        fh: FileHierarchy,
+        fh: Arc<FileHierarchy>,
         options: RegisterOptions,
     ) -> Result<Self, LewpError> {
         let mut register = Self {
-            fh: Arc::new(fh),
+            fh,
             options,
             components: HashMap::new(),
         };
@@ -97,6 +97,11 @@ impl Register {
     pub fn load_process_components(&mut self) -> Result<(), LewpError> {
         self.load_process_modules()?;
         self.load_process_pages()
+    }
+
+    /// Returns the path prefix where the CSS is mounted on the webserver.
+    pub fn css_path(&self, level: Level, id: String) -> &str {
+        &self.options.uri_path_prefix()
     }
 
     fn load_process_modules(&mut self) -> Result<(), LewpError> {
@@ -139,7 +144,7 @@ impl Register {
 impl Default for Register {
     /// Creates a CssRegister with a default [FileHierarchy] and [RegisterOptions].
     fn default() -> Self {
-        Self::new(FileHierarchy::default(), RegisterOptions::default())
+        Self::new(Arc::new(FileHierarchy::default()), RegisterOptions::default())
             .expect("Default CSS register instantiation should always work! If not, check your FileHierarchy setup first!")
     }
 }

@@ -5,6 +5,7 @@ use {
         html::{api::*, Node, Nodes},
         Charset,
         LanguageTag,
+        Lewp,
         LewpError,
         Module,
         Modules,
@@ -58,7 +59,6 @@ impl Module for HelloWorld {
 struct HelloWorldPage {
     modules: Modules,
     config: PageConfig,
-    css_register: Arc<CssRegister>,
 }
 
 impl Page for HelloWorldPage {
@@ -97,10 +97,6 @@ impl Page for HelloWorldPage {
         let module = HelloWorld::new();
         self.add_module(module.into_module_ptr());
     }
-
-    fn css_register(&self) -> Option<Arc<CssRegister>> {
-        Some(self.css_register.clone())
-    }
 }
 
 fn main() {
@@ -108,14 +104,13 @@ fn main() {
         .mountpoint(std::path::PathBuf::from("./lewp/testfiles"))
         .build();
 
-    let css_register =
-        CssRegister::new(fh, RegisterOptions::default()).unwrap();
-    let css_register = Arc::new(css_register);
+    let lewp = Lewp::new()
+        .with_file_hierarchy(fh)
+        .with_css_register(RegisterOptions::default());
 
     let mut page = HelloWorldPage {
         modules: vec![],
-        config: PageConfig::new(None),
-        css_register,
+        config: PageConfig::from(&lewp),
     };
     let dom = page.build();
     println!("{}", dom);

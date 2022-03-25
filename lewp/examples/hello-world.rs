@@ -111,6 +111,6 @@ impl Page for HelloWorldPage {
 }
 
 fn main() {
-    let mut page = HelloWorldPage::new(PageConfig::new(None));
+    let mut page = HelloWorldPage::new(PageConfig::default());
     println!("{}", page.build());
 }

@@ -139,12 +139,13 @@
 //! }
 //!
 //! fn main() {
-//!     let mut page = HelloWorldPage::new(PageConfig::new(None));
+//!     let mut page = HelloWorldPage::new(PageConfig::default());
 //!     println!("{}", page.build());
 //! }
 //! ```
 
 pub use {
+    crate::lewp::Lewp,
     charsets::Charset,
     error::{LewpError, LewpErrorKind},
     langtag::LanguageTag,
@@ -161,6 +162,7 @@ pub mod config;
 pub mod css;
 mod error;
 pub mod fh;
+mod lewp;
 pub(crate) mod module;
 mod page;
 pub mod resources;
