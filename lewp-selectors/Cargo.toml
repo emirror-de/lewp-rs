@@ -1,6 +1,6 @@
 [package]
 name = "lewp-selectors"
-version = "0.23.1"
+version = "0.24.0"
 authors = ["The Servo Project Developers", "Lewin Probst <info@emirror.de>"]
 documentation = "https://docs.rs/lewp-selectors/"
 description = "CSS Selectors matching for Rust - version used by lewp"
