@@ -2,7 +2,7 @@
 
 use {
     crate::{config::PageConfig, fh::FileHierarchy, LewpError},
-    std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc},
+    std::{cell::RefCell, collections::HashMap, rc::Rc},
 };
 
 /// Contains runtime information of a module.

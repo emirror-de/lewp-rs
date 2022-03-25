@@ -261,7 +261,7 @@ pub trait Page {
     fn build(&mut self) -> String {
         self.run();
         let runtime_information =
-            Arc::new(RuntimeInformation::new(self.config()));
+            Rc::new(RuntimeInformation::new(self.config()));
         let mut modules_rendered_dom = vec![];
         // all modules
         for module in self.modules() {

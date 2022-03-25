@@ -51,7 +51,7 @@ pub trait Module {
     /// data required for rendering.
     fn run(
         &mut self,
-        runtime_info: Arc<RuntimeInformation>,
+        runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError>;
 
     /*
@@ -187,7 +187,7 @@ pub trait Module {
     /// Runs all submodules in order as they are returned in [Self::submodules].
     fn run_submodules(
         &mut self,
-        runtime_information: Arc<RuntimeInformation>,
+        runtime_information: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         let submodules = match self.submodules() {
             None => return Ok(()),
@@ -209,7 +209,7 @@ pub trait Module {
     fn run_submodule(
         &mut self,
         idx: usize,
-        runtime_information: Arc<RuntimeInformation>,
+        runtime_information: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         let submodules = match self.submodules() {
             None => return Ok(()),
@@ -240,7 +240,7 @@ pub trait Module {
     fn run_submodule_id(
         &mut self,
         id: &str,
-        runtime_information: Arc<RuntimeInformation>,
+        runtime_information: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         let modules = match self.submodules() {
             None => return Ok(()),
@@ -270,7 +270,7 @@ pub trait Module {
     fn run_submodule_id_all(
         &mut self,
         id: &str,
-        runtime_information: Arc<RuntimeInformation>,
+        runtime_information: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         let modules = match self.submodules() {
             None => return Ok(()),

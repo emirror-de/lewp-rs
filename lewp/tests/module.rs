@@ -6,7 +6,7 @@ use {
         Module,
         RuntimeInformation,
     },
-    std::sync::Arc,
+    std::rc::Rc,
 };
 
 struct HelloWorld {
@@ -40,7 +40,7 @@ impl Module for HelloWorld {
 
     fn run(
         &mut self,
-        _runtime_info: Arc<RuntimeInformation>,
+        _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
@@ -53,8 +53,7 @@ impl Module for HelloWorld {
 #[test]
 fn hello_world() {
     let mut module = HelloWorld::new();
-    match module.run(Arc::new(RuntimeInformation::new(&PageConfig::new(None))))
-    {
+    match module.run(Rc::new(RuntimeInformation::new(&PageConfig::new(None)))) {
         _ => (),
     }
 }

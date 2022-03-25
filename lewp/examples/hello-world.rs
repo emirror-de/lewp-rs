@@ -14,7 +14,7 @@ use {
         Page,
         RuntimeInformation,
     },
-    std::sync::Arc,
+    std::rc::Rc,
 };
 
 struct HelloWorld {
@@ -48,7 +48,7 @@ impl Module for HelloWorld {
 
     fn run(
         &mut self,
-        _runtime_info: Arc<RuntimeInformation>,
+        _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }

@@ -8,7 +8,7 @@ use {
         Page,
         RuntimeInformation,
     },
-    std::sync::Arc,
+    std::rc::Rc,
 };
 
 struct HeadOnly {
@@ -52,7 +52,7 @@ impl Module for HeadOnly {
 
     fn run(
         &mut self,
-        _runtime_info: Arc<RuntimeInformation>,
+        _runtime_info: Rc<RuntimeInformation>,
     ) -> Result<(), LewpError> {
         Ok(())
     }
