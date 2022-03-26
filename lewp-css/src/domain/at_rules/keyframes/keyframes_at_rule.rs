@@ -5,6 +5,7 @@ use {
     super::{Keyframe, KeyframeSelector, KeyframesName},
     crate::domain::{
         at_rules::VendorPrefixedAtRule,
+        CssRule::Keyframes,
         HasVendorPrefix,
         VendorPrefix,
     },
@@ -12,8 +13,8 @@ use {
     std::fmt,
 };
 
-/// A [`@keyframes`][keyframes] rule.
-/// [keyframes]: <https://drafts.csswg.org/css-animations/#keyframes>
+/// A [`@keyframes`](Keyframes) rule.
+/// Keyframes: <https://drafts.csswg.org/css-animations/#keyframes>
 #[derive(Debug, Clone)]
 pub struct KeyframesAtRule {
     /// Vendor prefix type the @keyframes has.

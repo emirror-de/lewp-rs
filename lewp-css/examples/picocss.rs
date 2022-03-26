@@ -1,19 +1,8 @@
-use {
-    cssparser::ToCss,
-    lewp_css::{
-        domain::{
-            at_rules::{document::DocumentAtRule, media::MediaAtRule},
-            CssRule,
-            CssRules,
-            StyleRule,
-        },
-        Stylesheet,
-    },
-};
+use lewp_css::Stylesheet;
 
 fn main() {
     let some_css = std::fs::read_to_string("testfiles/pico.min.css").unwrap();
-    let mut stylesheet = Stylesheet::parse(&some_css).expect("CSS was invalid");
+    let stylesheet = Stylesheet::parse(&some_css).expect("CSS was invalid");
 
     // Alternatively, load from a file using Stylesheet::from_file_path("/path/to/stylesheet.css").unwrap();
 

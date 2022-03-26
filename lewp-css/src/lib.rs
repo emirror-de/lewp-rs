@@ -23,8 +23,7 @@
 //! ### Loading and Saving Stylesheets
 //!
 //! ```
-//! extern crate css_next;
-//! use ::css_next::Stylesheet;
+//! use ::lewp_css::Stylesheet;
 //!
 //! let some_css = "input { margin-left: 10pt; top: 20px; }".to_owned();
 //! let stylesheet = Stylesheet::parse(&some_css).expect("CSS was invalid");
@@ -51,8 +50,7 @@
 //! ### To parse a single CSS selector
 //!
 //! ```
-//! extern crate css_next;
-//! use ::css_next::parse_css_selector;
+//! use ::lewp_css::parse_css_selector;
 //!
 //! let selector = parse_css_selector("P.myclass").unwrap();
 //! ```
