@@ -69,7 +69,7 @@ pub trait NonTSPseudoClass: Sized + ToCss {
 
     /// Whether this pseudo-class belongs to:
     ///
-    /// https://drafts.csswg.org/selectors-4/#useraction-pseudos
+    /// <https://drafts.csswg.org/selectors-4/#useraction-pseudos>
     fn is_user_action_state(&self) -> bool;
 
     fn visit<V>(&self, _visitor: &mut V) -> bool
@@ -228,7 +228,7 @@ macro_rules! with_all_bounds {
             type BorrowedLocalName: ?Sized + Eq;
 
             /// non tree-structural pseudo-classes
-            /// (see: https://drafts.csswg.org/selectors/#structural-pseudos)
+            /// (see: <https://drafts.csswg.org/selectors/#structural-pseudos>)
             type NonTSPseudoClass: $($CommonBounds)* + NonTSPseudoClass<Impl = Self>;
 
             /// pseudo-elements
@@ -1037,9 +1037,9 @@ impl Combinator {
 }
 
 /// A CSS simple selector or combinator. We store both in the same enum for
-/// optimal packing and cache performance, see [1].
+/// optimal packing and cache performance, see \[1\].
 ///
-/// [1] https://bugzilla.mozilla.org/show_bug.cgi?id=1357973
+/// \[1\] <https://bugzilla.mozilla.org/show_bug.cgi?id=1357973>
 #[derive(Clone, Eq, PartialEq)]
 pub enum Component<Impl: SelectorImpl> {
     Combinator(Combinator),
@@ -1088,7 +1088,7 @@ pub enum Component<Impl: SelectorImpl> {
     NonTSPseudoClass(Impl::NonTSPseudoClass),
     /// The ::slotted() pseudo-element:
     ///
-    /// https://drafts.csswg.org/css-scoping/#slotted-pseudo
+    /// <https://drafts.csswg.org/css-scoping/#slotted-pseudo>
     ///
     /// The selector here is a compound selector, that is, no combinators.
     ///
@@ -1096,31 +1096,31 @@ pub enum Component<Impl: SelectorImpl> {
     /// writing no other browser does, and that allows them to put ::slotted()
     /// in the rule hash, so we do that too.
     ///
-    /// See https://github.com/w3c/csswg-drafts/issues/2158
+    /// See <https://github.com/w3c/csswg-drafts/issues/2158>
     Slotted(Selector<Impl>),
     /// The `::part` pseudo-element.
-    ///   https://drafts.csswg.org/css-shadow-parts/#part
+    ///   <https://drafts.csswg.org/css-shadow-parts/#part>
     Part(Box<[Impl::Identifier]>),
     /// The `:host` pseudo-class:
     ///
-    /// https://drafts.csswg.org/css-scoping/#host-selector
+    /// <https://drafts.csswg.org/css-scoping/#host-selector>
     ///
     /// NOTE(emilio): This should support a list of selectors, but as of this
     /// writing no other browser does, and that allows them to put :host()
     /// in the rule hash, so we do that too.
     ///
-    /// See https://github.com/w3c/csswg-drafts/issues/2158
+    /// See <https://github.com/w3c/csswg-drafts/issues/2158>
     Host(Option<Selector<Impl>>),
     /// The `:where` pseudo-class.
     ///
-    /// https://drafts.csswg.org/selectors/#zero-matches
+    /// <https://drafts.csswg.org/selectors/#zero-matches>
     ///
     /// The inner argument is conceptually a SelectorList, but we move the
     /// selectors to the heap to keep Component small.
     Where(Box<[Selector<Impl>]>),
     /// The `:is` pseudo-class.
     ///
-    /// https://drafts.csswg.org/selectors/#matches-pseudo
+    /// <https://drafts.csswg.org/selectors/#matches-pseudo>
     ///
     /// Same comment as above re. the argument.
     Is(Box<[Selector<Impl>]>),

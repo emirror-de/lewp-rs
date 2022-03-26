@@ -2,14 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-use crate::tree::OpaqueElement;
-use fxhash::FxHashMap;
+use {crate::tree::OpaqueElement, fxhash::FxHashMap};
 
 /// A cache to speed up matching of nth-index-like selectors.
 ///
-/// See [1] for some discussion around the design tradeoffs.
+/// See \[1\] for some discussion around the design tradeoffs.
 ///
-/// [1] https://bugzilla.mozilla.org/show_bug.cgi?id=1401855#c3
+/// \[1\] <https://bugzilla.mozilla.org/show_bug.cgi?id=1401855#c3>
 #[derive(Default)]
 pub struct NthIndexCache {
     nth: NthIndexCacheInner,
@@ -20,7 +19,11 @@ pub struct NthIndexCache {
 
 impl NthIndexCache {
     /// Gets the appropriate cache for the given parameters.
-    pub fn get(&mut self, is_of_type: bool, is_from_end: bool) -> &mut NthIndexCacheInner {
+    pub fn get(
+        &mut self,
+        is_of_type: bool,
+        is_from_end: bool,
+    ) -> &mut NthIndexCacheInner {
         match (is_of_type, is_from_end) {
             (false, false) => &mut self.nth,
             (false, true) => &mut self.nth_last,

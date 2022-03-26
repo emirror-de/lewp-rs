@@ -2,11 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-use crate::attr::CaseSensitivity;
-use crate::bloom::BloomFilter;
-use crate::nth_index_cache::NthIndexCache;
-use crate::parser::SelectorImpl;
-use crate::tree::{Element, OpaqueElement};
+use crate::{
+    attr::CaseSensitivity,
+    bloom::BloomFilter,
+    nth_index_cache::NthIndexCache,
+    parser::SelectorImpl,
+    tree::{Element, OpaqueElement},
+};
 
 /// What kind of selector matching mode we should use.
 ///
@@ -53,8 +55,8 @@ impl VisitedHandlingMode {
     pub fn matches_visited(&self) -> bool {
         matches!(
             *self,
-            VisitedHandlingMode::RelevantLinkVisited |
-                VisitedHandlingMode::AllLinksVisitedAndUnvisited
+            VisitedHandlingMode::RelevantLinkVisited
+                | VisitedHandlingMode::AllLinksVisitedAndUnvisited
         )
     }
 
@@ -62,15 +64,15 @@ impl VisitedHandlingMode {
     pub fn matches_unvisited(&self) -> bool {
         matches!(
             *self,
-            VisitedHandlingMode::AllLinksUnvisited |
-                VisitedHandlingMode::AllLinksVisitedAndUnvisited
+            VisitedHandlingMode::AllLinksUnvisited
+                | VisitedHandlingMode::AllLinksVisitedAndUnvisited
         )
     }
 }
 
 /// Which quirks mode is this document in.
 ///
-/// See: https://quirks.spec.whatwg.org/
+/// See: <https://quirks.spec.whatwg.org/>
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum QuirksMode {
     /// Quirks mode.
@@ -85,7 +87,9 @@ impl QuirksMode {
     #[inline]
     pub fn classes_and_ids_case_sensitivity(self) -> CaseSensitivity {
         match self {
-            QuirksMode::NoQuirks | QuirksMode::LimitedQuirks => CaseSensitivity::CaseSensitive,
+            QuirksMode::NoQuirks | QuirksMode::LimitedQuirks => {
+                CaseSensitivity::CaseSensitive
+            }
             QuirksMode::Quirks => CaseSensitivity::AsciiCaseInsensitive,
         }
     }
@@ -114,7 +118,7 @@ where
     ///
     /// When this is None, :scope will match the root element.
     ///
-    /// See https://drafts.csswg.org/selectors-4/#scope-pseudo
+    /// See <https://drafts.csswg.org/selectors-4/#scope-pseudo>
     pub scope_element: Option<OpaqueElement>,
 
     /// The current shadow host we're collecting :host rules for.
@@ -134,7 +138,8 @@ where
 
     /// An optional hook function for checking whether a pseudo-element
     /// should match when matching_mode is ForStatelessPseudoElement.
-    pub pseudo_element_matching_fn: Option<&'a dyn Fn(&Impl::PseudoElement) -> bool>,
+    pub pseudo_element_matching_fn:
+        Option<&'a dyn Fn(&Impl::PseudoElement) -> bool>,
 
     /// Extra implementation-dependent matching data.
     pub extra_data: Impl::ExtraMatchingData,
@@ -178,7 +183,8 @@ where
             visited_handling,
             nth_index_cache,
             quirks_mode,
-            classes_and_ids_case_sensitivity: quirks_mode.classes_and_ids_case_sensitivity(),
+            classes_and_ids_case_sensitivity: quirks_mode
+                .classes_and_ids_case_sensitivity(),
             scope_element: None,
             current_host: None,
             nesting_level: 0,

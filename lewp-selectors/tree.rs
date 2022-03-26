@@ -5,11 +5,14 @@
 //! Traits that nodes must implement. Breaks the otherwise-cyclic dependency
 //! between layout and style.
 
-use crate::attr::{AttrSelectorOperation, CaseSensitivity, NamespaceConstraint};
-use crate::matching::{ElementSelectorFlags, MatchingContext};
-use crate::parser::SelectorImpl;
-use std::fmt::Debug;
-use std::ptr::NonNull;
+use {
+    crate::{
+        attr::{AttrSelectorOperation, CaseSensitivity, NamespaceConstraint},
+        matching::{ElementSelectorFlags, MatchingContext},
+        parser::SelectorImpl,
+    },
+    std::{fmt::Debug, ptr::NonNull},
+};
 
 /// Opaque representation of an Element, for identity comparisons.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -62,10 +65,16 @@ pub trait Element: Sized + Clone + Debug {
 
     fn is_html_element_in_html_document(&self) -> bool;
 
-    fn has_local_name(&self, local_name: &<Self::Impl as SelectorImpl>::BorrowedLocalName) -> bool;
+    fn has_local_name(
+        &self,
+        local_name: &<Self::Impl as SelectorImpl>::BorrowedLocalName,
+    ) -> bool;
 
     /// Empty string for no namespace
-    fn has_namespace(&self, ns: &<Self::Impl as SelectorImpl>::BorrowedNamespaceUrl) -> bool;
+    fn has_namespace(
+        &self,
+        ns: &<Self::Impl as SelectorImpl>::BorrowedNamespaceUrl,
+    ) -> bool;
 
     /// Whether this element and the `other` element have the same local name and namespace.
     fn is_same_type(&self, other: &Self) -> bool;
@@ -74,7 +83,9 @@ pub trait Element: Sized + Clone + Debug {
         &self,
         ns: &NamespaceConstraint<&<Self::Impl as SelectorImpl>::NamespaceUrl>,
         local_name: &<Self::Impl as SelectorImpl>::LocalName,
-        operation: &AttrSelectorOperation<&<Self::Impl as SelectorImpl>::AttrValue>,
+        operation: &AttrSelectorOperation<
+            &<Self::Impl as SelectorImpl>::AttrValue,
+        >,
     ) -> bool;
 
     fn match_non_ts_pseudo_class<F>(
@@ -129,7 +140,7 @@ pub trait Element: Sized + Clone + Debug {
     /// Returns whether this element matches `:empty`.
     ///
     /// That is, whether it does not contain any child element or any non-zero-length text node.
-    /// See http://dev.w3.org/csswg/selectors-3/#empty-pseudo
+    /// See <http://dev.w3.org/csswg/selectors-3/#empty-pseudo>
     fn is_empty(&self) -> bool;
 
     /// Returns whether this element matches `:root`,
