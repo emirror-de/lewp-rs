@@ -5,14 +5,13 @@ use {
     super::PageSelectorPseudoClass,
     crate::domain::{
         properties::{Importance, PropertyDeclaration, PropertyDeclarations},
-        CssRule::Page,
         HasPropertyDeclarations,
     },
     cssparser::ToCss,
     std::fmt,
 };
 
-/// A [`@page`](Page) rule.
+/// A [`@page`](crate::domain::CssRule::Page) rule.
 /// page: <https://drafts.csswg.org/css2/page.html#page-box>
 /// page-selectors: <https://drafts.csswg.org/css2/page.html#page-selectors>
 #[derive(Default, Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
