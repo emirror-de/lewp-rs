@@ -278,7 +278,7 @@ pub fn title(title: &str) -> Node {
 /// Creates a [base](https://html.spec.whatwg.org/dev/semantics.html#the-base-element) element.
 pub fn base(href: &str, target: BrowsingContext) -> Node {
     let mut e = new_element("base", vec![]);
-    if href != "" {
+    if !href.is_empty() {
         e = e.attr("href", href);
     }
     match target {
@@ -290,10 +290,10 @@ pub fn base(href: &str, target: BrowsingContext) -> Node {
 /// Creates a [link](https://html.spec.whatwg.org/dev/semantics.html#the-link-element) element.
 pub fn link(type_: &str, href: &str) -> Node {
     let mut e = new_element("link", vec![]);
-    if href != "" {
+    if !href.is_empty() {
         e = e.attr("href", href);
     }
-    if type_ != "" {
+    if !type_.is_empty() {
         e = e.attr("type", type_);
     }
     e
@@ -323,7 +323,7 @@ pub fn style(text: Node) -> Node {
 /// Creates an [anchor](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-a-element) element.
 pub fn a(href: &str, children: Nodes) -> Node {
     let mut e = new_element("a", children);
-    if href != "" {
+    if !href.is_empty() {
         e = e.attr("href", href);
     }
     e

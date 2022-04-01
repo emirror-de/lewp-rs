@@ -32,7 +32,7 @@ where
         match &self.data() {
             NodeData::Doctype { name, .. } => Some(name.to_string()),
             NodeData::Element { name, .. } => Some(name.local.to_string()),
-            _ => return None,
+            _ => None,
         }
     }
     /// Adds an Attribute with given name and value to the node.

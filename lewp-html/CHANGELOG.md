@@ -8,6 +8,8 @@
 
 ### 📈 Changes
 
+* Internal code cleanup
+
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes

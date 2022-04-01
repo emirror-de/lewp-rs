@@ -1,4 +1,4 @@
-use lewp_html::{api::*, DocumentExt, LanguageTag, NodeExt, Script};
+use lewp_html::{api::*, DocumentExt, LanguageTag, NodeExt};
 
 fn main() {
     let valid_html = document(
