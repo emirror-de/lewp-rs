@@ -1,6 +1,6 @@
 [package]
 name = "lewp-html"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Lewin Probst <info@emirror.de>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -11,8 +11,6 @@ repository = "https://github.com/emirror-de/lewp-rs"
 readme = "README.md"
 keywords = ["HTML5", "CSS", "JavaScript", "modules"]
 categories = ["web-programming"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rcdom = { version = "0.1", package = "markup5ever_rcdom" }
