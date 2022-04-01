@@ -8,11 +8,13 @@
 * Pages now can have head tags. The `head_tags` method has been added to the `Page` trait
 * Pages now need to have method `id(&self) -> &str` implemented to identify resources that are used by that page
 * Page CSS files are now added as inline style using the `css::Register`
-* Added `fh::ResourceType` that is able to query resources from the file hierarchy (Currently textfiles and images)
+* Added `fh::ResourceType` that is able to query resources from the file hierarchy
+* Added `Text` and `Image` classes that implement `fh::Component` to enable retrieval of text and image files from the file hierarchy
 * `RuntimeInformation` now inlcudes a reference to the page config instance
 * `RuntimeInformation` are now passed to submodules
 * `PageConfig` now contains the member `fh: Option<Arc<FileHierarchy>>` to enable access to the file hierarchy for modules
 * `Lewp` struct has been introduced, enabling a shared global file hierarchy and css register
+* `css::Register` has now an option to autoload and process files on instantiation which is enabled by default
 
 ### 📈 Changes
 
@@ -27,6 +29,7 @@
 * `ModuleConfig::skip_wrapper` has been removed
 * `Module::view` method now returns `Node` instead of `Nodes`
 * `css_register` method has been removed from the `Page` trait, because it is stored in the `PageConfig` from now on
+* `SubModule` trait has been integrated into `Module` trait
 
 ## v0.3.0
 

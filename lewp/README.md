@@ -80,25 +80,26 @@ lewp generates a highly optimized HTML web page and provides automatic handling 
   - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
   - [x] A CSS register is implemented that can be used as shared global querying instance for CSS files
 - [x] Modules are isolated (HTML, CSS)
-- [ ] Page specific CSS is possible
+- [x] Page specific CSS is possible
+- [x] Provide an API for generic resources
+- [ ] Added [html5-picture](https://github.com/emirror-de/html5-picture) support
+  - [ ] Conversion of pictures on startup is possible
+  - [ ] Usage of `<picture>` tags within `lewp`
 - [ ] JavaScript integration
   - [ ] Combining files is implemented
   - [ ] Minimization is implemented
-- [ ] HTML can be streamed
 - [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
-- [ ] JavaScript and CSS can be compiled into the binary
+- [ ] Compiling resources into binary is possible
+  - [ ] JavaScript
+  - [ ] CSS
+  - [ ] Resources implementing `fh::Component`
 - [ ] Add attributes to the container wrapping the module
+- [ ] Provide an API for localization (l10n)
+- [ ] Modules can have isolated folders for temporary files
+- [ ] HTML can be streamed
 - [ ] Configuration using `.toml` files
   - [ ] Modules
   - [ ] Pages
-- [ ] Added [html5-picture](https://github.com/emirror-de/html5-picture) support
-  - [ ] Conversion of pictures on startup is possible
-  - [ ] API for a global register that holds all pictures and creates the HTML code
-- [ ] Provide an API for localization (l10n)
-- [ ] Provide an API for generic resources
-- [ ] Modules can have isolated folders for temporary files
-  - [ ] CSS attributes can be configured
-- [ ] Modules can send events to sub-modules
 
 ## 🤠 Contributing
 
