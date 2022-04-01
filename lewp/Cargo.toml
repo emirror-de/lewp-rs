@@ -14,7 +14,7 @@ categories = ["web-programming"]
 
 [dependencies]
 lewp-css = { version = "0.2", path = "../lewp-css" }
-lewp-html = { version = "0.1", path = "../lewp-html" }
+lewp-html = { version = "0.2", path = "../lewp-html" }
 selectors = { version = "0.24", path = "../lewp-selectors", package = "lewp-selectors" }
 serde = { version = "^1.0.130", features = ["derive"], optional = true }
 langtag = "^0.2.0"
