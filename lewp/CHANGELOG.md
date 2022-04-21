@@ -1,5 +1,7 @@
 # CHANGELOG
 
+---
+
 ## v0.4.0
 
 ### 📦 New features
@@ -31,6 +33,8 @@
 * `css_register` method has been removed from the `Page` trait, because it is stored in the `PageConfig` from now on
 * `SubModule` trait has been integrated into `Module` trait
 
+---
+
 ## v0.3.0
 
 This release brings several new features.
@@ -56,6 +60,8 @@ It also adds the following crates as dependencies:
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes
+
+---
 
 ## v0.2.0
 
