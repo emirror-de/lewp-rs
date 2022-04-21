@@ -90,6 +90,7 @@ impl FileHierarchy {
             }
             filenames.push(entry);
         }
+        filenames.sort();
         Ok(filenames)
     }
 
