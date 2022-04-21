@@ -21,6 +21,7 @@
 * `Component` trait contains a `folder_name` method that can be used to get the correct folder in the file hierarchy based on the given `ComponentInformation`
 * `PageOptions` now contains a file hierarchy and a css register as `Option`
 * List returned by `FileHierarchy::get_file_list` is now sorted
+* `FileHierarchy::get_file_list` now fully uses `Path` to assemble the subfolder
 
 ### 🐛 Bugfixes
 

@@ -56,12 +56,11 @@ impl FileHierarchy {
         &self,
         component: &COMP,
     ) -> Result<Vec<PathBuf>, LewpError> {
-        let subfolder = self.mountpoint.join(Path::new(&format!(
-            "{}/{}/{}",
-            component.level(),
-            component.id(),
-            component.kind()
-        )));
+        let subfolder = self
+            .mountpoint
+            .join(Path::new(&component.level().to_string()))
+            .join(Path::new(&component.id().to_string()))
+            .join(Path::new(&component.kind().to_string()));
         if !subfolder.is_dir() {
             return Err(LewpError {
                 kind: LewpErrorKind::FileHierarchy,
