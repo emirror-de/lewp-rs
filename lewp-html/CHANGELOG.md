@@ -12,6 +12,8 @@
 
 ### 🔨 Breaking changes
 
+* `Nodes` struct has been renamed to `NodeList` for better readability
+
 ## v0.2.0
 
 ### 📦 New features
