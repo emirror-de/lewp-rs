@@ -5,6 +5,8 @@
 ### 📦 New features
 
 - Added function `from_string(s: String) -> Result<Self, std::io::Error>` to `DocumentExt`, that enables to parse an HTML string into a `Document`
+- Added `NodeListExt` trait
+  - `from_string(s: String) -> Result<NodeList, std::io::Error>`
 
 ### 📈 Changes
 
