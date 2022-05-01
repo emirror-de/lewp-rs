@@ -2,7 +2,7 @@ use {
     lewp::{
         config::{ModuleConfig, PageConfig},
         css::{Register as CssRegister, RegisterOptions},
-        html::{api::*, Node, Nodes},
+        html::{api::*, Node, NodeList},
         Charset,
         LanguageTag,
         Lewp,
@@ -17,7 +17,7 @@ use {
 
 struct HelloWorld {
     config: ModuleConfig,
-    head_tags: Nodes,
+    head_tags: NodeList,
     data: String,
 }
 
@@ -32,7 +32,7 @@ impl HelloWorld {
 }
 
 impl Module for HelloWorld {
-    fn head_tags(&self) -> &Nodes {
+    fn head_tags(&self) -> &NodeList {
         &self.head_tags
     }
 
