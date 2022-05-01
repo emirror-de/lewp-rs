@@ -10,6 +10,8 @@ Say goodbye to the web template hell. Generate your HTML5 website technically op
 
 If you have questions, want to contribute or have any other type of request, your invited to create an issue or visit the [openprobst.dev](https://openprobst.dev) discord server.
 
+**Warnings during compilation are intended! They are used as reminder for e.g. features that need to be implemented etc. They will be removed with 1.0.0**
+
 ## ❓What is lewp?
 
 Lewp is a collection of structs and traits that simplify modularized website creation and reusage of code without sacrificing the comfort of programming, speed and optimized serving of the resulting site.
