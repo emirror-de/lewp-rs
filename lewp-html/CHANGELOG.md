@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.3.0
+
+### 📦 New features
+
+- Added function `from_string(s: String) -> Result<Self, std::io::Error>` to `DocumentExt`, that enables to parse an HTML string into a `Document`
+
+### 📈 Changes
+
+### 🐛 Bugfixes
+
+### 🔨 Breaking changes
+
 ## v0.2.0
 
 ### 📦 New features
