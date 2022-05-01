@@ -4,7 +4,7 @@
 
 ### 📦 New features
 
-* Integrated `lewp-html` version `0.2.0`
+* Integrated `lewp-html` version `0.3.0`
 * Pages now can have head tags. The `head_tags` method has been added to the `Page` trait
 * Pages now need to have method `id(&self) -> &str` implemented to identify resources that are used by that page
 * Page CSS files are now added as inline style using the `css::Register`
@@ -32,6 +32,7 @@
 * `Module::view` method now returns `Node` instead of `Nodes`
 * `css_register` method has been removed from the `Page` trait, because it is stored in the `PageConfig` from now on
 * `SubModule` trait has been integrated into `Module` trait
+* `Nodes` has been renamed to `NodeList` as it changed in `lewp-html`
 
 ## v0.3.0
 

@@ -9,7 +9,8 @@
 //!
 //! Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source.
 //!
-//! ⚠ ***This crate is currently evolving. API changes can happen anytime until v1.0.0***
+//! ⚠ ***This crate is currently evolving. API breaking changes can happen anytime until v1.0.0.
+//! Compiler warnings will be removed in 1.0.0***
 //!
 //! ## Provided solutions
 //!
@@ -29,7 +30,7 @@
 //!         config::{ModuleConfig, PageConfig},
 //!         html::{
 //!             api::{h1, text},
-//!             Nodes,
+//!             NodeList,
 //!             Node,
 //!         },
 //!         Module, Modules, RuntimeInformation,
@@ -44,7 +45,7 @@
 //! // This is one of your modules the webpage is build with.
 //! struct HelloWorld {
 //!     config: ModuleConfig,
-//!     head_tags: Nodes,
+//!     head_tags: NodeList,
 //!     data: String,
 //! }
 //!
@@ -60,7 +61,7 @@
 //!
 //! // The [Module] trait is required for [lewp] to know it is a module. :-)
 //! impl Module for HelloWorld {
-//!     fn head_tags(&self) -> &Nodes {
+//!     fn head_tags(&self) -> &NodeList {
 //!         &self.head_tags
 //!     }
 //!

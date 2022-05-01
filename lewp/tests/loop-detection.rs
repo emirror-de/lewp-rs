@@ -4,7 +4,7 @@ mod modules {
     use {
         lewp::{
             config::ModuleConfig,
-            html::{api::*, Node, NodeExt, Nodes},
+            html::{api::*, Node, NodeExt, NodeList},
             LewpError,
             Module,
             Modules,
@@ -15,7 +15,7 @@ mod modules {
 
     pub struct Header {
         config: ModuleConfig,
-        head_tags: Nodes,
+        head_tags: NodeList,
         children: Modules,
         data: String,
     }
@@ -24,7 +24,7 @@ mod modules {
         pub fn new() -> Self {
             let mut instance = Self {
                 config: ModuleConfig::new(),
-                head_tags: Nodes::new(),
+                head_tags: NodeList::new(),
                 children: Modules::new(),
                 data: String::from("hello-world"),
             };
@@ -33,7 +33,7 @@ mod modules {
                 .append_module(
                     Self {
                         config: ModuleConfig::new(),
-                        head_tags: Nodes::new(),
+                        head_tags: NodeList::new(),
                         children: Modules::new(),
                         data: String::from("hello-world"),
                     }
@@ -50,7 +50,7 @@ mod modules {
     }
 
     impl Module for Header {
-        fn head_tags(&self) -> &Nodes {
+        fn head_tags(&self) -> &NodeList {
             &self.head_tags
         }
 

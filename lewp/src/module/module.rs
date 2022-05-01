@@ -7,7 +7,7 @@ use {
         LewpErrorKind,
         Modules,
     },
-    lewp_html::{api::div, Node, NodeExt, Nodes},
+    lewp_html::{api::div, Node, NodeExt, NodeList},
     std::{cell::RefCell, rc::Rc, sync::Arc},
 };
 
@@ -24,7 +24,7 @@ pub trait Module {
     fn config(&self) -> &ModuleConfig;
 
     /// Borrows the head tags that are required to run this module in a web page.
-    fn head_tags(&self) -> &Nodes;
+    fn head_tags(&self) -> &NodeList;
 
     /// Wraps `self` into a `Rc<RefCell<>>`
     fn into_module_ptr(self) -> ModulePtr
@@ -37,7 +37,7 @@ pub trait Module {
     /// Constructs the view of the module.
     fn view(&self) -> Node;
 
-    /// Renders as DOM nodes.
+    /// Renders as DOM Node.
     fn render(&self) -> Node {
         let view = self.view();
         view.borrow_attrs(vec![
@@ -88,7 +88,7 @@ pub trait Module {
     }
 
     /// Renders all submodules to the parent view.
-    fn render_submodules(&self, parent_module_view: &mut Nodes) {
+    fn render_submodules(&self, parent_module_view: &mut NodeList) {
         let submodules = match self.submodules() {
             None => return,
             Some(modules) => modules,
@@ -106,7 +106,7 @@ pub trait Module {
     fn render_submodule(
         &self,
         idx: usize,
-        parent_module_view: &mut Nodes,
+        parent_module_view: &mut NodeList,
     ) -> Result<(), LewpError> {
         let submodules = match self.submodules() {
             None => return Ok(()),
@@ -137,7 +137,7 @@ pub trait Module {
     fn render_submodule_id(
         &self,
         id: &str,
-        parent_module_view: &mut Nodes,
+        parent_module_view: &mut NodeList,
     ) -> Result<(), LewpError> {
         let submodules = match self.submodules() {
             None => return Ok(()),
@@ -168,7 +168,7 @@ pub trait Module {
     fn render_submodule_id_all(
         &self,
         id: &str,
-        parent_module_view: &mut Nodes,
+        parent_module_view: &mut NodeList,
     ) -> Result<(), LewpError> {
         let submodules = match self.submodules() {
             None => return Ok(()),

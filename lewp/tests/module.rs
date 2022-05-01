@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        html::{api::*, Node, Nodes},
+        html::{api::*, Node, NodeList},
         LewpError,
         Module,
         RuntimeInformation,
@@ -11,7 +11,7 @@ use {
 
 struct HelloWorld {
     config: ModuleConfig,
-    head_tags: Nodes,
+    head_tags: NodeList,
     data: String,
 }
 
@@ -26,7 +26,7 @@ impl HelloWorld {
 }
 
 impl Module for HelloWorld {
-    fn head_tags(&self) -> &Nodes {
+    fn head_tags(&self) -> &NodeList {
         &self.head_tags
     }
 
