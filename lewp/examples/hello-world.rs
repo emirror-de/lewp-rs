@@ -4,7 +4,7 @@ use {
         html::{
             api::{h1, text},
             Node,
-            Nodes,
+            NodeList,
         },
         Charset,
         LanguageTag,
@@ -19,7 +19,7 @@ use {
 
 struct HelloWorld {
     config: ModuleConfig,
-    head_tags: Nodes,
+    head_tags: NodeList,
     data: String,
 }
 
@@ -34,7 +34,7 @@ impl HelloWorld {
 }
 
 impl Module for HelloWorld {
-    fn head_tags(&self) -> &Nodes {
+    fn head_tags(&self) -> &NodeList {
         &self.head_tags
     }
 

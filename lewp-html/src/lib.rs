@@ -42,6 +42,8 @@ mod document;
 mod document_ext;
 mod node;
 mod node_ext;
+mod node_list;
+mod node_list_ext;
 mod types;
 
 pub use {
@@ -51,11 +53,10 @@ pub use {
     langtag::LanguageTag,
     node::Node,
     node_ext::NodeExt,
+    node_list::NodeList,
+    node_list_ext::NodeListExt,
     types::*,
 };
-
-/// A list of nodes.
-pub type Nodes = Vec<Node>;
 
 #[macro_export]
 /// Error log with added prefix for this crate.

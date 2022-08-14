@@ -1,5 +1,13 @@
 use {
-    crate::{BrowsingContext, Charset, Document, Node, NodeExt, Nodes, Script},
+    crate::{
+        BrowsingContext,
+        Charset,
+        Document,
+        Node,
+        NodeExt,
+        NodeList,
+        Script,
+    },
     html5ever::{namespace_url, ns, tendril::Tendril, LocalName, QualName},
     langtag::LanguageTag,
     rcdom::NodeData,
@@ -20,7 +28,7 @@ macro_rules! api_children_only {
             #[$link]
             /// element.
             $(#[$outer])*
-            pub fn $name(children: Nodes) -> Node {
+            pub fn $name(children: NodeList) -> Node {
                 new_element($tag_name, children)
             }
         )*
@@ -231,7 +239,7 @@ api_children_only! {
 }
 
 /// Helper function to create a tag node.
-fn new_element(tag_name: &str, children: Nodes) -> Node {
+fn new_element(tag_name: &str, children: NodeList) -> Node {
     let node = rcdom::Node::new(rcdom::NodeData::Element {
         name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
         attrs: RefCell::new(vec![]),
@@ -321,7 +329,7 @@ pub fn style(text: Node) -> Node {
 }
 
 /// Creates an [anchor](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-a-element) element.
-pub fn a(href: &str, children: Nodes) -> Node {
+pub fn a(href: &str, children: NodeList) -> Node {
     let mut e = new_element("a", children);
     if !href.is_empty() {
         e = e.attr("href", href);
@@ -330,7 +338,7 @@ pub fn a(href: &str, children: Nodes) -> Node {
 }
 
 /// Creates an [data](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-data-element) element.
-pub fn data(value: &str, children: Nodes) -> Node {
+pub fn data(value: &str, children: NodeList) -> Node {
     new_element("a", children).attr("value", value)
 }
 
@@ -349,7 +357,7 @@ pub fn param(name: &str, value: &str) -> Node {
 }
 
 /// Creates an [map](https://html.spec.whatwg.org/dev/image-maps.html#the-map-element) element.
-pub fn map(name: &str, children: Nodes) -> Node {
+pub fn map(name: &str, children: NodeList) -> Node {
     new_element("map", children).attr("name", name)
 }
 /// Creates an [script](https://html.spec.whatwg.org/dev/scripting.html#the-script-element) element.
@@ -363,7 +371,7 @@ pub fn script(content: Script) -> Node {
 }
 
 /// Creates an element with the given custom name.
-pub fn custom(name: &str, children: Nodes) -> Node {
+pub fn custom(name: &str, children: NodeList) -> Node {
     new_element(name, children)
 }
 

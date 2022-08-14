@@ -56,12 +56,11 @@ impl FileHierarchy {
         &self,
         component: &COMP,
     ) -> Result<Vec<PathBuf>, LewpError> {
-        let subfolder = self.mountpoint.join(Path::new(&format!(
-            "{}/{}/{}",
-            component.level(),
-            component.id(),
-            component.kind()
-        )));
+        let subfolder = self
+            .mountpoint
+            .join(Path::new(&component.level().to_string()))
+            .join(Path::new(&component.id().to_string()))
+            .join(Path::new(&component.kind().to_string()));
         if !subfolder.is_dir() {
             return Err(LewpError {
                 kind: LewpErrorKind::FileHierarchy,
@@ -90,6 +89,7 @@ impl FileHierarchy {
             }
             filenames.push(entry);
         }
+        filenames.sort();
         Ok(filenames)
     }
 
@@ -105,36 +105,6 @@ impl FileHierarchy {
             },
         }
     }
-
-    /*
-    /// Collects all filenames in the given directory.
-    ///
-    /// The directory is relative to the mountpoint of the file hierarchy.
-    fn collect_filenames(
-        &self,
-        dir: PathBuf,
-    ) -> Result<Vec<PathBuf>, LewpError> {
-        let mut filenames = vec![];
-        for entry in walkdir::WalkDir::new(&dir) {
-            let entry = match entry {
-                Ok(v) => v.into_path(),
-                Err(msg) => {
-                    return Err(LewpError {
-                        kind: LewpErrorKind::FileHierarchy,
-                        message: msg.to_string(),
-                        source_component: component.component_information(),
-                    });
-                }
-            };
-            if entry.is_dir() {
-                // skip folders because we only want to get the files in the list
-                continue;
-            }
-            filenames.push(entry);
-        }
-        Ok(filenames)
-    }
-    */
 
     /// Gets a list of the component ids available for this [ComponentType] on the
     /// given [Level].

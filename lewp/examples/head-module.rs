@@ -1,7 +1,7 @@
 use {
     lewp::{
         config::{ModuleConfig, PageConfig},
-        html::{api::*, Node, NodeExt, Nodes, Script},
+        html::{api::*, Node, NodeExt, NodeList, Script},
         LewpError,
         Module,
         Modules,
@@ -13,7 +13,7 @@ use {
 
 struct HeadOnly {
     config: ModuleConfig,
-    head_tags: Nodes,
+    head_tags: NodeList,
 }
 
 impl HeadOnly {
@@ -25,7 +25,7 @@ impl HeadOnly {
         }
     }
 
-    fn create_head_tags() -> Nodes {
+    fn create_head_tags() -> NodeList {
         let content = String::from(
             "
             document.addEventListener('DOMContentLoaded', () => {
@@ -38,7 +38,7 @@ impl HeadOnly {
 }
 
 impl Module for HeadOnly {
-    fn head_tags(&self) -> &Nodes {
+    fn head_tags(&self) -> &NodeList {
         &self.head_tags
     }
 

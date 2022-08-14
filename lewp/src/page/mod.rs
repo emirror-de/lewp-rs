@@ -5,7 +5,7 @@ use {
         config::PageConfig,
         css::{Entireness, Register as CssRegister},
         fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
-        html::{api::*, Document, Node, Nodes},
+        html::{api::*, Document, Node, NodeList},
         module::{ModulePtr, Modules, RuntimeInformation},
         Charset,
         LanguageTag,
@@ -36,7 +36,7 @@ pub trait Page {
     fn id(&self) -> &str;
 
     /// Borrows the head tags that are specific for this page.
-    fn head_tags(&self) -> Option<&Nodes> {
+    fn head_tags(&self) -> Option<&NodeList> {
         None
     }
 
@@ -83,14 +83,14 @@ pub trait Page {
         required_ids
     }
 
-    /// Runs recursively through the given modules and collects a list of [Nodes]
+    /// Runs recursively through the given modules and collects a [NodeList]
     /// that are required in the `<head>` tag to run all those modules.
     fn collect_head_tags(
         &self,
         modules: &Modules,
         required_module_ids: &mut Vec<String>,
-    ) -> Nodes {
-        let mut head_tags = Nodes::new();
+    ) -> NodeList {
+        let mut head_tags = NodeList::new();
         let mut inline_css = vec![];
 
         for module in modules {
@@ -221,7 +221,7 @@ pub trait Page {
     }
 
     /// Assembles the `<body>` tag of the page.
-    fn assemble_body(&self, modules: Nodes) -> Node {
+    fn assemble_body(&self, modules: NodeList) -> Node {
         //let body = NodeCreator::element("body", vec![]);
         let mut body_children = vec![];
         for module in modules {
@@ -231,14 +231,14 @@ pub trait Page {
     }
 
     /// Assembles the full page and returns it as [Document].
-    fn assemble_full(&self, modules: Nodes) -> Document {
+    fn assemble_full(&self, modules: NodeList) -> Document {
         let head = self.assemble_head();
         let body = self.assemble_body(modules);
         document(self.language(), head, body)
     }
 
     /// Renders the page. To a full valid HTML string.
-    fn render(&self, modules: Nodes) -> String {
+    fn render(&self, modules: NodeList) -> String {
         let mut bytes = vec![];
         let document: SerializableHandle =
             self.assemble_full(modules).document.into();

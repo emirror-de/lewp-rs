@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.3.0
+
+### 📦 New features
+
+- Added function `from_string(s: String) -> Result<Self, std::io::Error>` to `DocumentExt`, that enables to parse an HTML string into a `Document`
+- Added `NodeListExt` trait
+  - `from_string(s: String) -> Result<NodeList, std::io::Error>`
+
+### 📈 Changes
+
+### 🐛 Bugfixes
+
+### 🔨 Breaking changes
+
+* `Nodes` struct has been renamed to `NodeList` for better readability
+
 ## v0.2.0
 
 ### 📦 New features

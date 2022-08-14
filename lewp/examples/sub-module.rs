@@ -9,13 +9,13 @@ mod modules {
             Modules,
             RuntimeInformation,
         },
-        lewp_html::{api::*, Node, NodeExt, Nodes},
+        lewp_html::{api::*, Node, NodeExt, NodeList},
         std::rc::Rc,
     };
 
     pub struct Header {
         config: ModuleConfig,
-        head_tags: Nodes,
+        head_tags: NodeList,
         children: Modules,
         data: String,
     }
@@ -24,7 +24,7 @@ mod modules {
         pub fn new() -> Self {
             let mut instance = Self {
                 config: ModuleConfig::new(),
-                head_tags: Nodes::new(),
+                head_tags: NodeList::new(),
                 children: Modules::new(),
                 data: String::from("hello-world"),
             };
@@ -38,7 +38,7 @@ mod modules {
     }
 
     impl Module for Header {
-        fn head_tags(&self) -> &Nodes {
+        fn head_tags(&self) -> &NodeList {
             &self.head_tags
         }
 
@@ -79,7 +79,7 @@ mod modules {
 
     pub struct RandomHeadline {
         config: ModuleConfig,
-        head_tags: Nodes,
+        head_tags: NodeList,
         current_headline: Option<usize>,
         execution_count: u32,
         data: Vec<String>,
@@ -89,7 +89,7 @@ mod modules {
         pub fn new() -> Self {
             Self {
                 config: ModuleConfig::new(),
-                head_tags: Nodes::new(),
+                head_tags: NodeList::new(),
                 current_headline: None,
                 execution_count: 0,
                 data: vec![
@@ -101,7 +101,7 @@ mod modules {
     }
 
     impl Module for RandomHeadline {
-        fn head_tags(&self) -> &Nodes {
+        fn head_tags(&self) -> &NodeList {
             &self.head_tags
         }
 
