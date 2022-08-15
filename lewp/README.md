@@ -2,13 +2,13 @@
 
 ----------------
 
-![Version](https://img.shields.io/crates/v/lewp?style=flat-square) [![](https://img.shields.io/docsrs/lewp?style=flat-square)](https://docs.rs/lewp) ![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square) ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square) [![](https://img.shields.io/discord/855726181142495242?color=154683&label=discord&style=flat-square)](https://discord.gg/nx7YtsjEbT)
+![Version](https://img.shields.io/crates/v/lewp?style=flat-square) [![](https://img.shields.io/docsrs/lewp?style=flat-square)](https://docs.rs/lewp) ![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square) ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)
 
 Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. Without mixing languages.
 
 *This is the adjusted Rust implementation of [the PHP version of lewp](https://gitlab.com/lewp/lewp).*
 
-If you have questions, want to contribute or have any other type of request, your invited to create an issue or visit the [openprobst.dev](https://openprobst.dev) discord server.
+If you have questions, want to contribute or have any other type of request, your invited to create an issue or a pull request draft.
 
 **Warnings during compilation are intended! They are used as reminder for e.g. features that need to be implemented etc. They will be removed with 1.0.0**
 
