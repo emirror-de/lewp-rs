@@ -243,7 +243,7 @@ fn new_element(tag_name: &str, children: NodeList) -> Node {
     let node = rcdom::Node::new(rcdom::NodeData::Element {
         name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
         attrs: RefCell::new(vec![]),
-        template_contents: None,
+        template_contents: RefCell::new(None),
         mathml_annotation_xml_integration_point: false,
     });
     node.append_children(children);
