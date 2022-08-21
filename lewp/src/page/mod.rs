@@ -10,7 +10,7 @@ use {
         Charset,
         LanguageTag,
     },
-    html5ever::{serialize, serialize::SerializeOpts},
+    html5ever::serialize,
     markup5ever_rcdom::SerializableHandle,
     std::{rc::Rc, sync::Arc},
 };
@@ -242,7 +242,7 @@ pub trait Page {
         let mut bytes = vec![];
         let document: SerializableHandle =
             self.assemble_full(modules).document.into();
-        serialize(&mut bytes, &document, SerializeOpts::default()).unwrap();
+        serialize(&mut bytes, &document, Default::default()).unwrap();
         String::from_utf8(bytes).unwrap()
     }
 
