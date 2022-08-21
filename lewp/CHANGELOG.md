@@ -22,6 +22,7 @@
 * `PageOptions` now contains a file hierarchy and a css register as `Option`
 * List returned by `FileHierarchy::get_file_list` is now sorted
 * `FileHierarchy::get_file_list` now fully uses `Path` to assemble the subfolder
+* Updated dependencies of the `*5ever` crates to the new versions.
 
 ### 🐛 Bugfixes
 
