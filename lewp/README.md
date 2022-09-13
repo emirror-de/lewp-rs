@@ -49,11 +49,11 @@ Lewp is a collection of structs and traits that simplify modularized website cre
 
 Many frameworks already exist that support developers in creating websites and -apps in various languages, eg. [Laravel](https://laravel.com/), [Symfony](https://symfony.com/), or [Django](https://www.djangoproject.com/) etc. They usually follow the [MVC pattern](https://www.tutorialspoint.com/design_pattern/mvc_pattern.htm). You can create a controller for every route and add a model as well as a view for this, all in separate folders. So far, nothing new, a well known and proven concept. However, several problems can arise regarding e.g. code quality, re-usability as well as best practices of SEO and much more. The architecture of these frameworks can lead developers to become inconsistent considering their code structure. Because the files are spread over the whole project, the reusability of code can easily suffer. In addition to that, the usage of templating systems like [Twig](https://twig.symfony.com/) can make the developer create invalid HTML code without recognizing it or create problems relating to for example page loading times [(which is a crucial factor)](https://www.marketingdive.com/news/google-53-of-mobile-users-abandon-sites-that-take-over-3-seconds-to-load/426070/), the [critical rendering path](https://varvy.com/pagespeed/critical-render-path.html) or avoiding ["extra whitespace between HTML tags to avoid browser rendering quirks under some circumstances"](https://twig.symfony.com/doc/3.x/filters/spaceless.html). In the latter (a cite from the [Twig](https://twig.symfony.com/doc/2.x/filters/spaceless.html) documentation), Twig has a property to prevent this, but you need to explicitly enable it and "*its performance is directly related to the text size you are working on*". Developing in these environments can run the risk of spreading those problems over your whole project, making it almost impossible to recover from without rewriting your code base.
 
-So the idea was to create a framework that tries to minimize the impact of the stated problems without making compromises on the comfort of programming.
+So the idea was to create a library that minimizes the impact of the stated problems without making compromises on the comfort of programming.
 
 lewp generates a highly optimized HTML web page and provides automatic handling of your CSS code (and your JavaScript soon) if you want to. Have a look at the examples folder for more information about how to use it.
 
-❗ ***lewp is not a webserver.*** It is a framework that supports you in structuring your algorithms bringing them perfectly in line with your view, without letting your code get messy! It perfectly integrates with frameworks like [rocket](https://rocket.rs) or [actix-web](https://actix.rs).
+❗ ***lewp is not a webserver.*** It is a library that supports you in structuring your algorithms bringing them perfectly in line with your view, without letting your code get messy! It perfectly integrates with frameworks like [rocket](https://rocket.rs) or [actix-web](https://actix.rs).
 
 ## 🚌 Roadmap
 
@@ -101,7 +101,7 @@ lewp generates a highly optimized HTML web page and provides automatic handling 
 
 Unless explicitly stated, any contribution intentionally submitted for inclusion in this project, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
-Please have a look at [CONTRIBUTING.md] for guidelines and conventions.
+Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines and conventions.
 
 ## ⚖ License
 
