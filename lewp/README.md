@@ -67,7 +67,7 @@ lewp generates a highly optimized HTML web page and provides automatic handling 
 - [x] The wrapping `div` tag can be disabled *(recommended only for `<head>` modules)*
 - [x] File hierarchy for CSS and JS is defined
   - [ ] Prevent `/` in IDs
-  - [ ] Remove `..` in IDs
+  - [x] Prevent usage of `..` in paths or IDs
 - [ ] CSS integration
   - [x] Combining files is implemented
   - [x] Minimization of CSS is implemented

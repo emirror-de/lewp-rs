@@ -1,7 +1,8 @@
 /// The file hierarchy level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Level {
-    /// The core level, only used when an error is thrown by lewp core.
+    /// The core level, used for internal purposes only, for example when an
+    /// error is thrown by lewp core.
     Core,
     /// The module level.
     Module,
