@@ -118,7 +118,8 @@ where
     /// but will never return false for items that are actually in the filter.
     #[inline]
     pub fn might_contain_hash(&self, hash: u32) -> bool {
-        !self.storage.first_slot_is_empty(hash) && !self.storage.second_slot_is_empty(hash)
+        !self.storage.first_slot_is_empty(hash)
+            && !self.storage.second_slot_is_empty(hash)
     }
 }
 
@@ -283,9 +284,13 @@ fn hash2(hash: u32) -> u32 {
 
 #[test]
 fn create_and_insert_some_stuff() {
-    use fxhash::FxHasher;
-    use std::hash::{Hash, Hasher};
-    use std::mem::transmute;
+    use {
+        fxhash::FxHasher,
+        std::{
+            hash::{Hash, Hasher},
+            mem::transmute,
+        },
+    };
 
     fn hash_as_str(i: usize) -> u32 {
         let mut hasher = FxHasher::default();
@@ -408,6 +413,7 @@ mod bench {
         });
     }
 
+    /*
     #[bench]
     fn remove_10(b: &mut test::Bencher) {
         let mut bf = BloomFilter::new();
@@ -419,4 +425,5 @@ mod bench {
             }
         });
     }
+    */
 }
