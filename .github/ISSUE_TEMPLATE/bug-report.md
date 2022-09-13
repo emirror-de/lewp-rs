@@ -7,15 +7,15 @@ assignees: emirror-de
 
 ---
 
-**Expected behavior**
+## Expected behavior
 
 Please describe the expected behavior. Short and clear.
 
-**Actual behavior**
+## Actual behavior
 
 Please describe the behavior that is making you create this issue.
 
-**To Reproduce**
+## To Reproduce
 
 Steps to reproduce the behavior:
 
@@ -24,15 +24,15 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
-**Screenshots - Code example**
+## Screenshots - Code example
 
 Please provide either screenshots, code examples or both if possible and helpful.
 
-**Additional context**
+## Additional context
 
 Anything else important to know about?
 
-**Checklist**
+## Checklist
 
 - [ ] Checked the repository if the bug has already been reported
 - [ ] Description of expected behavior is provided
