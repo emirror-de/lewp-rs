@@ -32,10 +32,11 @@ Please provide either screenshots, code examples or both if possible and helpful
 
 Anything else important to know about?
 
-## Checklist
+## Checklist (Please remove after checking)
 
-- [ ] Checked the repository if the bug has already been reported
-- [ ] Description of expected behavior is provided
-- [ ] Description of actual behavior is provided
-- [ ] Screenshots or code example are inserted or linked
-- [ ] Steps to reproduce are clear and tested
+- [ ] Has this bug already been reported in the repository issues?
+- [ ] Is the description of the expected behavior comprehensible for others?
+- [ ] Is the description of the actual behavior comprehensible?
+- [ ] Can I reproduce the error with the provided steps?
+- [ ] If possible, are screenshots or code example inserted or linked?
+- [ ] 

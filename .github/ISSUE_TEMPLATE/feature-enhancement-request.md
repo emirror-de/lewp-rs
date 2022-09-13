@@ -27,10 +27,10 @@ Did you find alternatives for this feature that can be used as reference?
 
 Anything else important to know about?
 
-## Checklist
+## Checklist (please remove after double checking)
 
 - [ ] Checked if there is already a similar issue available in the repository
-- [ ] Clear description of the motivation
-- [ ] Clear description of the desired solution
-- [ ] Code example/public API is provided and commented
-- [ ] Alternatives are stated that can be used as reference
+- [ ] Is the description of the motivation clearly defined?
+- [ ] Is the  description of the desired solution clear and comprehensible for other contributors?
+- [ ] Is my suggested and commented code example/public API easy to use?
+- [ ] Do all stated alternatives provide additional information about my topic?
