@@ -15,6 +15,7 @@
 * `PageConfig` now contains the member `fh: Option<Arc<FileHierarchy>>` to enable access to the file hierarchy for modules
 * `Lewp` struct has been introduced, enabling a shared global file hierarchy and css register
 * `css::Register` has now an option to autoload and process files on instantiation which is enabled by default
+* Added the css identifier `#module` that is replaced by the root node of your module on compilation. See [lewp::css](https://docs.rs/lewp/latest/lewp/css/index.html) for an example and detailed information.
 
 ### 📈 Changes
 

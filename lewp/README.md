@@ -8,9 +8,7 @@ Say goodbye to the web template hell. Generate your HTML5 website technically op
 
 *This is the adjusted Rust implementation of [the PHP version of lewp](https://gitlab.com/lewp/lewp).*
 
-If you have questions, want to contribute or have any other type of request, your invited to create an issue or a pull request draft.
-
-**Warnings during compilation are intended! They are used as reminder for e.g. features that need to be implemented etc. They will be removed with 1.0.0**
+If you have questions, want to contribute or have any other type of request, your invited to create an issue.
 
 ## ❓What is lewp?
 
