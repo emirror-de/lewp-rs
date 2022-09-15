@@ -24,6 +24,8 @@ use {
     std::{path::PathBuf, sync::Arc},
 };
 
+const CSS_MODULE_IDENTIFIER: &'static str = "#module ";
+
 /// Responsible for CSS that is stored for a given [FHComponent].
 ///
 /// Processes all files in the components directory and combines them into one
@@ -125,6 +127,13 @@ impl Component {
             match rule {
                 CssRule::Style(StyleRule { selectors, .. }) => {
                     for s in &mut selectors.0 {
+                        if s.to_css_string().starts_with(CSS_MODULE_IDENTIFIER)
+                        {
+                            self.replace_identifier_and_append_module_prefix(
+                                s,
+                            )?;
+                            continue;
+                        }
                         self.add_module_prefix(s)?;
                     }
                 }
@@ -157,6 +166,36 @@ impl Component {
             ".{} {}",
             self.id(),
             old
+        )) {
+            Err(e) => {
+                return Err(LewpError::new(
+                    LewpErrorKind::Css,
+                    &format!("{:#?}", e),
+                    self.component_information().clone(),
+                ));
+            }
+            Ok(s) => s,
+        };
+        *selector = new;
+        Ok(())
+    }
+
+    fn replace_identifier_and_append_module_prefix(
+        &self,
+        selector: &mut Selector<OurSelectorImpl>,
+    ) -> Result<(), LewpError> {
+        let mut old = String::new();
+        if let Err(e) = selector.to_css(&mut old) {
+            return Err(LewpError::new(
+                LewpErrorKind::Css,
+                &format!("{:#?}", e),
+                self.component_information().clone(),
+            ));
+        };
+        let new = match lewp_css::parse_css_selector(&format!(
+            "{}.{}",
+            old.replace(CSS_MODULE_IDENTIFIER, ""),
+            self.id()
         )) {
             Err(e) => {
                 return Err(LewpError::new(

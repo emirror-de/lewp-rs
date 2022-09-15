@@ -96,7 +96,7 @@ fn isolate_css_module() {
     };
     assert_eq!(
         stylesheet.to_css_string(true),
-        String::from(".hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")
+        String::from("header.hello-world{border: thin solid black}.hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")
         );
 
     match dir.close() {
