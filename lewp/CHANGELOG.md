@@ -16,6 +16,7 @@
 * `Lewp` struct has been introduced, enabling a shared global file hierarchy and css register
 * `css::Register` has now an option to autoload and process files on instantiation which is enabled by default
 * Added the css identifier `#module` that is replaced by the root node of your module on compilation. See [lewp::css](./src/css/mod.rs) for an example and detailed information.
+* Added `ModuleId` and `PageId` abstractions
 
 ### 📈 Changes
 

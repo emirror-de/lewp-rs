@@ -150,7 +150,7 @@ pub use {
     error::{LewpError, LewpErrorKind},
     langtag::LanguageTag,
     module::*,
-    page::Page,
+    page::{Page, PageId},
 };
 
 /// Re-export of the [lewp_html] crate.

@@ -1,5 +1,5 @@
 use {
-    super::{ModulePtr, RuntimeInformation},
+    super::{ModuleId, ModulePtr, RuntimeInformation},
     crate::{
         config::ModuleConfig,
         fh::{ComponentInformation, ComponentType, Level},
@@ -18,7 +18,7 @@ pub trait Module {
     /// Allowed characters for id are `[a-z]`, `[0-9]` and `-`.
     /// **There is currently no check wether other characters are used. So please
     /// make sure that you do not use any other characters while creating modules.**
-    fn id(&self) -> &str;
+    fn id(&self) -> &ModuleId;
 
     /// The configuration of the module.
     fn config(&self) -> &ModuleConfig;

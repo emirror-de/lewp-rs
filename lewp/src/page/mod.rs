@@ -15,6 +15,10 @@ use {
     std::{rc::Rc, sync::Arc},
 };
 
+/// Defines the unique page ID. This ID is used to identify eg. the page resources
+/// on the file system.
+pub type PageId = str;
+
 /// Main trait of a page.
 pub trait Page {
     /// Should point to a member of type [Modules] in the implementing struct.
@@ -32,8 +36,8 @@ pub trait Page {
         self.modules_mut().push(module);
     }
 
-    /// Unique page id.
-    fn id(&self) -> &str;
+    /// Returns a reference to the page ID.
+    fn id(&self) -> &PageId;
 
     /// Borrows the head tags that are specific for this page.
     fn head_tags(&self) -> Option<&NodeList> {
