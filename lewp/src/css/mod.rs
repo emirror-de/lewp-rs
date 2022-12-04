@@ -13,9 +13,13 @@
 //!
 //! For example if you defined the `id` method like this:
 //! ```
-//! fn id(&self) -> ModuleId {
+//! # use lewp::ModuleId;
+//! # struct YourModule;
+//! # impl YourModule {
+//! fn id(&self) -> &ModuleId {
 //!     "my-new-navigation-bar"
 //! }
+//! # }
 //! ```
 //! The resulting class name would be `my-new-navigation-bar`. To query all
 //! anchors that are contained in this module you can use:
