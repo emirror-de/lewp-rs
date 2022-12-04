@@ -24,7 +24,8 @@ use {
     std::{path::PathBuf, sync::Arc},
 };
 
-const CSS_MODULE_IDENTIFIER: &'static str = "#module ";
+/// This keyword is intentionally defined with a whitespace at the end.
+const CSS_KEYWORD_MODULE: &'static str = "#module ";
 
 /// Responsible for CSS that is stored for a given [FHComponent].
 ///
@@ -127,8 +128,7 @@ impl Component {
             match rule {
                 CssRule::Style(StyleRule { selectors, .. }) => {
                     for s in &mut selectors.0 {
-                        if s.to_css_string().starts_with(CSS_MODULE_IDENTIFIER)
-                        {
+                        if s.to_css_string().starts_with(CSS_KEYWORD_MODULE) {
                             self.replace_identifier_and_append_module_prefix(
                                 s,
                             )?;
@@ -194,7 +194,7 @@ impl Component {
         };
         let new = match lewp_css::parse_css_selector(&format!(
             "{}.{}",
-            old.replace(CSS_MODULE_IDENTIFIER, ""),
+            old.replace(CSS_KEYWORD_MODULE, ""),
             self.id()
         )) {
             Err(e) => {

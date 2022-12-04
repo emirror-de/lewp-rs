@@ -1,9 +1,10 @@
 use {
-    super::Component, crate::fh::Component as FHComponent, crate::LewpError,
+    super::Component,
+    crate::{fh::Component as FHComponent, LewpError},
     std::sync::Arc,
 };
 
-/// Container of processed CSS component.
+/// Container of a processed CSS component.
 pub struct ProcessedComponent {
     render_critical: Arc<String>,
 }
