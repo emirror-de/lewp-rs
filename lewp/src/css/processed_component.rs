@@ -12,7 +12,7 @@ pub struct ProcessedComponent {
 impl ProcessedComponent {
     /// Returns the render critical part of the processed [css_next::Stylesheet] [Component].
     pub fn render_critical(&self) -> Arc<String> {
-        self.render_critical.clone()
+        Arc::clone(&self.render_critical)
     }
 
     /// Takes the content of the given component and processes it for the usage
