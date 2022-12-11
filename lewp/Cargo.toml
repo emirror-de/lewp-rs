@@ -2,9 +2,13 @@
 name = "lewp"
 version = "0.4.0-dev"
 authors = ["Lewin Probst <info@emirror.de>"]
-edition = "2018"
+edition = "2021"
 license = "MIT OR Apache-2.0"
-description = "Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. In your Rust source."
+description = """
+Server-side HTML5 website rendering library written in Rust.
+Empowering you to always create valid, technically optimized code without templates and
+mixed languages.
+"""
 homepage = "https://github.com/emirror-de/lewp-rs"
 documentation = "https://docs.rs/lewp"
 repository = "https://github.com/emirror-de/lewp-rs"
