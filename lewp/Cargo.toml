@@ -21,7 +21,7 @@ lewp-css = { version = "0.2", path = "../lewp-css" }
 lewp-html = { version = "0.3.0-dev", path = "../lewp-html" }
 selectors = { version = "0.24", path = "../lewp-selectors", package = "lewp-selectors" }
 serde = { version = "^1.0.152", features = ["derive"], optional = true }
-langtag = "^0.2.0"
+langtag = "^0.3.2"
 log = "^0.4.17"
 html5ever = "0.26"
 markup5ever_rcdom = { version = "0.2" }

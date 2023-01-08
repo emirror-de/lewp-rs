@@ -23,10 +23,10 @@ cssparser = "0.29"
 derive_more = "0.99"
 fxhash = "0.2"
 log = "0.4"
-phf = "0.8"
+phf = "0.11"
 precomputed-hash = "0.1"
 servo_arc =  "0.1"
 smallvec = "1.10"
 
 [build-dependencies]
-phf_codegen = "0.8"
+phf_codegen = "0.11"

@@ -16,6 +16,6 @@ categories = ["web-programming"]
 rcdom = { version = "0.2", package = "markup5ever_rcdom" }
 html5ever = { version = "0.26" }
 markup5ever = { version = "0.11" }
-langtag = "0.2"
+langtag = "0.3"
 log = "0.4"
 charsets = "0.2"

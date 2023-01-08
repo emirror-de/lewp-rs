@@ -66,7 +66,6 @@ extern crate bitflags;
 #[macro_use]
 pub extern crate cssparser;
 extern crate either;
-pub extern crate ordermap;
 extern crate phf;
 extern crate precomputed_hash;
 #[macro_use]

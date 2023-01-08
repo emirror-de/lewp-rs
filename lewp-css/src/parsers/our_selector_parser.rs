@@ -25,7 +25,7 @@ use {
         SourceLocation,
         ToCss,
     },
-    ordermap::OrderMap,
+    indexmap::IndexMap,
     selectors::{Parser, SelectorImpl, SelectorList},
     std::{collections::HashMap, rc::Rc},
 };
@@ -144,7 +144,7 @@ impl<'a> OurSelectorParser<'a> {
         }
 
         let mut deduplicatedSelectors =
-            OrderMap::with_capacity(selectors.len());
+            IndexMap::with_capacity(selectors.len());
         for selector in selectors {
             let selectorCss = selector.to_css_string();
             if isInvalidSelector(&selector) {
