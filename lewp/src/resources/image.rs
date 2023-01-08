@@ -97,14 +97,8 @@ impl Image {
 fn read_rust_logo() {
     use {
         crate::{
-            fh::{
-                ComponentInformation,
-                FileHierarchy,
-                FileHierarchyBuilder,
-                Level,
-            },
+            fh::{ComponentInformation, FileHierarchyBuilder, Level},
             resources::Image,
-            LewpError,
         },
         std::{path::PathBuf, sync::Arc},
     };
@@ -116,7 +110,7 @@ fn read_rust_logo() {
     );
     let component_information = Arc::new(ComponentInformation {
         id: String::from("hello-world"),
-        level: Level::Module,
+        level: Level::Component,
         kind: ComponentType::Resource(ResourceType::Image),
     });
     let image_resource = Image::new(component_information, fh);
@@ -129,7 +123,7 @@ fn read_rust_logo() {
 
     assert_eq!(
         std::fs::read(
-            "testfiles/modules/hello-world/images/rust-logo-512x512-blk.png"
+            "testfiles/components/hello-world/images/rust-logo-512x512-blk.png"
         )
         .unwrap(),
         logo

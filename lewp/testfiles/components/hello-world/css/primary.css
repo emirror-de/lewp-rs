@@ -1,4 +1,4 @@
-#module header {
+#component header {
     border: thin solid black;
 }
 h1 {

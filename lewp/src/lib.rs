@@ -25,7 +25,6 @@
 //! * Build the DOM completely in Rust
 
 pub use {
-    crate::lewp::Lewp,
     charsets::Charset,
     error::{LewpError, LewpErrorKind},
     langtag::LanguageTag,
@@ -37,11 +36,9 @@ pub mod html {
 }
 
 pub mod component;
-pub mod config;
 pub mod css;
 mod error;
 pub mod fh;
-mod lewp;
 pub mod page;
 pub mod resources;
 pub mod view;

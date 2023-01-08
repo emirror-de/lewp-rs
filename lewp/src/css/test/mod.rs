@@ -24,7 +24,7 @@ fn css_components_and_register() {
         .mountpoint(std::path::PathBuf::from("./testfiles"))
         .build();
     assert_eq!(
-        fh.collect_component_ids(ComponentType::Css, Level::Module,)
+        fh.collect_component_ids(ComponentType::Css, Level::Component,)
             .unwrap()
             .sort(),
         vec!["footer", "hello-world", "navigation"].sort(),
@@ -69,8 +69,8 @@ fn isolate_css_module() {
         .build();
 
     // create path where the testfiles should be copied
-    let testfiles_destination = dir.path().join("modules");
-    let testfiles_source = "testfiles/modules";
+    let testfiles_destination = dir.path().join("components");
+    let testfiles_source = "testfiles/components";
     let mut copy_options = fs_extra::dir::CopyOptions::new();
     copy_options.copy_inside = true;
     match fs_extra::dir::copy(
@@ -85,7 +85,7 @@ fn isolate_css_module() {
     let css = Component::new(
         Arc::new(ComponentInformation {
             id: String::from("hello-world"),
-            level: Level::Module,
+            level: Level::Component,
             kind: ComponentType::Css,
         }),
         Arc::new(fh),

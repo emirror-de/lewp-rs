@@ -7,13 +7,12 @@ pub use dependency_list::DependencyList;
 
 use {
     crate::{
-        fh,
-        html::{Node, NodeExt, NodeList},
+        html::{Node, NodeList},
+        view::ComponentView,
     },
     std::{
         cell::{Ref, RefCell},
         rc::Rc,
-        sync::Arc,
     },
 };
 
@@ -36,7 +35,18 @@ where
     /// The main method designing the behavior of the component.
     fn main(&mut self);
     /// Defines the view of the component.
-    fn view(&self) -> Option<ComponentView>;
+    fn view(&self) -> Option<Node>;
+    /// Use this when rendering a nested component. This ensures that all
+    /// required attributes are set to make your `JavaScript` work on client side.
+    fn nested_view(&self) -> Option<Node> {
+        match self.view() {
+            Some(v) => {
+                v.to_component_view(self.id());
+                Some(v)
+            }
+            None => None,
+        }
+    }
     /// Defines the additional head nodes this component requires.
     ///
     /// Defaults to an empty [NodeList].
@@ -60,9 +70,6 @@ where
 /// A unique component ID.
 pub type ComponentId = String;
 
-/// The view of the component.
-pub type ComponentView = Node;
-
 /// A component that is used to create web pages. This struct is created when calling
 /// [Component::new] and should only be instantiated this way.
 pub struct ComponentWrapper<C>
@@ -75,7 +82,7 @@ where
     model: Rc<RefCell<C>>,
     /// Contains the rendered view. This view gets initially created when the
     /// [main](Self::main) or [update](Self::update) method is called.
-    view: Rc<RefCell<Option<ComponentView>>>,
+    view: Rc<RefCell<Option<Node>>>,
 }
 
 impl<C> ComponentWrapper<C>
@@ -129,13 +136,10 @@ where
     /// Returns a clone of the given component view. This is for internal use
     /// only because it reveals a [RefCell] to the user.
     /// This method is called by the [HtmlPage] for further processing.
-    pub(crate) fn view(&self) -> Rc<RefCell<Option<ComponentView>>> {
+    pub(crate) fn view(&self) -> Rc<RefCell<Option<Node>>> {
         let view = self.view.borrow_mut();
         match *view {
-            Some(ref v) => v.borrow_attrs(vec![
-                ("class", &self.id()),
-                ("data-lewp-component", "component"),
-            ]),
+            Some(ref v) => v.to_component_view(self.id()),
             None => (),
         };
         Rc::clone(&self.view)

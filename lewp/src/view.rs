@@ -2,22 +2,37 @@
 
 use {
     crate::{
-        component::{
-            Component,
-            ComponentView,
-            ComponentWrapper,
-            DependencyList,
-        },
-        html::NodeList,
+        component::{Component, ComponentId, ComponentWrapper, DependencyList},
+        html::{Node, NodeExt, NodeList},
     },
     std::{cell::RefCell, rc::Rc},
 };
 
+/// Defines required additions for a [Node] to be a view of a component.
+pub trait ComponentView {
+    /// Prepares the [Node] to be considered a view of a component if required.
+    fn to_component_view(&self, id: ComponentId);
+}
+
+impl ComponentView for Node {
+    fn to_component_view(&self, id: ComponentId) {
+        self.borrow_attrs(vec![
+            ("class", &id),
+            ("data-lewp-type", "component"),
+        ]);
+    }
+}
+
 /// A complete web page view. Contains all `HTML` nodes as well as parameters
 /// required to render a valid `HTML` page.
 pub struct PageView {
+    /// The `<head>` tag content.
+    ///
+    /// Every entry of the [Vec] corresponds to a component. Because the component
+    /// itself cannot be stored, a [Rc] is passed to the view.
+    head: Vec<Rc<RefCell<NodeList>>>,
     /// The `<body>` tag content.
-    body: Vec<Rc<RefCell<Option<ComponentView>>>>,
+    body: Vec<Rc<RefCell<Option<Node>>>>,
     /// The component dependency list of the page.
     dependency_list: DependencyList,
 }
@@ -32,6 +47,14 @@ impl PageView {
         component.main();
         self.body.push(component.view());
 
+        if !&self.dependency_list.contains(component.id()) {
+            log::debug!(
+                "Storing head tags reference for ID \"{}\"",
+                component.id()
+            );
+            self.head.push(component.head());
+        }
+
         log::debug!("Processing dependencies for ID \"{}\"", component.id());
         let mut dependencies = component.dependency_list().clone();
         dependencies.push(component.model().id());
@@ -41,16 +64,25 @@ impl PageView {
             dependencies
         );
         self.dependency_list.append(dependencies);
+
         self
     }
 
-    /// Returns the children of the `<body>` tag of the current page view.
+    /// Collects the children of the `<body>` tag of the current page view.
     pub fn body(self) -> NodeList {
         self.body
             .into_iter()
             .filter(|n| n.borrow().is_some())
             .map(|n| n.borrow().as_ref().unwrap().to_owned())
             .collect()
+    }
+
+    /// Collects the children of the `<head>` tag of the current page view.
+    pub fn head(&self) -> NodeList {
+        self.head.iter().fold(NodeList::new(), |mut acc, h| {
+            acc.append(&mut h.borrow_mut());
+            acc
+        })
     }
 
     /// Returns a reference to the component dependency list.
@@ -62,6 +94,7 @@ impl PageView {
 impl Default for PageView {
     fn default() -> Self {
         Self {
+            head: vec![],
             body: vec![],
             dependency_list: DependencyList::default(),
         }

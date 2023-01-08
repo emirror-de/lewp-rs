@@ -1,10 +1,10 @@
 use {
     lewp::{
-        component::{Component, ComponentId, ComponentView},
+        component::{Component, ComponentId},
         page::{Page, PageId},
         view::PageView,
     },
-    lewp_html::{api::script, NodeList},
+    lewp_html::{api::script, Node, NodeList},
 };
 
 // This component does not add data to the HTML body, only specifies a head node.
@@ -33,7 +33,7 @@ impl Component for HeadComponent {
     fn main(&mut self) {}
 
     // This is the view of your component.
-    fn view(&self) -> Option<ComponentView> {
+    fn view(&self) -> Option<Node> {
         None
     }
 
@@ -72,5 +72,6 @@ impl Page for HeadOnlyPage {
 fn main() {
     simple_logger::init().unwrap();
     let hello_world = HeadOnlyPage {};
-    println!("{}", Page::render(hello_world));
+    let page = Page::new(hello_world);
+    println!("{}", page.main().render());
 }

@@ -21,14 +21,14 @@ impl DependencyList {
     }
 
     /// Returns the list as [Vec<ComponentId>].
-    pub fn list(self) -> Vec<ComponentId> {
-        self.dependency_list
+    pub fn list(&self) -> &Vec<ComponentId> {
+        &self.dependency_list
     }
 
     /// True if the component list already contains the given [ComponentId].
     pub fn contains(&self, id: ComponentId) -> bool {
         log::debug!(
-            "Dependency list contains id {}: {}",
+            "Dependency list contains id \"{}\": {}",
             id,
             self.dependency_list.contains(&id)
         );
@@ -37,7 +37,8 @@ impl DependencyList {
 
     /// Consumes and appends the given dependency list to the current one.
     pub fn append(&mut self, component_id_list: DependencyList) {
-        self.dependency_list.append(&mut component_id_list.list());
+        self.dependency_list
+            .append(&mut component_id_list.list().clone());
         self.dependency_list.sort();
         self.dependency_list.dedup();
     }

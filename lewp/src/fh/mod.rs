@@ -26,7 +26,7 @@ pub struct FileHierarchy {
 impl FileHierarchy {
     /// Creates a new file hierarchy instance.
     ///
-    /// The mounpoint is set to "."
+    /// The mounpoint is set to `.`
     pub fn new() -> Self {
         Self {
             mountpoint: PathBuf::from("."),
@@ -202,7 +202,7 @@ impl FileHierarchy {
     /// Extracts the component id from the given PathBuf.
     ///
     /// Example:
-    /// `testfiles/modules/footer/css` will result in `footer`.
+    /// `testfiles/components/footer/css` will result in `footer`.
     fn extract_component_ids_from_pathbuf(
         &self,
         p: &PathBuf,
@@ -264,7 +264,7 @@ impl FileHierarchy {
     }
 
     /// Collects all folders in the given subfolder. Can be used to find eg.
-    /// all modules available
+    /// all components available
     ///
     /// **For internal use only.**
     fn collect_foldernames(
@@ -339,7 +339,7 @@ mod tests {
         fn component_information(&self) -> Arc<ComponentInformation> {
             Arc::new(ComponentInformation {
                 id: self.id.clone(),
-                level: Level::Module,
+                level: Level::Component,
                 kind: ComponentType::Css,
             })
         }
@@ -386,7 +386,7 @@ mod tests {
         };
         let js = Js { fh: fh.clone() };
         assert_eq!(
-            "./modules/module-id/css",
+            "./components/module-id/css",
             fh.folder(&css).to_str().unwrap()
         );
         assert_eq!("./pages/hello-world/js", fh.folder(&js).to_str().unwrap());
@@ -422,8 +422,8 @@ mod tests {
             }
         };
         let mut reference = vec![
-            PathBuf::from("modules/hello-world/css/primary.css"),
-            PathBuf::from("modules/hello-world/css/secondary.css"),
+            PathBuf::from("components/hello-world/css/primary.css"),
+            PathBuf::from("components/hello-world/css/secondary.css"),
         ];
         assert_eq!(filenames.sort(), reference.sort());
     }
@@ -441,13 +441,13 @@ mod tests {
             fh: fh.clone(),
         };
         let mut filenames =
-            match fh.collect_foldernames(&PathBuf::from("modules")) {
+            match fh.collect_foldernames(&PathBuf::from("components")) {
                 Ok(f) => f,
                 Err(e) => {
                     panic!("{}", e)
                 }
             };
-        let mut reference = vec![PathBuf::from("modules/hello-world")];
+        let mut reference = vec![PathBuf::from("components/hello-world")];
         assert_eq!(filenames.sort(), reference.sort());
     }
 
@@ -459,13 +459,14 @@ mod tests {
                 .mountpoint(PathBuf::from("testfiles"))
                 .build(),
         );
-        let mut component_ids =
-            match fh.collect_component_ids(ComponentType::Css, Level::Module) {
-                Ok(ids) => ids,
-                Err(e) => {
-                    panic!("{}", e)
-                }
-            };
+        let mut component_ids = match fh
+            .collect_component_ids(ComponentType::Css, Level::Component)
+        {
+            Ok(ids) => ids,
+            Err(e) => {
+                panic!("{}", e)
+            }
+        };
         let mut reference = vec!["footer", "hello-world", "navigation"];
         assert_eq!(component_ids.sort(), reference.sort());
     }

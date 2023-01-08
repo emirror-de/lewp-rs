@@ -9,8 +9,8 @@ pub enum ComponentType {
     Css,
     /// A JavaScript file with `.js` extension.
     JavaScript,
-    /// A module.
-    Module,
+    /// A component.
+    Component,
     /// Resources that are stored in the file hierarchy.
     Resource(ResourceType),
     /// A custom defined component. The String attached is also used as folder
@@ -39,7 +39,7 @@ impl ComponentType {
             Core(s) => format!("core-{}", s),
             Css => String::from("css"),
             JavaScript => String::from("js"),
-            Module => String::from("module"),
+            Component => String::from("component"),
             Resource(t) => match t {
                 ResourceType::Text => String::from("text"),
                 ResourceType::Image => String::from("images"),

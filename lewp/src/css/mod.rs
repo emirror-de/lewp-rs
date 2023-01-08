@@ -13,11 +13,11 @@
 //!
 //! For example if you defined the `id` method like this:
 //! ```
-//! # use lewp::ModuleId;
+//! # use lewp::component::ComponentId;
 //! # struct YourModule;
 //! # impl YourModule {
-//! fn id(&self) -> &ModuleId {
-//!     "my-new-navigation-bar"
+//! fn id(&self) -> ComponentId {
+//!     "my-new-navigation-bar".into()
 //! }
 //! # }
 //! ```
@@ -34,16 +34,16 @@
 //! To be able to detect parts of your CSS source code that targets specific
 //! nodes, it is required to introduce special keywords.
 //!
-//! ## The `#module` keyword
+//! ## The `#component` keyword
 //! Lewp is not able to detect whether which style rule targets the main
 //! node of a module by simply scanning your CSS files. To prevent the requirement
-//! of storing this particular style rule to the page level, the `#module` keyword
+//! of storing this particular style rule to the page level, the `#component` keyword
 //! has been introduced. This keyword is removed during processing, and the
 //! module's class name (see above) is appended to the rest of the rule name.
 //!
 //! For example if the id of your module is `my-new-navigation-bar` the following code
 //! ```css
-//! #module nav {
+//! #component nav {
 //!     background: #fff;
 //! }
 //! ```

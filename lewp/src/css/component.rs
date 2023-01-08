@@ -25,7 +25,7 @@ use {
 };
 
 /// This keyword is intentionally defined with a whitespace at the end.
-const CSS_KEYWORD_MODULE: &'static str = "#module ";
+const CSS_COMPONENT_IDENTIFIER: &'static str = "#component ";
 
 /// Responsible for CSS that is stored for a given [FHComponent].
 ///
@@ -128,13 +128,15 @@ impl Component {
             match rule {
                 CssRule::Style(StyleRule { selectors, .. }) => {
                     for s in &mut selectors.0 {
-                        if s.to_css_string().starts_with(CSS_KEYWORD_MODULE) {
+                        if s.to_css_string()
+                            .starts_with(CSS_COMPONENT_IDENTIFIER)
+                        {
                             self.replace_identifier_and_append_module_prefix(
                                 s,
                             )?;
                             continue;
                         }
-                        self.add_module_prefix(s)?;
+                        self.add_component_prefix(s)?;
                     }
                 }
                 CssRule::Media(MediaAtRule { rules, .. })
@@ -150,7 +152,7 @@ impl Component {
         Ok(())
     }
 
-    fn add_module_prefix(
+    fn add_component_prefix(
         &self,
         selector: &mut Selector<OurSelectorImpl>,
     ) -> Result<(), LewpError> {
@@ -194,7 +196,7 @@ impl Component {
         };
         let new = match lewp_css::parse_css_selector(&format!(
             "{}.{}",
-            old.replace(CSS_KEYWORD_MODULE, ""),
+            old.replace(CSS_COMPONENT_IDENTIFIER, ""),
             self.id()
         )) {
             Err(e) => {

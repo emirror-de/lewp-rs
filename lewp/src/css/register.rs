@@ -107,11 +107,11 @@ impl Register {
     fn load_process_modules(&mut self) -> Result<(), LewpError> {
         let module_ids = self
             .fh
-            .collect_component_ids(ComponentType::Css, Level::Module)?;
+            .collect_component_ids(ComponentType::Css, Level::Component)?;
         for id in module_ids {
             let component_information = Arc::new(ComponentInformation {
                 id: id.clone(),
-                level: Level::Module,
+                level: Level::Component,
                 kind: ComponentType::Css,
             });
             let c =

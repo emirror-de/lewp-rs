@@ -4,8 +4,8 @@ pub enum Level {
     /// The core level, used for internal purposes only, for example when an
     /// error is thrown by lewp core.
     Core,
-    /// The module level.
-    Module,
+    /// The component level.
+    Component,
     /// The page level.
     Page,
 }
@@ -18,7 +18,7 @@ impl std::fmt::Display for Level {
         use Level::*;
         let s = match self {
             Core => "core",
-            Module => "modules",
+            Component => "components",
             Page => "pages",
         };
         write!(f, "{}", s)

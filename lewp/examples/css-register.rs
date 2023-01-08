@@ -1,117 +1,88 @@
 use {
     lewp::{
-        config::{ModuleConfig, PageConfig},
+        component::{Component, ComponentId},
         css::{Register as CssRegister, RegisterOptions},
-        html::{api::*, Node, NodeList},
-        Charset,
-        LanguageTag,
-        Lewp,
-        LewpError,
-        Module,
-        Modules,
-        Page,
-        RuntimeInformation,
+        fh::FileHierarchyBuilder,
+        html::{
+            api::{h1, text},
+            Node,
+        },
+        page::{Page, PageId},
+        view::PageView,
     },
-    std::{rc::Rc, sync::Arc},
+    std::{path::PathBuf, sync::Arc},
 };
 
+// Your hello world component.
 struct HelloWorld {
-    config: ModuleConfig,
-    head_tags: NodeList,
     data: String,
 }
 
 impl HelloWorld {
     pub fn new() -> Self {
         Self {
-            config: ModuleConfig::new(),
-            head_tags: vec![],
-            data: String::from("hello-world"),
+            data: String::from("Hello World!"),
         }
     }
 }
 
-impl Module for HelloWorld {
-    fn head_tags(&self) -> &NodeList {
-        &self.head_tags
+// Implement the [Component] trait to define the behavior and view.
+impl Component for HelloWorld {
+    // No message required for a simple component.
+    type Message = ();
+
+    // The unique ID of your component is used to identify and process further
+    // resources, as well as isolation in the world of JavaScript on client side.
+    fn id(&self) -> ComponentId {
+        "hello-world".into()
     }
 
-    fn id(&self) -> &str {
-        "hello-world"
-    }
+    // There is no reason your page should fail. It should always render
+    // at least something. Errors during processing should already be
+    // handled before you call your page to be rendered.
+    fn main(&mut self) {}
 
-    fn config(&self) -> &ModuleConfig {
-        &self.config
-    }
-
-    fn run(
-        &mut self,
-        _runtime_info: Rc<RuntimeInformation>,
-    ) -> Result<(), LewpError> {
-        Ok(())
-    }
-
-    fn view(&self) -> Node {
-        h1(vec![text(&self.data)])
+    // This is the view of your component.
+    fn view(&self) -> Option<Node> {
+        Some(h1(vec![text(&self.data)]))
     }
 }
 
-struct HelloWorldPage {
-    modules: Modules,
-    config: PageConfig,
-}
+// Define your page. This simple example page only contains one component that
+// only specifies a h1 node.
+struct HelloWorldPage;
 
 impl Page for HelloWorldPage {
-    fn id(&self) -> &str {
-        "helloworldpage"
+    // Throughout your site, the page id should be unique for the same reason as
+    // the component id.
+    fn id(&self) -> PageId {
+        "sitemap".into()
     }
 
-    fn modules(&self) -> &Modules {
-        &self.modules
-    }
-    fn modules_mut(&mut self) -> &mut Modules {
-        &mut self.modules
-    }
-
-    fn title(&self) -> &str {
-        "Hello World from lewp!"
-    }
-
-    fn description(&self) -> &str {
-        "My first page using lewp!"
-    }
-
-    fn language(&self) -> LanguageTag {
-        LanguageTag::parse("de-DE").unwrap()
-    }
-
-    fn charset(&self) -> Charset {
-        Charset::Utf8
-    }
-
-    fn config(&self) -> &PageConfig {
-        &self.config
-    }
-
-    fn run(&mut self) {
-        let module = HelloWorld::new();
-        self.add_module(module.into_module_ptr());
+    // The main method of the page. In here you can add your components to the
+    // page and do whatever processing is required for your page to be rendered.
+    fn main(&self, view: &mut PageView) {
+        let mut comp = Component::new(HelloWorld::new());
+        // the component is only borrowed, to enable the possibility of adding
+        // it twice to your page. You can use the state of your component to
+        // define the behavior when adding it multiple times.
+        view.push(&mut comp);
     }
 }
 
 fn main() {
-    let fh = lewp::fh::FileHierarchyBuilder::new()
-        .mountpoint(std::path::PathBuf::from("./lewp/testfiles"))
-        .build();
-
-    let lewp = Lewp::new()
-        .with_file_hierarchy(fh)
-        .with_css_register(RegisterOptions::default());
-
-    let mut page = HelloWorldPage {
-        modules: vec![],
-        config: PageConfig::from(&lewp),
-    };
-    let dom = page.build();
-    println!("{}", dom);
+    simple_logger::init().unwrap();
+    let fh = Arc::new(
+        FileHierarchyBuilder::new()
+            .mountpoint(PathBuf::from("./lewp/testfiles"))
+            .build(),
+    );
+    let hello_world = HelloWorldPage {};
+    let page = Page::new(hello_world)
+        .with_file_hierarchy(Arc::clone(&fh))
+        .with_css_register(Arc::new(
+            CssRegister::new(Arc::clone(&fh), RegisterOptions::default())
+                .unwrap(),
+        ));
+    println!("{}", page.main().render());
 }
