@@ -25,6 +25,16 @@ impl DependencyList {
         self.dependency_list
     }
 
+    /// True if the component list already contains the given [ComponentId].
+    pub fn contains(&self, id: ComponentId) -> bool {
+        log::debug!(
+            "Dependency list contains id {}: {}",
+            id,
+            self.dependency_list.contains(&id)
+        );
+        self.dependency_list.contains(&id)
+    }
+
     /// Consumes and appends the given dependency list to the current one.
     pub fn append(&mut self, component_id_list: DependencyList) {
         self.dependency_list.append(&mut component_id_list.list());

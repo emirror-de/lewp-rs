@@ -72,7 +72,7 @@ impl<P: Page> PageWrapper<P> {
 
         let document = document(
             self.model.language(),
-            head(vec![]),
+            head(self.view.head()),
             body(self.view.body()),
         );
 

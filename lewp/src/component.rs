@@ -36,11 +36,18 @@ where
     /// The main method designing the behavior of the component.
     fn main(&mut self);
     /// Defines the view of the component.
-    fn view(&self) -> ComponentView;
-    /// Returns the dependencies of the implementing component. Returns an
-    /// empty list by default. If you are using other components within your
-    /// component, you will need to add its ID to the dependency list by
-    /// implementing this method.
+    fn view(&self) -> Option<ComponentView>;
+    /// Defines the additional head nodes this component requires.
+    ///
+    /// Defaults to an empty [NodeList].
+    fn head(&self) -> NodeList {
+        NodeList::new()
+    }
+    /// Returns the dependencies of the implementing component. If you are
+    /// using other components within your component, you will need to add
+    /// its ID to the dependency list by implementing this method.
+    ///
+    /// Defaults to an empty [DependencyList].
     fn dependency_list(&self) -> DependencyList {
         DependencyList::default()
     }
@@ -62,8 +69,8 @@ pub struct ComponentWrapper<C>
 where
     C: Component,
 {
-    /// Contains head nodes required by the component.
-    head: NodeList,
+    ///// Contains head nodes required by the component.
+    head: Rc<RefCell<NodeList>>,
     /// An instance of the model that is implemented by the user.
     model: Rc<RefCell<C>>,
     /// Contains the rendered view. This view gets initially created when the
@@ -80,7 +87,7 @@ where
     pub fn main(&mut self) {
         log::debug!("Running component \"{}\"", self.model.borrow().id());
         self.model.borrow_mut().main();
-        self.update_view();
+        self.update_content();
     }
 
     /// Updates the model by calling the models [update](Component::update)
@@ -91,14 +98,32 @@ where
             self.model.borrow().id()
         );
         self.model.borrow_mut().update(message);
+        self.update_content();
+    }
+
+    /// Updates the content of the component. This is called in [Self::main],
+    /// as well as in [Self::update] (required for nested components).
+    fn update_content(&mut self) {
         self.update_view();
+        self.update_head();
     }
 
     /// Updates the view by calling model's [view](Component::view) method.
+    /// This is especially required for nested components as the reference to
+    /// the view gets stored in the [PageView] instance.
     fn update_view(&mut self) {
         log::debug!("Updating view for \"{}\"", self.model.borrow().id());
         let mut view = self.view.borrow_mut();
-        *view = Some(self.model.borrow().view());
+        *view = self.model.borrow().view();
+    }
+
+    /// Updates the head nodes by calling model's [head](Component::head) method.
+    /// This is especially required for nested components as the reference to
+    /// the head gets stored in the [PageView] instance.
+    fn update_head(&mut self) {
+        log::debug!("Updating head nodes for \"{}\"", self.model.borrow().id());
+        let mut head = self.head.borrow_mut();
+        *head = self.model.borrow().head();
     }
 
     /// Returns a clone of the given component view. This is for internal use
@@ -116,13 +141,21 @@ where
         Rc::clone(&self.view)
     }
 
+    /// Returns a clone of the given component head. This is for internal use
+    /// only because it reveals a [RefCell] to the user.
+    /// This method is called by the [HtmlPage] for further processing.
+    pub(crate) fn head(&self) -> Rc<RefCell<NodeList>> {
+        Rc::clone(&self.head)
+    }
+
     /// Returns a borrowed reference of the model.
     pub fn model(&self) -> Ref<C> {
         self.model.borrow()
     }
 
     /// Returns the [ComponentId] filtered by allowed characters.
-    /// The resulting ID is converted to lowercase.
+    /// The resulting ID is converted to lowercase. Disallowed characters get
+    /// filtered.
     ///
     /// Allowed characters are: `[a-z]`, `[0-9]` and `-`.
     pub fn id(&self) -> ComponentId {
@@ -141,20 +174,6 @@ where
         list.append(self.model().dependency_list());
         list
     }
-
-    /// Returns a reference to the head nodes required by this component.
-    pub fn head(&self) -> &NodeList {
-        &self.head
-    }
-
-    /// Returns the meta information for this module.
-    pub fn component_information(&self) -> Arc<fh::ComponentInformation> {
-        Arc::new(fh::ComponentInformation {
-            id: self.id(),
-            level: fh::Level::Module,
-            kind: fh::ComponentType::Module,
-        })
-    }
 }
 
 impl<C: Component> From<C> for ComponentWrapper<C> {
@@ -162,7 +181,7 @@ impl<C: Component> From<C> for ComponentWrapper<C> {
         log::debug!("Creating new component for model: \"{}\"", model.id());
         let model = Rc::new(RefCell::new(model));
         let view = Rc::new(RefCell::new(None));
-        let head = NodeList::new();
+        let head = Rc::new(RefCell::new(NodeList::new()));
         Self { model, view, head }
     }
 }
