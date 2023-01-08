@@ -1,32 +1,30 @@
-use lewp::{
-    component::{Component, ComponentId, ComponentView},
-    html::api::{h1, text},
-    page::{Page, PageId},
-    view::PageView,
+use {
+    lewp::{
+        component::{Component, ComponentId, ComponentView},
+        page::{Page, PageId},
+        view::PageView,
+    },
+    lewp_html::{api::script, NodeList},
 };
 
-// Your hello world component.
-struct HelloWorld {
-    data: String,
-}
+// This component does not add data to the HTML body, only specifies a head node.
+struct HeadComponent;
 
-impl HelloWorld {
+impl HeadComponent {
     pub fn new() -> Self {
-        Self {
-            data: String::from("Hello World!"),
-        }
+        Self {}
     }
 }
 
 // Implement the [Component] trait to define the behavior and view.
-impl Component for HelloWorld {
+impl Component for HeadComponent {
     // No message required for a simple component.
     type Message = ();
 
     // The unique ID of your component is used to identify and process further
     // resources, as well as isolation in the world of JavaScript on client side.
     fn id(&self) -> ComponentId {
-        "hello-world".into()
+        "head-component".into()
     }
 
     // There is no reason your page should fail. It should always render
@@ -36,34 +34,43 @@ impl Component for HelloWorld {
 
     // This is the view of your component.
     fn view(&self) -> Option<ComponentView> {
-        Some(h1(vec![text(&self.data)]))
+        None
+    }
+
+    fn head(&self) -> NodeList {
+        let mut head = NodeList::new();
+        head.push(script(lewp_html::Script::Inline(
+            "console.log(\"This component only adds a head node to the page.\")",
+        )));
+        head
     }
 }
 
-// Define your page. This simple example page only contains one component that
-// only specifies a h1 node.
-struct HelloWorldPage;
+// This page will only contain a head node.
+struct HeadOnlyPage;
 
-impl Page for HelloWorldPage {
+impl Page for HeadOnlyPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
-        "helloworldpage".into()
+        "head-only-page".into()
     }
 
     // The main method of the page. In here you can add your components to the
     // page and do whatever processing is required for your page to be rendered.
     fn main(&self, view: &mut PageView) {
-        let mut comp = Component::new(HelloWorld::new());
+        let mut comp = Component::new(HeadComponent::new());
         // the component is only borrowed, to enable the possibility of adding
         // it twice to your page. You can use the state of your component to
         // define the behavior when adding it multiple times.
+        view.push(&mut comp);
+        // head nodes are only added !ONCE! for every component intentionally
         view.push(&mut comp);
     }
 }
 
 fn main() {
     simple_logger::init().unwrap();
-    let hello_world = HelloWorldPage {};
+    let hello_world = HeadOnlyPage {};
     println!("{}", Page::render(hello_world));
 }
