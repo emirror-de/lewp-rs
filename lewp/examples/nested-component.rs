@@ -8,30 +8,30 @@ use lewp::{
     view::PageView,
 };
 
-// Your hello world component that has a nested component.
-struct HelloWorld {
+// This is your main component that has a nested one.
+struct Parent {
     data: String,
     nested: NestedComponent,
 }
 
-impl HelloWorld {
+impl Parent {
     pub fn new() -> Self {
         Self {
-            data: String::from("Hello World!"),
+            data: String::from("Nested components example"),
             nested: NestedComponent {},
         }
     }
 }
 
 // Implement the [Component] trait to define the behavior and view.
-impl Component for HelloWorld {
+impl Component for Parent {
     // No message required for a simple component.
     type Message = ();
 
     // The unique ID of your component is used to identify and process further
     // resources, as well as isolation in the world of JavaScript on client side.
     fn id(&self) -> ComponentId {
-        "hello-world".into()
+        "parent".into()
     }
 
     // There is no reason your page should fail. It should always render
@@ -59,7 +59,7 @@ impl Component for HelloWorld {
     }
 }
 
-// Define your component that is nested in [HelloWorld].
+// Define your component that is nested in [Parent].
 struct NestedComponent;
 
 // Implement the [Component] trait to define the behavior and view.
@@ -81,7 +81,7 @@ impl Component for NestedComponent {
     // This is the view of your component.
     fn view(&self) -> Option<Node> {
         Some(h2(vec![text(
-            "This is a text rendered as a nested component! :-)",
+            "This text is rendered by a nested component! :-)",
         )]))
     }
 }
@@ -94,13 +94,13 @@ impl Page for HelloWorldPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
-        "helloworldpage".into()
+        "hello-world-page".into()
     }
 
     // The main method of the page. In here you can add your components to the
     // page and do whatever processing is required for your page to be rendered.
     fn main(&self, view: &mut PageView) {
-        let mut comp = Component::new(HelloWorld::new());
+        let mut comp = Component::new(Parent::new());
         // the component is only borrowed, to enable the possibility of adding
         // it twice to your page. You can use the state of your component to
         // define the behavior when adding it multiple times.

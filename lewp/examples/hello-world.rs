@@ -28,13 +28,15 @@ impl Component for HelloWorld {
 
     // The unique ID of your component is used to identify and process further
     // resources, as well as isolation in the world of JavaScript on client side.
+    // It is best practice to use the lowercase kebab-case of your structs name
+    // to have a clear identification of the components resources in the file
+    // hierarchy and your code base.
     fn id(&self) -> ComponentId {
         "hello-world".into()
     }
 
-    // There is no reason your page should fail. It should always render
-    // at least something. Errors during processing should already be
-    // handled before you call your page to be rendered.
+    // There is no reason for your page to fail. Errors during processing should
+    // result in a different view that you define below.
     fn main(&mut self) {}
 
     // This is the view of your component.
@@ -49,25 +51,36 @@ struct HelloWorldPage;
 
 impl Page for HelloWorldPage {
     // Throughout your site, the page id should be unique for the same reason as
-    // the component id.
+    // the component id. Use lowercase kebab-case here as well as convention.
     fn id(&self) -> PageId {
-        "helloworldpage".into()
+        "hello-world-page".into()
     }
 
     // The main method of the page. In here you can add your components to the
     // page and do whatever processing is required for your page to be rendered.
     fn main(&self, view: &mut PageView) {
         let mut comp = Component::new(HelloWorld::new());
-        // the component is only borrowed, to enable the possibility of adding
+        // The component is only borrowed, to enable the possibility of adding
         // it twice to your page. You can use the state of your component to
         // define the behavior when adding it multiple times.
+        // However, the required head nodes for example CSS and JS is being added
+        // only once, so you can be sure that there is no overhead when adding
+        // the component multiple times.
         view.push(&mut comp);
     }
 }
 
 fn main() {
     simple_logger::init().unwrap();
-    let hello_world = HelloWorldPage {};
-    let page = Page::new(hello_world);
-    println!("{}", page.main().render());
+
+    // Create an instance of your page
+    let page = Page::new(HelloWorldPage {});
+
+    // You have full control when you want to run and render your page.
+    // Because the internal state of the page changes when running the main
+    // method, you need to get the result in order to be able to render the
+    // resulting page.
+    let executed_page = page.main();
+
+    println!("{}", executed_page.render());
 }
