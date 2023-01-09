@@ -116,7 +116,7 @@ impl Register {
             });
             let c =
                 Component::new(component_information.clone(), self.fh.clone());
-            let c = ProcessedComponent::from(&c)?;
+            let c = ProcessedComponent::try_from(&c)?;
             self.components.insert(component_information.clone(), c);
         }
         Ok(())
@@ -134,7 +134,7 @@ impl Register {
             });
             let c =
                 Component::new(component_information.clone(), self.fh.clone());
-            let c = ProcessedComponent::from(&c)?;
+            let c = ProcessedComponent::try_from(&c)?;
             self.components.insert(component_information.clone(), c);
         }
         Ok(())

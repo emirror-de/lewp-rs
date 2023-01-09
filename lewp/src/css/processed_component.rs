@@ -15,12 +15,12 @@ impl ProcessedComponent {
         Arc::clone(&self.render_critical)
     }
 
-    /// Takes the content of the given component and processes it for the usage
-    /// within a website.
-    pub fn from(
-        component: &Component,
-    ) -> Result<ProcessedComponent, LewpError> {
-        let content = component.content(())?;
+impl TryFrom<&Component> for ProcessedComponent {
+    type Error = LewpError;
+    fn try_from(value: &Component) -> Result<Self, Self::Error> {
+        let origin = value.content(())?;
+        let render_critical =
+            value.extract_render_critical_stylesheet(origin)?;
         Ok(ProcessedComponent {
             render_critical: Arc::new(content.to_css_string(false)),
         })
