@@ -5,9 +5,9 @@ authors = ["Lewin Probst <info@emirror.de>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = """
-Server-side HTML5 website rendering library written in Rust.
-Empowering you to always create valid, technically optimized code without templates and
-mixed languages.
+Modular library to generate and render technically optimized and always valid
+HTML5 websites with ease. Provides management of different resource types like
+images required for your website.
 """
 homepage = "https://github.com/emirror-de/lewp-rs"
 documentation = "https://docs.rs/lewp"
