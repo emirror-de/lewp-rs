@@ -41,7 +41,7 @@ fn css_components_and_register() {
         kind: ComponentType::Css,
     });
     let c = Component::new(component_information.clone(), Arc::new(fh));
-    let parsed_component = ProcessedComponent::from(&c).unwrap();
+    let parsed_component = ProcessedComponent::try_from(&c).unwrap();
     println!(
         "Parsed render critical: {:#?}",
         parsed_component.render_critical()
