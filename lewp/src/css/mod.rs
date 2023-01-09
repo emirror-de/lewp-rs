@@ -62,6 +62,7 @@
 mod component;
 mod entireness;
 mod processed_component;
+mod property_classification;
 mod register;
 
 #[cfg(test)]

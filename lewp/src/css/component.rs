@@ -1,4 +1,5 @@
 use {
+    super::property_classification::PropertyClassification,
     crate::{
         fh::{
             Component as FHComponent,
@@ -234,9 +235,7 @@ impl Component {
                     property_declarations,
                     ..
                 }) => {
-                    property_declarations
-                        .0
-                        .retain(|x| self.is_render_critical(&x.name));
+                    property_declarations.0.retain(|x| x.is_render_critical());
                 }
                 CssRule::Media(MediaAtRule { rules, .. })
                 | CssRule::Document(DocumentAtRule { rules, .. }) => {
@@ -259,13 +258,5 @@ impl Component {
         });
 
         Ok(())
-    }
-
-    /// Checks if the given CSS property is considered render critical.
-    fn is_render_critical(&self, property_name: &Atom) -> bool {
-        match &property_name.0[..] {
-            "display" | "height" | "width" => true,
-            _ => false,
-        }
     }
 }

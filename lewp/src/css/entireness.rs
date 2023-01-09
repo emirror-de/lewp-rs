@@ -1,4 +1,5 @@
 /// Defines the level of completeness.
+#[derive(Debug)]
 pub enum Entireness {
     /// The entire CSS.
     Full,
