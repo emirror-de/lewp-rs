@@ -14,6 +14,7 @@ use {
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},
             selectors::OurSelectorImpl,
+            Atom,
             CssRule,
             CssRules,
             StyleRule,
@@ -210,5 +211,61 @@ impl Component {
         };
         *selector = new;
         Ok(())
+    }
+
+    /// Creates a new stylesheet that contains only render critical properties.
+    pub fn extract_render_critical_stylesheet(
+        &self,
+        stylesheet: Stylesheet,
+    ) -> Result<<Self as FHComponent>::Content, LewpError> {
+        let mut stylesheet = stylesheet;
+        self.extract_render_critical_rules(&mut stylesheet.rules, true)?;
+        Ok(stylesheet)
+    }
+
+    fn extract_render_critical_rules(
+        &self,
+        rules: &mut CssRules,
+        recursive: bool,
+    ) -> Result<(), LewpError> {
+        for rule in &mut rules.0 {
+            match rule {
+                CssRule::Style(StyleRule {
+                    property_declarations,
+                    ..
+                }) => {
+                    property_declarations
+                        .0
+                        .retain(|x| self.is_render_critical(&x.name));
+                }
+                CssRule::Media(MediaAtRule { rules, .. })
+                | CssRule::Document(DocumentAtRule { rules, .. }) => {
+                    if !recursive {
+                        continue;
+                    }
+                    self.isolate_rules(rules, true)?
+                }
+                _ => {}
+            }
+        }
+
+        // remove all empty rules
+        rules.0.retain(|r| match r {
+            CssRule::Style(StyleRule {
+                property_declarations,
+                ..
+            }) => !property_declarations.is_empty(),
+            _ => false,
+        });
+
+        Ok(())
+    }
+
+    /// Checks if the given CSS property is considered render critical.
+    fn is_render_critical(&self, property_name: &Atom) -> bool {
+        match &property_name.0[..] {
+            "display" | "height" | "width" => true,
+            _ => false,
+        }
     }
 }

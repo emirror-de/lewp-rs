@@ -1,3 +1,5 @@
 section.sitemap {
+    display: block;
+    height: 10px;
     list-style-type: none;
 }
