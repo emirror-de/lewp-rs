@@ -204,7 +204,7 @@ impl<P: Page, FH: FhState, CSS: CssState>
         head.append(&mut prelude);
 
         let mut inline_css = match self.get_page_css() {
-            Some(css) => format!("{}", css),
+            Some(css) => format!("{css}"),
             None => "".into(),
         };
         if let Some(css) = self.get_component_css() {

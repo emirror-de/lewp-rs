@@ -36,7 +36,7 @@ impl ComponentType {
     fn serialize(&self) -> String {
         use ComponentType::*;
         match self {
-            Core(s) => format!("core-{}", s),
+            Core(s) => format!("core-{s}"),
             Css => String::from("css"),
             JavaScript => String::from("js"),
             Component => String::from("component"),
@@ -45,9 +45,8 @@ impl ComponentType {
                 ResourceType::Image => String::from("images"),
             },
             Plugin(s) => s
-                .replace(" ", "-")
-                .replace(".", "")
-                .replace("/", "")
+                .replace(' ', "-")
+                .replace(['.', '/'], "")
                 .to_lowercase(),
         }
     }

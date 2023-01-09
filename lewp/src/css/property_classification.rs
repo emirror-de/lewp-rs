@@ -13,12 +13,11 @@ impl<I: HasImportance> PropertyClassification for PropertyDeclaration<I> {
     fn is_render_critical(&self) -> bool {
         CSS_PROPERTY_RENDER_CRITICAL
             .iter()
-            .find(|&e| self.name.starts_with(e))
-            .is_some()
+            .any(|e| self.name.starts_with(e))
     }
 }
 
-const CSS_PROPERTY_RENDER_CRITICAL: &'static [&'static str] = &[
+const CSS_PROPERTY_RENDER_CRITICAL: &[&str] = &[
     "--",
     "height",
     "max-height",

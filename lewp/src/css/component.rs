@@ -27,7 +27,7 @@ use {
 };
 
 /// This keyword is intentionally defined with a whitespace at the end.
-const CSS_COMPONENT_IDENTIFIER: &'static str = "#component ";
+const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 
 /// Responsible for CSS that is stored for a given [FHComponent].
 ///
@@ -61,7 +61,7 @@ impl FHComponent for Component {
             Err(msg) => {
                 return Err(LewpError::new(
                     LewpErrorKind::Css,
-                    &format!("{:#?}", msg),
+                    &format!("{msg:#?}"),
                     self.component_information.clone(),
                 ));
             }
@@ -102,7 +102,7 @@ impl Component {
                 Err(msg) => {
                     return Err(LewpError::new(
                         LewpErrorKind::Css,
-                        &format!("Error reading stylesheet file: {}", msg),
+                        &format!("Error reading stylesheet file: {msg}"),
                         self.component_information.clone(),
                     ));
                 }
@@ -162,8 +162,8 @@ impl Component {
         if let Err(e) = selector.to_css(&mut old) {
             return Err(LewpError::new(
                 LewpErrorKind::Css,
-                &format!("{:#?}", e),
-                self.component_information().clone(),
+                &format!("{e:#?}"),
+                self.component_information(),
             ));
         };
         let new = match lewp_css::parse_css_selector(&format!(
@@ -174,8 +174,8 @@ impl Component {
             Err(e) => {
                 return Err(LewpError::new(
                     LewpErrorKind::Css,
-                    &format!("{:#?}", e),
-                    self.component_information().clone(),
+                    &format!("{e:#?}"),
+                    self.component_information(),
                 ));
             }
             Ok(s) => s,
@@ -192,8 +192,8 @@ impl Component {
         if let Err(e) = selector.to_css(&mut old) {
             return Err(LewpError::new(
                 LewpErrorKind::Css,
-                &format!("{:#?}", e),
-                self.component_information().clone(),
+                &format!("{e:#?}"),
+                self.component_information(),
             ));
         };
         let new = match lewp_css::parse_css_selector(&format!(
@@ -204,8 +204,8 @@ impl Component {
             Err(e) => {
                 return Err(LewpError::new(
                     LewpErrorKind::Css,
-                    &format!("{:#?}", e),
-                    self.component_information().clone(),
+                    &format!("{e:#?}"),
+                    self.component_information(),
                 ));
             }
             Ok(s) => s,
@@ -219,10 +219,10 @@ impl Component {
         &self,
         stylesheet: Stylesheet,
     ) -> Result<<Self as FHComponent>::Content, LewpError> {
-        Ok(self.filter_stylesheet_properties(
+        self.filter_stylesheet_properties(
             stylesheet,
             Rc::new(Box::new(|x| x.is_render_critical())),
-        )?)
+        )
     }
 
     /// Creates a new stylesheet that contains only NON render critical properties.
@@ -230,10 +230,10 @@ impl Component {
         &self,
         stylesheet: Stylesheet,
     ) -> Result<<Self as FHComponent>::Content, LewpError> {
-        Ok(self.filter_stylesheet_properties(
+        self.filter_stylesheet_properties(
             stylesheet,
             Rc::new(Box::new(|x| !x.is_render_critical())),
-        )?)
+        )
     }
 
     /// Creates a new stylesheet and filters the properties by the given closure.

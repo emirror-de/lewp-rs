@@ -5,13 +5,12 @@ use {
             ComponentInformation as FHComponentInformation,
             ComponentType,
             FileHierarchy,
-            Level,
             ResourceType,
         },
         LewpError,
         LewpErrorKind,
     },
-    std::{path::PathBuf, sync::Arc},
+    std::{sync::Arc},
 };
 
 /// Enables interactions with text files in the file hierarchy.
@@ -41,9 +40,7 @@ impl FHComponent for Text {
             None => {
                 return Err(LewpError {
                     kind: LewpErrorKind::FileHierarchyComponent,
-                    message: format!(
-                        "The extension for a text file could not be found! This error should never occur!",
-                    ),
+                    message: "The extension for a text file could not be found! This error should never occur!".to_string(),
                     source_component: self.component_information(),
                 })
             },
@@ -56,7 +53,7 @@ impl FHComponent for Text {
             Err(msg) => {
                 return Err(LewpError::new(
                     LewpErrorKind::FileHierarchyComponent,
-                    &format!("Error reading text file: {}", msg),
+                    &format!("Error reading text file: {msg}"),
                     self.component_information.clone(),
                 ));
             }

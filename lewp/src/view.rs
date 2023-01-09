@@ -25,6 +25,7 @@ impl ComponentView for Node {
 
 /// A complete web page view. Contains all `HTML` nodes as well as parameters
 /// required to render a valid `HTML` page.
+#[derive(Default)]
 pub struct PageView {
     /// The `<head>` tag content.
     ///
@@ -56,7 +57,7 @@ impl PageView {
         }
 
         log::debug!("Processing dependencies for ID \"{}\"", component.id());
-        let mut dependencies = component.dependency_list().clone();
+        let mut dependencies = component.dependency_list();
         dependencies.push(component.model().id());
         log::debug!(
             "Adding dependencies for component \"{}\": \"{}\"",
@@ -91,12 +92,4 @@ impl PageView {
     }
 }
 
-impl Default for PageView {
-    fn default() -> Self {
-        Self {
-            head: vec![],
-            body: vec![],
-            dependency_list: DependencyList::default(),
-        }
-    }
-}
+

@@ -52,9 +52,9 @@ fn css_components_and_register() {
         .build();
     let r = Register::new(Arc::new(fh), RegisterOptions::default()).unwrap();
     let css = r
-        .query(component_information.clone(), Entireness::Full)
+        .query(component_information, Entireness::Full)
         .unwrap();
-    println!("Queried from register: {:#?}", css);
+    println!("Queried from register: {css:#?}");
 }
 
 #[test]

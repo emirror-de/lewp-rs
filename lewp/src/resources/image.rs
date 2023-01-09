@@ -5,13 +5,12 @@ use {
             ComponentInformation as FHComponentInformation,
             ComponentType,
             FileHierarchy,
-            Level,
             ResourceType,
         },
         LewpError,
         LewpErrorKind,
     },
-    std::{path::PathBuf, sync::Arc},
+    std::{sync::Arc},
 };
 
 /// The parameter required for the image
@@ -118,7 +117,7 @@ fn read_rust_logo() {
         .content(ImageParameter::new("rust-logo-512x512-blk.png"))
     {
         Ok(f) => f,
-        Err(e) => panic!("{:#?}", e),
+        Err(e) => panic!("{e:#?}"),
     };
 
     assert_eq!(

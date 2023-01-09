@@ -21,6 +21,6 @@ impl std::fmt::Display for Level {
             Component => "components",
             Page => "pages",
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }

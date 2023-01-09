@@ -44,7 +44,7 @@ impl FileHierarchy {
     pub fn folder<COMP: Component>(&self, component: &COMP) -> PathBuf {
         let mut path = self.mountpoint.clone();
         path.push(component.level().to_string());
-        path.push(component.id().to_string());
+        path.push(&component.id());
         path.push(component.kind().to_string());
         path
     }
@@ -59,7 +59,7 @@ impl FileHierarchy {
         let subfolder = self
             .mountpoint
             .join(Path::new(&component.level().to_string()))
-            .join(Path::new(&component.id().to_string()))
+            .join(Path::new(&component.id()))
             .join(Path::new(&component.kind().to_string()));
         if !subfolder.is_dir() {
             return Err(LewpError {
@@ -100,7 +100,7 @@ impl FileHierarchy {
         match pathdiff::diff_paths(input_path, mountpoint) {
             Some(p) => Ok(p),
             None => match input_path.to_str() {
-                Some(v) => Err(format!("Could not remove base dir of {}", v)),
+                Some(v) => Err(format!("Could not remove base dir of {v}")),
                 None => Err("Could not remove base dir!".to_string()),
             },
         }
@@ -137,12 +137,12 @@ impl FileHierarchy {
         };
         log::trace!("filepath: {:#?}", filepath.to_string());
         // glob it!
-        let glob_paths = match glob::glob(&filepath) {
+        let glob_paths = match glob::glob(filepath) {
             Ok(paths) => paths,
             Err(e) => {
                 return Err(LewpError {
                     kind: LewpErrorKind::FileHierarchy,
-                    message: format!("Error during glob call: {}", e),
+                    message: format!("Error during glob call: {e}"),
                     source_component: Arc::new(ComponentInformation::core(
                         "get_component_ids",
                     )),
@@ -166,7 +166,7 @@ impl FileHierarchy {
                                 let extension = e
                                     .file_name()
                                     .to_str()
-                                    .map(|s| s.ends_with(&format!(".{}", ext)))
+                                    .map(|s| s.ends_with(&format!(".{ext}")))
                                     .unwrap_or(false);
                                 depth && extension
                             })
@@ -214,8 +214,7 @@ impl FileHierarchy {
                     return Err(LewpError {
                         kind: LewpErrorKind::FileHierarchy,
                         message: format!(
-                            "Could not extract file name from parent of PathBuf: {:#?}",
-                            p
+                            "Could not extract file name from parent of PathBuf: {p:#?}"
                         ),
                         source_component: Arc::new(ComponentInformation::core(
                             "extract_component_ids_from_pathbuf",
@@ -227,8 +226,7 @@ impl FileHierarchy {
                     return Err(LewpError {
                         kind: LewpErrorKind::FileHierarchy,
                         message: format!(
-                            "Could not extract parent from PathBuf: {:#?}",
-                            p
+                            "Could not extract parent from PathBuf: {p:#?}"
                         ),
                         source_component: Arc::new(ComponentInformation::core(
                             "extract_component_ids_from_pathbuf",
@@ -242,8 +240,7 @@ impl FileHierarchy {
                 return Err(LewpError {
                     kind: LewpErrorKind::FileHierarchy,
                     message: format!(
-                        "Could not create String from OsStr: {:#?}",
-                        os_str
+                        "Could not create String from OsStr: {os_str:#?}"
                     ),
                     source_component: Arc::new(ComponentInformation::core(
                         "extract_component_ids_from_pathbuf",
@@ -436,7 +433,7 @@ mod tests {
                 .mountpoint(PathBuf::from("testfiles"))
                 .build(),
         );
-        let css = Css {
+        let _css = Css {
             id: String::from("hello-world"),
             fh: fh.clone(),
         };
