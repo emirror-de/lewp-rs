@@ -203,22 +203,24 @@ impl<P: Page, FH: FhState, CSS: CssState>
 
         head.append(&mut prelude);
 
-        match self.assemble_page_css() {
-            Some(css) => head.push(css),
-            None => (),
+        let mut inline_css = match self.get_page_css() {
+            Some(css) => format!("{}", css),
+            None => "".into(),
         };
-
-        match self.assemble_component_css() {
-            Some(css) => head.push(css),
-            None => (),
+        if let Some(css) = self.get_component_css() {
+            inline_css += &css;
         };
+        if !inline_css.is_empty() {
+            log::debug!("Adding inline <style> element with page and all components to <head>");
+            head.push(style(text(&inline_css)));
+        }
 
         head.append(&mut self.view.head());
 
         head
     }
 
-    fn assemble_page_css(&self) -> Option<Node> {
+    fn get_page_css(&self) -> Option<Arc<String>> {
         let comp_css = Arc::new(ComponentInformation {
             id: self.model.id(),
             level: Level::Page,
@@ -226,25 +228,12 @@ impl<P: Page, FH: FhState, CSS: CssState>
         });
 
         match &self.css_register {
-            Some(r) => {
-                match r.query(comp_css, Entireness::Full) {
-                    Some(css) => {
-                        let css = format!("{}", css);
-                        // create a style tag for inline css
-                        if css.is_empty() {
-                            return None;
-                        } else {
-                            return Some(style(text(&css)));
-                        }
-                    }
-                    None => None,
-                }
-            }
+            Some(r) => r.query(comp_css, Entireness::Full),
             None => None,
         }
     }
 
-    fn assemble_component_css(&self) -> Option<Node> {
+    fn get_component_css(&self) -> Option<String> {
         let css_register = match &self.css_register {
             Some(r) => r,
             None => return None,
@@ -270,7 +259,7 @@ impl<P: Page, FH: FhState, CSS: CssState>
         if collected_css.is_empty() {
             return None;
         }
-        Some(style(text(collected_css)))
+        Some(collected_css.to_owned())
     }
 }
 

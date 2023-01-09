@@ -90,7 +90,12 @@ impl Register {
         entity: Entireness,
     ) -> Option<Arc<String>> {
         let ref_css = self.components.get(&component_information)?;
-        Some(ref_css.render_critical())
+        let css = match entity {
+            Entireness::Full => ref_css.full(),
+            Entireness::RenderCritical => ref_css.render_critical(),
+            Entireness::NonRenderCritical => ref_css.non_render_critical(),
+        };
+        Some(css)
     }
 
     /// Collects, processes and caches all available CSS in the file hierarchy.

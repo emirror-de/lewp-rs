@@ -14,8 +14,8 @@ use {
         cssparser::ToCss,
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},
+            properties::{Importance, PropertyDeclaration},
             selectors::OurSelectorImpl,
-            Atom,
             CssRule,
             CssRules,
             StyleRule,
@@ -23,7 +23,7 @@ use {
         Stylesheet,
     },
     selectors::parser::Selector,
-    std::{path::PathBuf, sync::Arc},
+    std::{path::PathBuf, rc::Rc, sync::Arc},
 };
 
 /// This keyword is intentionally defined with a whitespace at the end.
@@ -52,7 +52,7 @@ impl FHComponent for Component {
 
     fn content(
         &self,
-        params: Self::ContentParameter,
+        _params: Self::ContentParameter,
     ) -> Result<Self::Content, LewpError> {
         let files = self.fh.get_file_list(self)?;
         let css_raw = self.combine_files(files)?;
@@ -219,36 +219,70 @@ impl Component {
         &self,
         stylesheet: Stylesheet,
     ) -> Result<<Self as FHComponent>::Content, LewpError> {
+        Ok(self.filter_stylesheet_properties(
+            stylesheet,
+            Rc::new(Box::new(|x| x.is_render_critical())),
+        )?)
+    }
+
+    /// Creates a new stylesheet that contains only NON render critical properties.
+    pub fn extract_non_render_critical_stylesheet(
+        &self,
+        stylesheet: Stylesheet,
+    ) -> Result<<Self as FHComponent>::Content, LewpError> {
+        Ok(self.filter_stylesheet_properties(
+            stylesheet,
+            Rc::new(Box::new(|x| !x.is_render_critical())),
+        )?)
+    }
+
+    /// Creates a new stylesheet and filters the properties by the given closure.
+    ///
+    /// It automatically cleans up empty rules.
+    pub fn filter_stylesheet_properties(
+        &self,
+        stylesheet: Stylesheet,
+        filter: Rc<Box<dyn Fn(&PropertyDeclaration<Importance>) -> bool>>,
+    ) -> Result<<Self as FHComponent>::Content, LewpError> {
         let mut stylesheet = stylesheet;
-        self.extract_render_critical_rules(&mut stylesheet.rules, true)?;
+
+        self.filter_rules(&mut stylesheet.rules, filter, true)?;
+
+        self.remove_empty_rules(&mut stylesheet.rules);
+
         Ok(stylesheet)
     }
 
-    fn extract_render_critical_rules(
+    fn filter_rules(
         &self,
         rules: &mut CssRules,
+        filter: Rc<Box<dyn Fn(&PropertyDeclaration<Importance>) -> bool>>,
         recursive: bool,
     ) -> Result<(), LewpError> {
         for rule in &mut rules.0 {
+            let iteration_filter = Rc::clone(&filter);
             match rule {
                 CssRule::Style(StyleRule {
                     property_declarations,
                     ..
                 }) => {
-                    property_declarations.0.retain(|x| x.is_render_critical());
+                    property_declarations.0.retain(|x| iteration_filter(x));
                 }
                 CssRule::Media(MediaAtRule { rules, .. })
                 | CssRule::Document(DocumentAtRule { rules, .. }) => {
                     if !recursive {
                         continue;
                     }
-                    self.isolate_rules(rules, true)?
+                    self.filter_rules(rules, iteration_filter, true)?
                 }
                 _ => {}
             }
         }
 
-        // remove all empty rules
+        Ok(())
+    }
+
+    fn remove_empty_rules(&self, rules: &mut CssRules) {
         rules.0.retain(|r| match r {
             CssRule::Style(StyleRule {
                 property_declarations,
@@ -256,7 +290,5 @@ impl Component {
             }) => !property_declarations.is_empty(),
             _ => false,
         });
-
-        Ok(())
     }
 }
