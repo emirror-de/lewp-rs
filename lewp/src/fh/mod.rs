@@ -25,12 +25,8 @@ pub struct FileHierarchy {
 
 impl FileHierarchy {
     /// Creates a new file hierarchy instance.
-    ///
-    /// The mounpoint is set to `.`
-    pub fn new() -> Self {
-        Self {
-            mountpoint: PathBuf::from("."),
-        }
+    pub fn new(mountpoint: PathBuf) -> Self {
+        Self { mountpoint }
     }
 
     /// Returns the directory where the file hierarchy is mounted.
@@ -308,7 +304,9 @@ impl FileHierarchy {
 impl Default for FileHierarchy {
     /// Creates a new instance of the file hierarchy with the [FileHierarchy::new] function.
     fn default() -> Self {
-        Self::new()
+        Self {
+            mountpoint: PathBuf::from("."),
+        }
     }
 }
 
