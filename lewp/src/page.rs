@@ -67,6 +67,10 @@ where
     fn viewport(&self) -> Option<Node> {
         Some(viewport())
     }
+    /// Adds the returned [NodeList] to the `<head>` of the page.
+    fn head(&self) -> NodeList {
+        vec![]
+    }
     /// Creates a new [PageWrapper] which is able to attach different
     /// resources and rendering the page.
     fn new(
@@ -195,6 +199,8 @@ impl<P: Page, FH: FhState, CSS: CssState>
             title(&self.model.title()),
             description(&self.model.description()),
         ];
+        let mut page_head = self.model.head();
+        prelude.append(&mut page_head);
 
         // add viewport if available
         if let Some(v) = self.model.viewport() {
