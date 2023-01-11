@@ -32,8 +32,9 @@ where
     /// implementation. Mostly, it is called from another component's
     /// [main](Component::main) method.
     fn update(&mut self, _message: Self::Message) {}
-    /// The main method designing the behavior of the component.
-    fn main(&mut self);
+    /// The main method designing the behavior of the component. Does nothing by
+    /// default.
+    fn main(&mut self) {}
     /// Defines the view of the component.
     fn view(&self) -> Option<Node>;
     /// Use this when rendering a nested component. This ensures that all
