@@ -68,24 +68,21 @@ impl Default for RegisterOptions {
 /// variable. It loads all components available in the given file hierarchy and
 /// keeps them in memory, as long as this instance is available.
 pub struct Register {
-    fh: Arc<FileHierarchy>,
     options: RegisterOptions,
     components: HashMap<Arc<ComponentInformation>, Arc<String>>,
 }
 
 impl Register {
     /// Creates a new Register instance.
-    pub fn new(
-        fh: Arc<FileHierarchy>,
+    pub fn new<T: FileHierarchy>(
         options: RegisterOptions,
-    ) -> Result<Self, LewpError> {
+    ) -> anyhow::Result<Self> {
         let mut register = Self {
-            fh,
             options,
             components: HashMap::new(),
         };
         if register.options.autoload() {
-            register.load_process_components()?
+            register.load_process_components::<T>()?
         }
         Ok(register)
     }
@@ -99,9 +96,11 @@ impl Register {
     }
 
     /// Collects, processes and caches all available CSS in the file hierarchy.
-    pub fn load_process_components(&mut self) -> Result<(), LewpError> {
-        self.load_process_modules()?;
-        self.load_process_pages()
+    pub fn load_process_components<T: FileHierarchy>(
+        &mut self,
+    ) -> anyhow::Result<()> {
+        self.load_process_modules::<T>()?;
+        self.load_process_pages::<T>()
     }
 
     /// Returns the path prefix where the CSS is mounted on the webserver.
@@ -109,8 +108,8 @@ impl Register {
         &self.options.uri_path_prefix()
     }
 
-    fn load_process_modules(&mut self) -> Result<(), LewpError> {
-        let module_ids = self.fh.collect_component_ids(
+    fn load_process_modules<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
+        let module_ids = T::collect_component_ids(
             ComponentType::JavaScript,
             Level::Component,
         )?;
@@ -120,20 +119,20 @@ impl Register {
                 level: Level::Component,
                 kind: ComponentType::JavaScript,
             });
-            let c = JsComponent::new(
-                component_information.clone(),
-                self.fh.clone(),
-            );
-            let c = match c.content(()) {
+            let c = JsComponent::new(component_information.clone());
+            let c = match c.content::<T>(()) {
                 Ok(c) => c,
                 Err(e) => {
-                    return Err(LewpError {
-                        kind: LewpErrorKind::JavaScript,
-                        message: format!(
-                            "Could not get minified JavaScript: {e}",
-                        ),
-                        source_component: component_information.clone(),
-                    })
+                    return Err(anyhow::anyhow!(
+                        "{}",
+                        LewpError {
+                            kind: LewpErrorKind::JavaScript,
+                            message: format!(
+                                "Could not get minified JavaScript: {e}",
+                            ),
+                            source_component: component_information.clone(),
+                        }
+                    ))
                 }
             };
             self.components
@@ -142,43 +141,34 @@ impl Register {
         Ok(())
     }
 
-    fn load_process_pages(&mut self) -> Result<(), LewpError> {
-        let page_ids = self
-            .fh
-            .collect_component_ids(ComponentType::Css, Level::Page)?;
+    fn load_process_pages<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
+        let page_ids =
+            T::collect_component_ids(ComponentType::Css, Level::Page)?;
         for id in page_ids {
             let component_information = Arc::new(ComponentInformation {
                 id: id.clone(),
                 level: Level::Page,
                 kind: ComponentType::JavaScript,
             });
-            let c = JsComponent::new(
-                component_information.clone(),
-                self.fh.clone(),
-            );
-            let c = match c.content(()) {
+            let c = JsComponent::new(component_information.clone());
+            let c = match c.content::<T>(()) {
                 Ok(c) => c,
                 Err(e) => {
-                    return Err(LewpError {
-                        kind: LewpErrorKind::JavaScript,
-                        message: format!(
-                            "Could not get minified JavaScript: {e}",
-                        ),
-                        source_component: component_information.clone(),
-                    })
+                    return Err(anyhow::anyhow!(
+                        "{}",
+                        LewpError {
+                            kind: LewpErrorKind::JavaScript,
+                            message: format!(
+                                "Could not get minified JavaScript: {e}",
+                            ),
+                            source_component: component_information.clone(),
+                        }
+                    ))
                 }
             };
             self.components
                 .insert(component_information.clone(), Arc::new(c));
         }
         Ok(())
-    }
-}
-
-impl Default for Register {
-    /// Creates a CssRegister with a default [FileHierarchy] and [RegisterOptions].
-    fn default() -> Self {
-        Self::new(Arc::new(FileHierarchy::default()), RegisterOptions::default())
-            .expect("Default CSS register instantiation should always work! If not, check your FileHierarchy setup first!")
     }
 }

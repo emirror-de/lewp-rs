@@ -1,7 +1,7 @@
 use {
     lewp::{
         component::{Component, ComponentId},
-        fh::FileHierarchyBuilder,
+        file_hierarchy,
         html::{
             api::{h1, text},
             Node,
@@ -70,17 +70,14 @@ impl Page for HelloWorldPage {
     }
 }
 
+// This defines where your hierarchy is stored. You can have multiple.
+file_hierarchy!(TestHierarchy, "testfiles");
+
 fn main() {
     simple_logger::init().unwrap();
-    let fh = Arc::new(
-        FileHierarchyBuilder::new()
-            .mountpoint(PathBuf::from("./lewp/testfiles"))
-            .build(),
-    );
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
-        .with_file_hierarchy(Arc::clone(&fh))
-        .with_js_register(JsRegisterOptions::default())
+        .with_js_register::<TestHierarchy>(JsRegisterOptions::default())
         .unwrap();
     println!("{}", page.main().render());
 }

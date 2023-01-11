@@ -8,52 +8,48 @@ use {
             RegisterOptions,
         },
         fh::{
-            self,
             Component as FHComponent,
             ComponentInformation,
             ComponentType,
+            FileHierarchy,
             Level,
         },
+        file_hierarchy,
     },
     std::sync::Arc,
 };
 
+file_hierarchy!(TestHierarchy, "testfiles");
+
 #[test]
 fn css_components_and_register() {
-    let fh = crate::fh::FileHierarchyBuilder::new()
-        .mountpoint(std::path::PathBuf::from("./testfiles"))
-        .build();
-    assert_eq!(
-        fh.collect_component_ids(ComponentType::Css, Level::Component,)
-            .unwrap()
-            .sort(),
-        vec!["footer", "hello-world", "navigation"].sort(),
-    );
-    assert_eq!(
-        fh.collect_component_ids(ComponentType::Css, Level::Page,)
-            .unwrap()
-            .sort(),
-        vec!["sitemap"].sort()
-    );
+    let mut test = TestHierarchy::collect_component_ids(
+        ComponentType::Css,
+        Level::Component,
+    )
+    .unwrap();
+    test.sort();
+    assert_eq!(test, vec!["footer", "hello-world", "navigation"],);
+    let mut test =
+        TestHierarchy::collect_component_ids(ComponentType::Css, Level::Page)
+            .unwrap();
+    test.sort();
+    assert_eq!(test, vec!["sitemap"]);
     let component_information = Arc::new(ComponentInformation {
         id: "sitemap".to_string(),
         level: Level::Page,
         kind: ComponentType::Css,
     });
-    let c = Component::new(component_information.clone(), Arc::new(fh));
-    let parsed_component = ProcessedComponent::try_from(&c).unwrap();
+    let c = Component::new(component_information.clone());
+    let parsed_component =
+        ProcessedComponent::new::<TestHierarchy>(&c).unwrap();
     println!(
         "Parsed render critical: {:#?}",
         parsed_component.render_critical()
     );
 
-    let fh = fh::FileHierarchyBuilder::new()
-        .mountpoint(std::path::PathBuf::from("./testfiles"))
-        .build();
-    let r = Register::new(Arc::new(fh), RegisterOptions::default()).unwrap();
-    let css = r
-        .query(component_information, Entireness::Full)
-        .unwrap();
+    let r = Register::new::<TestHierarchy>(RegisterOptions::default()).unwrap();
+    let css = r.query(component_information, Entireness::Full).unwrap();
     println!("Queried from register: {css:#?}");
 }
 
@@ -61,36 +57,12 @@ fn css_components_and_register() {
 fn isolate_css_module() {
     use crate::fh::Level;
 
-    // get temporary directory
-    let dir = tempfile::tempdir().unwrap();
-    // base the file hierarchy to this directory
-    let fh = crate::fh::FileHierarchyBuilder::new()
-        .mountpoint(dir.path().to_path_buf())
-        .build();
-
-    // create path where the testfiles should be copied
-    let testfiles_destination = dir.path().join("components");
-    let testfiles_source = "testfiles/components";
-    let mut copy_options = fs_extra::dir::CopyOptions::new();
-    copy_options.copy_inside = true;
-    match fs_extra::dir::copy(
-        testfiles_source,
-        testfiles_destination,
-        &copy_options,
-    ) {
-        Err(msg) => panic!("{}", msg.to_string()),
-        Ok(_) => (),
-    };
-
-    let css = Component::new(
-        Arc::new(ComponentInformation {
-            id: String::from("hello-world"),
-            level: Level::Component,
-            kind: ComponentType::Css,
-        }),
-        Arc::new(fh),
-    );
-    let stylesheet = match css.content(()) {
+    let css = Component::new(Arc::new(ComponentInformation {
+        id: String::from("hello-world"),
+        level: Level::Component,
+        kind: ComponentType::Css,
+    }));
+    let stylesheet = match css.content::<TestHierarchy>(()) {
         Ok(c) => c,
         Err(e) => panic!("{}", e),
     };
@@ -98,9 +70,4 @@ fn isolate_css_module() {
         stylesheet.to_css_string(true),
         String::from("header.hello-world{border: thin solid black}.hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")
         );
-
-    match dir.close() {
-        Err(msg) => panic!("{}", msg.to_string()),
-        Ok(_) => (),
-    }
 }

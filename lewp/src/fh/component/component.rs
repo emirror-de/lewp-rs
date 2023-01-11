@@ -1,10 +1,7 @@
 use {
     super::{component_type::ComponentType, information::ComponentInformation},
-    crate::{
-        fh::{FileHierarchy, Level},
-        LewpError,
-    },
-    std::{path::PathBuf, sync::Arc},
+    crate::fh::{FileHierarchy, Level},
+    std::sync::Arc,
 };
 
 /// A lewp component. Anything inside the file hierarchy is a component (Files, Folders, Modules,
@@ -18,13 +15,11 @@ pub trait Component {
     /// Returns the ComponentInformation instance. Required eg. for passing information to
     /// LewpError.
     fn component_information(&self) -> Arc<ComponentInformation>;
-    /// Returns a reference to the file hierarchy instance attached to this component.
-    fn file_hierarchy(&self) -> Arc<FileHierarchy>;
     /// Implementation of acquiring the content for this type of component.
-    fn content(
+    fn content<T: FileHierarchy>(
         &self,
         params: Self::ContentParameter,
-    ) -> Result<Self::Content, LewpError>;
+    ) -> anyhow::Result<Self::Content>;
 
     /// The unique ID of the component.
     fn id(&self) -> String {
@@ -37,12 +32,5 @@ pub trait Component {
     /// The component type.
     fn kind(&self) -> ComponentType {
         self.component_information().kind.clone()
-    }
-    /// Returns the folder name of the component according to the file hierarchy.
-    fn folder_name(&self) -> PathBuf
-    where
-        Self: Sized,
-    {
-        self.file_hierarchy().folder(self)
     }
 }

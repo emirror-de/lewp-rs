@@ -10,12 +10,11 @@ use {
         LewpError,
         LewpErrorKind,
     },
-    std::{sync::Arc},
+    std::sync::Arc,
 };
 
 /// Enables interactions with text files in the file hierarchy.
 pub struct Text {
-    fh: Arc<FileHierarchy>,
     component_information: Arc<FHComponentInformation>,
 }
 
@@ -29,49 +28,46 @@ impl FHComponent for Text {
         self.component_information.clone()
     }
 
-    fn content(
+    fn content<T: FileHierarchy>(
         &self,
         params: Self::ContentParameter,
-    ) -> Result<Self::Content, LewpError> {
-        let mut filename = self.folder_name();
+    ) -> anyhow::Result<Self::Content> {
+        let mut filename = T::folder(self);
         filename.push(params);
-        let extension = match ComponentType::Resource(ResourceType::Text).extension() {
+        let extension = match ComponentType::Resource(ResourceType::Text)
+            .extension()
+        {
             Some(e) => e,
             None => {
-                return Err(LewpError {
+                return Err(anyhow::anyhow!("{}", LewpError {
                     kind: LewpErrorKind::FileHierarchyComponent,
                     message: "The extension for a text file could not be found! This error should never occur!".to_string(),
                     source_component: self.component_information(),
-                })
-            },
-
+                }));
+            }
         };
         filename.set_extension(extension);
         log::trace!("filename: {:#?}", filename);
         let text = match std::fs::read_to_string(&filename) {
             Ok(r) => r,
             Err(msg) => {
-                return Err(LewpError::new(
-                    LewpErrorKind::FileHierarchyComponent,
-                    &format!("Error reading text file: {msg}"),
-                    self.component_information.clone(),
+                return Err(anyhow::anyhow!(
+                    "{}",
+                    LewpError::new(
+                        LewpErrorKind::FileHierarchyComponent,
+                        &format!("Error reading text file: {msg}"),
+                        self.component_information.clone(),
+                    )
                 ));
             }
         };
         Ok(text)
     }
-
-    fn file_hierarchy(&self) -> Arc<FileHierarchy> {
-        self.fh.clone()
-    }
 }
 
 impl Text {
     /// Creates a new Text component.
-    pub fn new(
-        component_information: Arc<FHComponentInformation>,
-        fh: Arc<FileHierarchy>,
-    ) -> Self {
+    pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
         let component_information = Arc::new(FHComponentInformation {
             id: component_information.id.clone(),
             level: component_information.level,
@@ -79,7 +75,6 @@ impl Text {
         });
         log::trace!("ComponentInformation: {:#?}", component_information);
         Self {
-            fh,
             component_information,
         }
     }

@@ -1,16 +1,13 @@
-use {
-    lewp::{
-        component::{Component, ComponentId},
-        css::RegisterOptions as CssRegisterOptions,
-        fh::FileHierarchyBuilder,
-        html::{
-            api::{h1, text},
-            Node,
-        },
-        page::{Page, PageId},
-        view::PageView,
+use lewp::{
+    component::{Component, ComponentId},
+    css::RegisterOptions as CssRegisterOptions,
+    file_hierarchy,
+    html::{
+        api::{h1, text},
+        Node,
     },
-    std::{path::PathBuf, sync::Arc},
+    page::{Page, PageId},
+    view::PageView,
 };
 
 // Your hello world component.
@@ -70,17 +67,14 @@ impl Page for HelloWorldPage {
     }
 }
 
+// This defines where your hierarchy is stored. You can have multiple.
+file_hierarchy!(TestHierarchy, "testfiles");
+
 fn main() {
     simple_logger::init().unwrap();
-    let fh = Arc::new(
-        FileHierarchyBuilder::new()
-            .mountpoint(PathBuf::from("./lewp/testfiles"))
-            .build(),
-    );
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
-        .with_file_hierarchy(Arc::clone(&fh))
-        .with_css_register(CssRegisterOptions::default())
+        .with_css_register::<TestHierarchy>(CssRegisterOptions::default())
         .unwrap();
     println!("{}", page.main().render());
 }

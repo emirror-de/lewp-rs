@@ -30,7 +30,6 @@ use {
         view::PageView,
         Charset,
         LanguageTag,
-        LewpError,
     },
     html5ever::serialize,
     markup5ever_rcdom::SerializableHandle,
@@ -84,53 +83,93 @@ where
     /// resources and rendering the page.
     fn new(
         model: Self,
-    ) -> PageWrapper<
-        Self,
-        WithoutFileHierarchy,
-        WithoutCss,
-        WithoutJs,
-        PagePreparing,
-    > {
+    ) -> PageWrapper<Self, WithoutCss, WithoutJs, PagePreparing> {
         PageWrapper::from(model)
     }
 }
 
 /// A wrapper around the implemented [Page] trait. Contains all necessary code
 /// to execute the behavior and assemble the view of your page.
-pub struct PageWrapper<
-    P: Page,
-    FH: FhState,
-    CSS: CssState,
-    JS: JsState,
-    E: ExecutionState,
-> {
+pub struct PageWrapper<P: Page, CSS: CssState, JS: JsState, E: ExecutionState> {
     model: P,
     view: PageView,
-    fh: Option<Arc<FileHierarchy>>,
     css_register: Option<Arc<CssRegister>>,
     js_register: Option<Arc<JsRegister>>,
-    fs_state: std::marker::PhantomData<FH>,
     css_state: std::marker::PhantomData<CSS>,
     js_state: std::marker::PhantomData<JS>,
     execution_state: std::marker::PhantomData<E>,
 }
 
-impl<P: Page>
-    PageWrapper<P, WithoutFileHierarchy, WithoutCss, WithoutJs, PagePreparing>
-{
-    /// Attaches the given [FileHierarchy].
-    pub fn with_file_hierarchy(
+impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
+    /// Creates a new [CssRegister] instance with the given [CSSRegisterOptions]
+    /// and attaches it to the page. For this, the previously given file hierarchy
+    /// is used.
+    pub fn with_css_register<FH: FileHierarchy>(
         self,
-        fh: Arc<FileHierarchy>,
-    ) -> PageWrapper<P, WithFileHierarchy, WithoutCss, WithoutJs, PagePreparing>
-    {
+        options: CssRegisterOptions,
+    ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
+        let register = CssRegister::new::<FH>(options)?;
+        Ok(PageWrapper {
+            model: self.model,
+            view: self.view,
+            css_register: Some(Arc::new(register)),
+            js_register: self.js_register,
+            css_state: std::marker::PhantomData,
+            js_state: std::marker::PhantomData,
+            execution_state: std::marker::PhantomData,
+        })
+    }
+}
+
+impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
+    /// Creates a new [JsRegister] instance with the given [JSRegisterOptions]
+    /// and attaches it to the page. For this, the previously given file hierarchy
+    /// is used.
+    pub fn with_js_register<FH: FileHierarchy>(
+        self,
+        options: JsRegisterOptions,
+    ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
+        let register = JsRegister::new::<FH>(options)?;
+        Ok(PageWrapper {
+            model: self.model,
+            view: self.view,
+            css_register: self.css_register,
+            js_register: Some(Arc::new(register)),
+            css_state: std::marker::PhantomData,
+            js_state: std::marker::PhantomData,
+            execution_state: std::marker::PhantomData,
+        })
+    }
+}
+
+impl<P: Page, JS: JsState> PageWrapper<P, WithCss, JS, PagePreparing> {
+    /// Returns the attached [CssRegister].
+    pub fn css_register(&self) -> Arc<CssRegister> {
+        // state enforces a Some to css_register
+        Arc::clone(self.css_register.as_ref().unwrap())
+    }
+}
+
+impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithJs, PagePreparing> {
+    /// Returns the attached [JsRegister].
+    pub fn js_register(&self) -> Arc<JsRegister> {
+        // state enforces a Some to js_register
+        Arc::clone(self.js_register.as_ref().unwrap())
+    }
+}
+
+impl<P: Page, CSS: CssState, JS: JsState>
+    PageWrapper<P, CSS, JS, PagePreparing>
+{
+    /// This is your main entry point to processing your implemented page.
+    pub fn main(mut self) -> PageWrapper<P, CSS, JS, PageFinished> {
+        self.model.main(&mut self.view);
+
         PageWrapper {
             model: self.model,
             view: self.view,
-            fh: Some(fh),
             css_register: self.css_register,
             js_register: self.js_register,
-            fs_state: std::marker::PhantomData,
             css_state: std::marker::PhantomData,
             js_state: std::marker::PhantomData,
             execution_state: std::marker::PhantomData,
@@ -139,116 +178,7 @@ impl<P: Page>
 }
 
 impl<P: Page, CSS: CssState, JS: JsState>
-    PageWrapper<P, WithoutFileHierarchy, CSS, JS, PagePreparing>
-{
-    /// Returns the attached [FileHierarchy].
-    pub fn file_hierarchy(&self) -> Arc<FileHierarchy> {
-        // state enforces a Some to file_hierarchy
-        Arc::clone(self.fh.as_ref().unwrap())
-    }
-}
-
-impl<P: Page, JS: JsState>
-    PageWrapper<P, WithFileHierarchy, WithoutCss, JS, PagePreparing>
-{
-    /// Creates a new [CssRegister] instance with the given [CSSRegisterOptions]
-    /// and attaches it to the page. For this, the previously given file hierarchy
-    /// is used.
-    pub fn with_css_register(
-        self,
-        options: CssRegisterOptions,
-    ) -> Result<
-        PageWrapper<P, WithFileHierarchy, WithCss, JS, PagePreparing>,
-        LewpError,
-    > {
-        let register =
-            CssRegister::new(Arc::clone(&self.fh.as_ref().unwrap()), options)?;
-        Ok(PageWrapper {
-            model: self.model,
-            view: self.view,
-            fh: self.fh,
-            css_register: Some(Arc::new(register)),
-            js_register: self.js_register,
-            fs_state: std::marker::PhantomData,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        })
-    }
-}
-
-impl<P: Page, CSS: CssState>
-    PageWrapper<P, WithFileHierarchy, CSS, WithoutJs, PagePreparing>
-{
-    /// Creates a new [JsRegister] instance with the given [JSRegisterOptions]
-    /// and attaches it to the page. For this, the previously given file hierarchy
-    /// is used.
-    pub fn with_js_register(
-        self,
-        options: JsRegisterOptions,
-    ) -> Result<
-        PageWrapper<P, WithFileHierarchy, CSS, WithJs, PagePreparing>,
-        LewpError,
-    > {
-        let register =
-            JsRegister::new(Arc::clone(&self.fh.as_ref().unwrap()), options)?;
-        Ok(PageWrapper {
-            model: self.model,
-            view: self.view,
-            fh: self.fh,
-            css_register: self.css_register,
-            js_register: Some(Arc::new(register)),
-            fs_state: std::marker::PhantomData,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        })
-    }
-}
-
-impl<P: Page, FH: FhState, JS: JsState>
-    PageWrapper<P, FH, WithCss, JS, PagePreparing>
-{
-    /// Returns the attached [CssRegister].
-    pub fn css_register(&self) -> Arc<CssRegister> {
-        // state enforces a Some to css_register
-        Arc::clone(self.css_register.as_ref().unwrap())
-    }
-}
-
-impl<P: Page, FH: FhState, CSS: CssState>
-    PageWrapper<P, FH, CSS, WithJs, PagePreparing>
-{
-    /// Returns the attached [JsRegister].
-    pub fn js_register(&self) -> Arc<JsRegister> {
-        // state enforces a Some to js_register
-        Arc::clone(self.js_register.as_ref().unwrap())
-    }
-}
-
-impl<P: Page, FH: FhState, CSS: CssState, JS: JsState>
-    PageWrapper<P, FH, CSS, JS, PagePreparing>
-{
-    /// This is your main entry point to processing your implemented page.
-    pub fn main(mut self) -> PageWrapper<P, FH, CSS, JS, PageFinished> {
-        self.model.main(&mut self.view);
-
-        PageWrapper {
-            model: self.model,
-            view: self.view,
-            fh: self.fh,
-            css_register: self.css_register,
-            js_register: self.js_register,
-            fs_state: std::marker::PhantomData,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<P: Page, FH: FhState, CSS: CssState, JS: JsState>
-    PageWrapper<P, FH, CSS, JS, PageFinished>
+    PageWrapper<P, CSS, JS, PageFinished>
 {
     /// Renders the page to valid `HTML5` code.
     pub fn render(self) -> String {
@@ -371,23 +301,13 @@ impl<P: Page, FH: FhState, CSS: CssState, JS: JsState>
     }
 }
 
-impl<P: Page> From<P>
-    for PageWrapper<
-        P,
-        WithoutFileHierarchy,
-        WithoutCss,
-        WithoutJs,
-        PagePreparing,
-    >
-{
+impl<P: Page> From<P> for PageWrapper<P, WithoutCss, WithoutJs, PagePreparing> {
     fn from(model: P) -> Self {
         Self {
             model,
             view: PageView::default(),
-            fh: None,
             css_register: None,
             js_register: None,
-            fs_state: std::marker::PhantomData,
             css_state: std::marker::PhantomData,
             js_state: std::marker::PhantomData,
             execution_state: std::marker::PhantomData,

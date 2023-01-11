@@ -9,7 +9,8 @@ use {
         LewpErrorKind,
     },
     minify_js::{minify, TopLevelMode},
-    std::{path::PathBuf, rc::Rc, sync::Arc},
+    rust_embed::RustEmbed,
+    std::{path::PathBuf, sync::Arc},
 };
 
 /// Responsible for JS that is stored for a given [FHComponent].
@@ -18,7 +19,6 @@ use {
 /// JavaScript file. The resulting file is used to initialize your component on
 /// the client side.
 pub struct Component {
-    fh: Arc<FileHierarchy>,
     component_information: Arc<FHComponentInformation>,
 }
 
@@ -31,12 +31,12 @@ impl FHComponent for Component {
         self.component_information.clone()
     }
 
-    fn content(
+    fn content<T: FileHierarchy>(
         &self,
         _params: Self::ContentParameter,
-    ) -> Result<Self::Content, LewpError> {
-        let files = self.fh.get_file_list(self)?;
-        let js = self.combine_files(files)?;
+    ) -> anyhow::Result<Self::Content> {
+        let files = T::get_file_list(self);
+        let js = self.combine_files::<T>(files)?;
         let mut result = Vec::new();
         let js = match minify(
             TopLevelMode::Global,
@@ -45,60 +45,73 @@ impl FHComponent for Component {
         ) {
             Ok(j) => j,
             Err(e) => {
-                return Err(LewpError {
-                    kind: LewpErrorKind::JavaScript,
-                    message: format!("Could not minify JavaScript: {e}"),
-                    source_component: self.component_information.clone(),
-                })
+                return Err(anyhow::anyhow!(
+                    "{}",
+                    LewpError {
+                        kind: LewpErrorKind::JavaScript,
+                        message: format!("Could not minify JavaScript: {e}"),
+                        source_component: self.component_information.clone(),
+                    }
+                ));
             }
         };
         match String::from_utf8(result) {
             Ok(r) => Ok(r),
             Err(e) => {
-                return Err(LewpError {
-                    kind: LewpErrorKind::JavaScript,
-                    message: format!(
+                return Err(anyhow::anyhow!(
+                    "{}",
+                    LewpError {
+                        kind: LewpErrorKind::JavaScript,
+                        message: format!(
                         "Could not create String from minified JavaScript: {e}",
                     ),
-                    source_component: self.component_information.clone(),
-                })
+                        source_component: self.component_information.clone(),
+                    }
+                ));
             }
         }
-    }
-
-    fn file_hierarchy(&self) -> Arc<FileHierarchy> {
-        self.fh.clone()
     }
 }
 
 impl Component {
     /// Creates a new JS component
-    pub fn new(
-        component_information: Arc<FHComponentInformation>,
-        fh: Arc<FileHierarchy>,
-    ) -> Self {
+    pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
         Self {
-            fh,
             component_information,
         }
     }
 
-    fn combine_files(
+    fn combine_files<T: FileHierarchy>(
         &self,
         css_files: Vec<PathBuf>,
-    ) -> Result<String, LewpError> {
+    ) -> anyhow::Result<String> {
         let mut css_combined = String::new();
         for css_file_name in css_files {
-            let css = match std::fs::read_to_string(&css_file_name) {
-                Ok(r) => r,
-                Err(msg) => {
-                    return Err(LewpError::new(
-                        LewpErrorKind::Css,
-                        &format!("Error reading stylesheet file: {msg}"),
-                        self.component_information.clone(),
+            let css_file_name = match css_file_name.to_str() {
+                Some(s) => s,
+                None => {
+                    return Err(anyhow::anyhow!(
+                        "Could not convert {} to str!",
+                        css_file_name.display()
+                    ))
+                }
+            };
+            let css = match <T as RustEmbed>::get(&css_file_name) {
+                Some(r) => r,
+                None => {
+                    return Err(anyhow::anyhow!(
+                        "{}",
+                        LewpError::new(
+                            LewpErrorKind::JavaScript,
+                            &format!(
+                                "Could not get JavaScript file {css_file_name}"
+                            ),
+                            self.component_information.clone(),
+                        )
                     ));
                 }
             };
+            let css = std::str::from_utf8(&css.data)?;
             css_combined.push_str(&css);
         }
         Ok(css_combined)

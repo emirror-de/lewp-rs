@@ -17,10 +17,10 @@ keywords = ["HTML5", "CSS", "JavaScript", "WASM", "modules"]
 categories = ["web-programming"]
 
 [dependencies]
+anyhow = "1"
 lewp-css = { version = "0.2", path = "../lewp-css" }
 lewp-html = { version = "0.3.0-dev", path = "../lewp-html" }
 selectors = { version = "0.24", path = "../lewp-selectors", package = "lewp-selectors" }
-serde = { version = "^1.0.152", features = ["derive"], optional = true }
 langtag = "^0.3.2"
 log = "^0.4.17"
 html5ever = "0.26"
@@ -29,6 +29,7 @@ minify-js = "0.4.2"
 charsets = "^0.2.0"
 walkdir = "^2.3.2"
 pathdiff = "^0.2.1"
+rust-embed = "6.4.2"
 glob = "0.3.1"
 
 [dev-dependencies]
