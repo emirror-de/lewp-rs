@@ -1,12 +1,12 @@
 use {
     lewp::{
         component::{Component, ComponentId},
-        css::RegisterOptions as CssRegisterOptions,
         fh::FileHierarchyBuilder,
         html::{
             api::{h1, text},
             Node,
         },
+        js::RegisterOptions as JsRegisterOptions,
         page::{Page, PageId},
         view::PageView,
     },
@@ -80,7 +80,7 @@ fn main() {
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
         .with_file_hierarchy(Arc::clone(&fh))
-        .with_css_register(CssRegisterOptions::default())
+        .with_js_register(JsRegisterOptions::default())
         .unwrap();
     println!("{}", page.main().render());
 }

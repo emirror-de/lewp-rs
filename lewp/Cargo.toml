@@ -25,6 +25,7 @@ langtag = "^0.3.2"
 log = "^0.4.17"
 html5ever = "0.26"
 markup5ever_rcdom = { version = "0.2" }
+minify-js = "0.4.2"
 charsets = "^0.2.0"
 walkdir = "^2.3.2"
 pathdiff = "^0.2.1"

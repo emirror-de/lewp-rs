@@ -9,6 +9,8 @@ pub enum LewpErrorKind {
     ModuleNotFound,
     /// Indicates an error that occured during CSS processing.
     Css,
+    /// Indicates an error that occured during JavaScript processing.
+    JavaScript,
     /// Error occured in functions of the FileHierarchy.
     FileHierarchy,
     /// Error occured in functions of a component of the FileHierarchy.
@@ -80,6 +82,7 @@ impl std::fmt::Display for LewpError {
             FileHierarchyComponent => "FILE HIERARCHY COMPONENT",
             Runtime => "Runtime",
             Render => "RENDER",
+            JavaScript => "JAVASCRIPT",
         };
         write!(
             f,

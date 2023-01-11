@@ -22,6 +22,17 @@ impl CssState for WithCss {}
 pub struct WithoutCss;
 impl CssState for WithoutCss {}
 
+/// Defines the state if a [JsRegister] has been attached.
+pub trait JsState {}
+
+/// Indicates a state with [JsRegister] attached.
+pub struct WithJs;
+impl JsState for WithJs {}
+
+/// Indicates a state without [CssRegister] attached.
+pub struct WithoutJs;
+impl JsState for WithoutJs {}
+
 /// Defines the execution state of a page.
 pub trait ExecutionState {}
 
