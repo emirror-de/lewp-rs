@@ -5,6 +5,7 @@ use {
 };
 
 /// Options for the Register.
+#[derive(Clone)]
 pub struct RegisterOptions {
     uri_path_prefix: String,
     autoload: bool,
@@ -69,6 +70,11 @@ impl Register {
             register.load_process_components::<T>()?;
         }
         Ok(register)
+    }
+
+    /// Returns a copy to the [RegisterOptions].
+    pub fn options(&self) -> RegisterOptions {
+        self.options.clone()
     }
 
     /// Queries the CSS of the given component using the given options.
