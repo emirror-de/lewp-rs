@@ -1,13 +1,16 @@
-use lewp::{
-    component::{Component, ComponentId},
-    css::RegisterOptions as CssRegisterOptions,
-    file_hierarchy,
-    html::{
-        api::{h1, text},
-        Node,
+use {
+    lewp::{
+        component::{Component, ComponentId},
+        css::{Register as CssRegister, RegisterOptions as CssRegisterOptions},
+        file_hierarchy,
+        html::{
+            api::{h1, text},
+            Node,
+        },
+        page::{Page, PageId},
+        view::PageView,
     },
-    page::{Page, PageId},
-    view::PageView,
+    std::sync::Arc,
 };
 
 // Your hello world component.
@@ -72,9 +75,13 @@ file_hierarchy!(TestHierarchy, "testfiles");
 
 fn main() {
     simple_logger::init().unwrap();
+    let css_register = Arc::new(
+        CssRegister::new::<TestHierarchy>(CssRegisterOptions::default())
+            .unwrap(),
+    );
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
-        .with_css_register::<TestHierarchy>(CssRegisterOptions::default())
+        .with_css_register::<TestHierarchy>(css_register)
         .unwrap();
     println!("{}", page.main().render());
 }

@@ -6,11 +6,11 @@ use {
             api::{h1, text},
             Node,
         },
-        js::RegisterOptions as JsRegisterOptions,
+        js::{Register as JsRegister, RegisterOptions as JsRegisterOptions},
         page::{Page, PageId},
         view::PageView,
     },
-    std::{path::PathBuf, sync::Arc},
+    std::sync::Arc,
 };
 
 // Your hello world component.
@@ -75,9 +75,12 @@ file_hierarchy!(TestHierarchy, "testfiles");
 
 fn main() {
     simple_logger::init().unwrap();
+    let js_register = Arc::new(
+        JsRegister::new::<TestHierarchy>(JsRegisterOptions::default()).unwrap(),
+    );
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
-        .with_js_register::<TestHierarchy>(JsRegisterOptions::default())
+        .with_js_register::<TestHierarchy>(js_register)
         .unwrap();
     println!("{}", page.main().render());
 }
