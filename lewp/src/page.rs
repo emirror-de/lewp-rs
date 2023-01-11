@@ -102,14 +102,11 @@ pub struct PageWrapper<P: Page, CSS: CssState, JS: JsState, E: ExecutionState> {
 
 impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
     /// Attaches the given [CssRegister] instance to the page.
+    #[cfg(not(debug_assertions))]
     pub fn with_css_register<FH: FileHierarchy>(
         self,
         register: Arc<CssRegister>,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
-        #[cfg(debug_assertions)]
-        return self.with_new_css_register::<FH>(register.options());
-
-        #[cfg(not(debug_assertions))]
         Ok(PageWrapper {
             model: self.model,
             view: self.view,
@@ -119,6 +116,15 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
             js_state: std::marker::PhantomData,
             execution_state: std::marker::PhantomData,
         })
+    }
+
+    /// Attaches the given [CssRegister] instance to the page.
+    #[cfg(debug_assertions)]
+    pub fn with_css_register<FH: FileHierarchy>(
+        self,
+        register: Arc<CssRegister>,
+    ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
+        self.with_new_css_register::<FH>(register.options())
     }
 
     /// Creates a new [CssRegister] instance with the given [CSSRegisterOptions]
@@ -142,14 +148,11 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
 
 impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
     /// Attaches the given [JsRegister] instance to the page.
+    #[cfg(not(debug_assertions))]
     pub fn with_js_register<FH: FileHierarchy>(
         self,
         register: Arc<JsRegister>,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
-        #[cfg(debug_assertions)]
-        return self.with_new_js_register::<FH>(register.options());
-
-        #[cfg(not(debug_assertions))]
         Ok(PageWrapper {
             model: self.model,
             view: self.view,
@@ -160,6 +163,16 @@ impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
             execution_state: std::marker::PhantomData,
         })
     }
+
+    /// Attaches the given [JsRegister] instance to the page.
+    #[cfg(debug_assertions)]
+    pub fn with_js_register<FH: FileHierarchy>(
+        self,
+        register: Arc<JsRegister>,
+    ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
+        self.with_new_js_register::<FH>(register.options())
+    }
+
     /// Creates a new [JsRegister] instance with the given [JSRegisterOptions]
     /// and attaches it to the page.
     pub fn with_new_js_register<FH: FileHierarchy>(
