@@ -376,7 +376,7 @@ mod tests {
 
     #[test]
     fn folder_name_generation() {
-        let fh = Arc::new(FileHierarchy::new());
+        let fh = Arc::new(FileHierarchy::default());
         let css = Css {
             id: String::from("module-id"),
             fh: fh.clone(),
