@@ -15,7 +15,7 @@ use {
 };
 
 /// Options for the Register.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RegisterOptions {
     uri_path_prefix: String,
     autoload: bool,
@@ -78,6 +78,7 @@ impl Register {
     pub fn new<T: FileHierarchy>(
         options: RegisterOptions,
     ) -> anyhow::Result<Self> {
+        log::debug!("Creating new JS register with options: {options:?}");
         let mut register = Self {
             options,
             components: HashMap::new(),
