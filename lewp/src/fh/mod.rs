@@ -10,12 +10,10 @@ use {
     },
 };
 
-//mod builder;
 mod component;
 mod level;
 
 pub use {
-    //builder::FileHierarchyBuilder,
     component::{Component, ComponentInformation, ComponentType, ResourceType},
     level::Level,
 };
@@ -105,6 +103,21 @@ macro_rules! file_hierarchy {
         #[derive(::rust_embed::RustEmbed)]
         #[folder = $folder]
         pub struct $name;
+    };
+
+    ($name: ident, $folder: literal, $route: literal) => {
+        /// Storage definition of the file hierarchy.
+        #[derive(::rust_embed::RustEmbed)]
+        #[folder = $folder]
+        pub struct $name;
+
+        impl $name {
+            /// Returns the route prefix where the file hierarchy is mounted on
+            /// the webserver.
+            fn route() -> &str {
+                $route
+            }
+        }
     };
 }
 
