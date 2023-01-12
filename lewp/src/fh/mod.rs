@@ -114,7 +114,7 @@ macro_rules! file_hierarchy {
         impl $name {
             /// Returns the route prefix where the file hierarchy is mounted on
             /// the webserver.
-            fn route() -> &str {
+            fn route() -> &'static str {
                 $route
             }
         }
