@@ -1,13 +1,13 @@
 use {
     lewp::{
         component::{Component, ComponentId},
-        css::{Register as CssRegister, RegisterOptions as CssRegisterOptions},
         file_hierarchy,
         html::{
             api::{h1, text},
             Node,
         },
         page::{Page, PageId},
+        resources::{CssRegister, CssRegisterOptions},
         view::PageView,
     },
     std::sync::Arc,

@@ -1,5 +1,5 @@
 use {
-    super::Component,
+    super::Css,
     crate::fh::{Component as FHComponent, FileHierarchy},
     std::sync::Arc,
 };
@@ -13,8 +13,8 @@ pub struct ProcessedComponent {
 }
 
 impl ProcessedComponent {
-    /// Creates a new processed component from the given [Component].
-    pub fn new<T: FileHierarchy>(comp: &Component) -> anyhow::Result<Self> {
+    /// Creates a new processed component from the given [Css].
+    pub fn new<T: FileHierarchy>(comp: &Css) -> anyhow::Result<Self> {
         let origin = comp.content::<T>(())?;
         let render_critical =
             comp.extract_render_critical_stylesheet(origin.clone())?;
@@ -28,15 +28,15 @@ impl ProcessedComponent {
             full: Arc::new(origin.to_css_string(false)),
         })
     }
-    /// Returns the render critical part of the processed [css_next::Stylesheet] [Component].
+    /// Returns the render critical part of the processed [css_next::Stylesheet] [Css].
     pub fn render_critical(&self) -> Arc<String> {
         Arc::clone(&self.render_critical)
     }
-    /// Returns the NON render critical part of the processed [css_next::Stylesheet] [Component].
+    /// Returns the NON render critical part of the processed [css_next::Stylesheet] [Css].
     pub fn non_render_critical(&self) -> Arc<String> {
         Arc::clone(&self.non_render_critical)
     }
-    /// Returns the complete processed [css_next::Stylesheet] [Component].
+    /// Returns the complete processed [css_next::Stylesheet] [Css].
     pub fn full(&self) -> Arc<String> {
         Arc::clone(&self.full)
     }

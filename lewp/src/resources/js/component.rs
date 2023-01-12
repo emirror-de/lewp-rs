@@ -18,11 +18,11 @@ use {
 /// Processes all files in the components directory and combines them into one
 /// JavaScript file. The resulting file is used to initialize your component on
 /// the client side.
-pub struct Component {
+pub struct Js {
     component_information: Arc<FHComponentInformation>,
 }
 
-impl FHComponent for Component {
+impl FHComponent for Js {
     /// The actual content is parsed and provided as String.
     type Content = String;
     type ContentParameter = ();
@@ -73,7 +73,7 @@ impl FHComponent for Component {
     }
 }
 
-impl Component {
+impl Js {
     /// Creates a new JS component
     pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
         Self {

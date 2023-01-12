@@ -1,5 +1,5 @@
 use {
-    super::{Component, Entireness, ProcessedComponent},
+    super::{Css, Entireness, ProcessedComponent},
     crate::fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
     std::{collections::HashMap, sync::Arc},
 };
@@ -115,7 +115,7 @@ impl Register {
                 level: Level::Component,
                 kind: ComponentType::Css,
             });
-            let c = Component::new(component_information.clone());
+            let c = Css::new(component_information.clone());
             let c = ProcessedComponent::new::<T>(&c)?;
             self.components.insert(component_information.clone(), c);
         }
@@ -131,7 +131,7 @@ impl Register {
                 level: Level::Page,
                 kind: ComponentType::Css,
             });
-            let c = Component::new(component_information.clone());
+            let c = Css::new(component_information.clone());
             let c = ProcessedComponent::new::<T>(&c)?;
             self.components.insert(component_information.clone(), c);
         }

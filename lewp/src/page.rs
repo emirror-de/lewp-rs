@@ -2,11 +2,6 @@
 
 use {
     crate::{
-        css::{
-            Entireness,
-            Register as CssRegister,
-            RegisterOptions as CssRegisterOptions,
-        },
         fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
         html::{
             api::{
@@ -26,7 +21,13 @@ use {
             NodeList,
             Script,
         },
-        js::{Register as JsRegister, RegisterOptions as JsRegisterOptions},
+        resources::{
+            CssRegister,
+            CssRegisterOptions,
+            Entireness,
+            JsRegister,
+            JsRegisterOptions,
+        },
         view::PageView,
         Charset,
         LanguageTag,

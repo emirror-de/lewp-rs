@@ -1,5 +1,4 @@
 use {
-    super::property_classification::PropertyClassification,
     crate::{
         fh::{
             Component as FHComponent,
@@ -27,6 +26,23 @@ use {
     std::{path::PathBuf, rc::Rc, sync::Arc},
 };
 
+mod entireness;
+mod processed_component;
+mod property_classification;
+mod register;
+#[cfg(test)]
+mod test;
+
+pub use {
+    entireness::Entireness,
+    processed_component::ProcessedComponent,
+    property_classification::PropertyClassification,
+    register::{
+        Register as CssRegister,
+        RegisterOptions as CssRegisterOptions,
+    },
+};
+
 /// This keyword is intentionally defined with a whitespace at the end.
 const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 
@@ -37,11 +53,11 @@ const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 /// module it belongs to. If the stylesheet's [level](Level) is [Page](Level::Page),
 /// then the resulting stylesheet is *NOT* isolated as there is no reason for
 /// isolating a page wide CSS rule.
-pub struct Component {
+pub struct Css {
     component_information: Arc<FHComponentInformation>,
 }
 
-impl FHComponent for Component {
+impl FHComponent for Css {
     /// The actual content is parsed and provided as [Stylesheet].
     type Content = Stylesheet;
     type ContentParameter = ();
@@ -78,7 +94,7 @@ impl FHComponent for Component {
     }
 }
 
-impl Component {
+impl Css {
     /// Creates a new CSS component
     pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
         Self {

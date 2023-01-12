@@ -1,12 +1,5 @@
 use {
     crate::{
-        css::{
-            Component,
-            Entireness,
-            ProcessedComponent,
-            Register,
-            RegisterOptions,
-        },
         fh::{
             Component as FHComponent,
             ComponentInformation,
@@ -15,6 +8,13 @@ use {
             Level,
         },
         file_hierarchy,
+        resources::{
+            Css,
+            CssRegister,
+            CssRegisterOptions,
+            Entireness,
+            ProcessedComponent,
+        },
     },
     std::sync::Arc,
 };
@@ -40,7 +40,7 @@ fn css_components_and_register() {
         level: Level::Page,
         kind: ComponentType::Css,
     });
-    let c = Component::new(component_information.clone());
+    let c = Css::new(component_information.clone());
     let parsed_component =
         ProcessedComponent::new::<TestHierarchy>(&c).unwrap();
     println!(
@@ -48,7 +48,8 @@ fn css_components_and_register() {
         parsed_component.render_critical()
     );
 
-    let r = Register::new::<TestHierarchy>(RegisterOptions::default()).unwrap();
+    let r = CssRegister::new::<TestHierarchy>(CssRegisterOptions::default())
+        .unwrap();
     let css = r.query(component_information, Entireness::Full).unwrap();
     println!("Queried from register: {css:#?}");
 }
@@ -57,7 +58,7 @@ fn css_components_and_register() {
 fn isolate_css_module() {
     use crate::fh::Level;
 
-    let css = Component::new(Arc::new(ComponentInformation {
+    let css = Css::new(Arc::new(ComponentInformation {
         id: String::from("hello-world"),
         level: Level::Component,
         kind: ComponentType::Css,

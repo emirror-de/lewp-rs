@@ -1,5 +1,5 @@
 use {
-    super::Component as JsComponent,
+    super::Js,
     crate::{
         fh::{
             Component,
@@ -16,12 +16,12 @@ use {
 
 /// Options for the Register.
 #[derive(Clone, Debug)]
-pub struct RegisterOptions {
+pub struct JsRegisterOptions {
     uri_path_prefix: String,
     autoload: bool,
 }
 
-impl RegisterOptions {
+impl JsRegisterOptions {
     /// Creates a [RegisterOptions] instance with `uri_path_prefix` set to `/resources/css` and
     /// `autoload` to `true`.
     pub fn new() -> Self {
@@ -57,26 +57,26 @@ impl RegisterOptions {
     }
 }
 
-impl Default for RegisterOptions {
+impl Default for JsRegisterOptions {
     fn default() -> Self {
         Self::new()
     }
 }
 
-/// Manages the CSS of lewp components in the given file hierarchy.
+/// Manages the JavaScript of lewp components in the given file hierarchy.
 ///
 /// This register can be used in multi threaded environments as a shared
 /// variable. It loads all components available in the given file hierarchy and
 /// keeps them in memory, as long as this instance is available.
-pub struct Register {
-    options: RegisterOptions,
+pub struct JsRegister {
+    options: JsRegisterOptions,
     components: HashMap<Arc<ComponentInformation>, Arc<String>>,
 }
 
-impl Register {
+impl JsRegister {
     /// Creates a new Register instance.
     pub fn new<T: FileHierarchy>(
-        options: RegisterOptions,
+        options: JsRegisterOptions,
     ) -> anyhow::Result<Self> {
         log::debug!("Creating new JS register with options: {options:?}");
         let mut register = Self {
@@ -90,7 +90,7 @@ impl Register {
     }
 
     /// Returns a copy to the [RegisterOptions].
-    pub fn options(&self) -> RegisterOptions {
+    pub fn options(&self) -> JsRegisterOptions {
         self.options.clone()
     }
 
@@ -126,7 +126,7 @@ impl Register {
                 level: Level::Component,
                 kind: ComponentType::JavaScript,
             });
-            let c = JsComponent::new(component_information.clone());
+            let c = Js::new(component_information.clone());
             let c = match c.content::<T>(()) {
                 Ok(c) => c,
                 Err(e) => {
@@ -150,14 +150,14 @@ impl Register {
 
     fn load_process_pages<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
         let page_ids =
-            T::collect_component_ids(ComponentType::Css, Level::Page)?;
+            T::collect_component_ids(ComponentType::JavaScript, Level::Page)?;
         for id in page_ids {
             let component_information = Arc::new(ComponentInformation {
                 id: id.clone(),
                 level: Level::Page,
                 kind: ComponentType::JavaScript,
             });
-            let c = JsComponent::new(component_information.clone());
+            let c = Js::new(component_information.clone());
             let c = match c.content::<T>(()) {
                 Ok(c) => c,
                 Err(e) => {
