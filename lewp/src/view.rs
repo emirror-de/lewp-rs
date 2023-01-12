@@ -16,10 +16,8 @@ pub trait ComponentView {
 
 impl ComponentView for Node {
     fn to_component_view(&self, id: ComponentId) {
-        self.borrow_attrs(vec![
-            ("class", &id),
-            ("data-lewp-type", "component"),
-        ]);
+        self.add_class(&id);
+        self.borrow_attr("data-lewp-type", "component");
     }
 }
 
@@ -91,5 +89,3 @@ impl PageView {
         &self.dependency_list
     }
 }
-
-

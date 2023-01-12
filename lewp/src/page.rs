@@ -281,8 +281,8 @@ impl<P: Page, CSS: CssState, JS: JsState>
         }
 
         for c in self.get_component_js() {
-            let script = script(Script::Inline(&c));
-            script.borrow_attrs(vec![("type", "module"), ("defer", "defer")]);
+            let script = script(Script::Inline(&c))
+                .attrs(vec![("type", "module"), ("defer", "defer")]);
             head.push(script);
         }
 
