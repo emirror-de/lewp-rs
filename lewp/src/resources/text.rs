@@ -10,6 +10,7 @@ use {
         LewpError,
         LewpErrorKind,
     },
+    rust_embed::RustEmbed,
     std::sync::Arc,
 };
 
@@ -48,20 +49,31 @@ impl FHComponent for Text {
         };
         filename.set_extension(extension);
         log::trace!("filename: {:#?}", filename);
-        let text = match std::fs::read_to_string(&filename) {
-            Ok(r) => r,
-            Err(msg) => {
+        let filename = match filename.to_str() {
+            Some(s) => s,
+            None => {
+                return Err(anyhow::anyhow!(
+                    "Could not convert {} to str!",
+                    filename.display()
+                ))
+            }
+        };
+        let text = match <T as RustEmbed>::get(&filename) {
+            Some(r) => r,
+            None => {
                 return Err(anyhow::anyhow!(
                     "{}",
                     LewpError::new(
                         LewpErrorKind::FileHierarchyComponent,
-                        &format!("Error reading text file: {msg}"),
+                        &format!(
+                            "Error reading text file from file hierarchy!"
+                        ),
                         self.component_information.clone(),
                     )
                 ));
             }
         };
-        Ok(text)
+        Ok(String::from(std::str::from_utf8(&text.data)?))
     }
 }
 

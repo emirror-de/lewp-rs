@@ -10,6 +10,7 @@ use {
         LewpError,
         LewpErrorKind,
     },
+    rust_embed::RustEmbed,
     std::sync::Arc,
 };
 
@@ -50,24 +51,32 @@ impl FHComponent for Image {
         let mut filename = T::folder(self);
         filename.push(params.filename);
         log::trace!("Image filename: {:#?}", filename);
-        let image = match std::fs::read(&filename) {
-            Ok(r) => r,
-            Err(msg) => {
+        let filename = match filename.to_str() {
+            Some(s) => s,
+            None => {
+                return Err(anyhow::anyhow!(
+                    "Could not convert {} to str!",
+                    filename.display()
+                ))
+            }
+        };
+        let image = match <T as RustEmbed>::get(&filename) {
+            Some(r) => r,
+            None => {
                 return Err(anyhow::anyhow!(
                     "{}",
                     LewpError::new(
                         LewpErrorKind::FileHierarchyComponent,
                         &format!(
-                            "Error reading image file \"{}\" with error: {}",
-                            filename.display(),
-                            msg
+                            "Error reading image file \"{}\" from file hierarchy!",
+                            filename,
                         ),
                         self.component_information.clone(),
                     )
                 ));
             }
         };
-        Ok(image)
+        Ok(image.data.to_vec())
     }
 }
 
@@ -86,7 +95,6 @@ impl Image {
     }
 }
 
-/*
 #[test]
 fn read_rust_logo() {
     use {
@@ -121,4 +129,3 @@ fn read_rust_logo() {
         logo
     );
 }
-*/
