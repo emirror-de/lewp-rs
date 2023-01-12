@@ -18,6 +18,15 @@ pub use {
     level::Level,
 };
 
+/// Route path where the file hierarchy is mounted on the webserver. The default
+/// implementation is set to `/resources`
+pub trait Route {
+    /// Returns the route path.
+    fn route() -> &'static str {
+        "/resources"
+    }
+}
+
 /// Defines the behavior of the file hierarchy.
 pub trait FileHierarchy
 where
@@ -103,21 +112,6 @@ macro_rules! file_hierarchy {
         #[derive(::rust_embed::RustEmbed)]
         #[folder = $folder]
         pub struct $name;
-    };
-
-    ($name: ident, $folder: literal, $route: literal) => {
-        /// Storage definition of the file hierarchy.
-        #[derive(::rust_embed::RustEmbed)]
-        #[folder = $folder]
-        pub struct $name;
-
-        impl $name {
-            /// Returns the route prefix where the file hierarchy is mounted on
-            /// the webserver.
-            fn route() -> &'static str {
-                $route
-            }
-        }
     };
 }
 

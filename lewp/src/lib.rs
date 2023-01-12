@@ -130,10 +130,8 @@ pub mod html {
 }
 
 pub mod component;
-pub mod css;
 mod error;
 pub mod fh;
-pub mod js;
 pub mod page;
 pub mod resources;
 pub mod view;
