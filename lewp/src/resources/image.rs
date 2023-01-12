@@ -1,10 +1,12 @@
 use {
     crate::{
+        component::ComponentId,
         fh::{
             Component as FHComponent,
             ComponentInformation as FHComponentInformation,
             ComponentType,
             FileHierarchy,
+            Level,
             ResourceType,
         },
         LewpError,
@@ -82,10 +84,10 @@ impl FHComponent for Image {
 
 impl Image {
     /// Creates a new Image component.
-    pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
+    pub fn new(id: ComponentId, level: Level) -> Self {
         let component_information = Arc::new(FHComponentInformation {
-            id: component_information.id.clone(),
-            level: component_information.level,
+            id,
+            level,
             kind: ComponentType::Resource(ResourceType::Image),
         });
         log::trace!("ComponentInformation: {:#?}", component_information);
@@ -97,23 +99,12 @@ impl Image {
 
 #[test]
 fn read_rust_logo() {
-    use {
-        crate::{
-            fh::{ComponentInformation, Level},
-            file_hierarchy,
-            resources::Image,
-        },
-        std::sync::Arc,
-    };
+    use crate::{fh::Level, file_hierarchy, resources::Image};
 
     file_hierarchy!(TestHierarchy, "testfiles");
 
-    let component_information = Arc::new(ComponentInformation {
-        id: String::from("hello-world"),
-        level: Level::Component,
-        kind: ComponentType::Resource(ResourceType::Image),
-    });
-    let image_resource = Image::new(component_information);
+    let image_resource =
+        Image::new(ComponentId::from("hello-world"), Level::Component);
     let logo = match image_resource.content::<TestHierarchy>(
         ImageParameter::new("rust-logo-512x512-blk.png"),
     ) {

@@ -1,11 +1,13 @@
 use {
     super::{component_type::ComponentType, information::ComponentInformation},
-    crate::fh::{FileHierarchy, Level},
-    std::sync::Arc,
+    crate::fh::{FileHierarchy, Level, Route},
+    std::{
+        path::{Path, PathBuf},
+        sync::Arc,
+    },
 };
 
-/// A lewp component. Anything inside the file hierarchy is a component (Files, Folders, Modules,
-/// Pages etc.).
+/// A lewp component. Any resource inside the file hierarchy is a component (Images, CSS, JS etc.).
 pub trait Component {
     /// Content type that the component type delivers.
     type Content;
@@ -32,5 +34,14 @@ pub trait Component {
     /// The component type.
     fn kind(&self) -> ComponentType {
         self.component_information().kind.clone()
+    }
+    /// Returns the router path to the given component file.
+    fn route<FH: FileHierarchy + Route>(&self, filename: &str) -> PathBuf {
+        let c = self.component_information();
+        Path::new(FH::route())
+            .join(c.level.to_string())
+            .join(c.id.to_string())
+            .join(c.kind.to_string())
+            .join(filename)
     }
 }
