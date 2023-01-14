@@ -20,80 +20,41 @@ Lewp is a collection of structs and traits that simplify modularized website cre
    putting logic into your HTML (like it is done in templates)
 
 2. Creating ***modularized websites*** with ***truly isolated*** and ***reusable*** 
-   components/modules, eg. automatically ***namespaced CSS*** and ***JavaScript*** (not
-   implemented yet)
+   components/modules, eg. automatically ***namespaced CSS*** and ***JavaScript***
 
-3. Providing a ***file hierarchy*** that is ***consistently throughout your project*** and can be ***shared*** between different projects
+3. Providing a ***storage with pre-defined folder hierarchy*** for easy resource management and possibility to ***share*** between different projects
 
 4. Getting the ***best of both*** worlds, ***server*** side and ***client side*** rendering
 
-5. ***Minimization*** of ***page loading*** times (especially FCP and TTI)
+5. ***Minimization*** of ***page loading*** times (for example FCP and TTI)
 
-6. ***Removing*** initial setup ***HTML boilerplate*** code creation by the developer (the base
-   skeleton with html, head and required meta, body tags are created by 
-   lewp)
+6. ***Removing*** any ***HTML boilerplate*** code. Lewp takes care of it
 
 7. Applying **SEO** best practices already in development setup as much as possible
 
-## 📦 Features
-
-- [x] Build your HTML website fully from Rust source
-- [x] No additional fancy markup or language, just a clean API
-- [x] Never touch confusing templates again
-- [x] Always serve correct, minimized HTML5
-- [x] Develop your Website as fully isolated modules
-
-## ❓Why lewp?
-
-Many frameworks already exist that support developers in creating websites and -apps in various languages, eg. [Laravel](https://laravel.com/), [Symfony](https://symfony.com/), or [Django](https://www.djangoproject.com/) etc. They usually follow the [MVC pattern](https://www.tutorialspoint.com/design_pattern/mvc_pattern.htm). You can create a controller for every route and add a model as well as a view for this, all in separate folders. So far, nothing new, a well known and proven concept. However, several problems can arise regarding e.g. code quality, re-usability as well as best practices of SEO and much more. The architecture of these frameworks can lead developers to become inconsistent considering their code structure. Because the files are spread over the whole project, the reusability of code can easily suffer. In addition to that, the usage of templating systems like [Twig](https://twig.symfony.com/) can make the developer create invalid HTML code without recognizing it or create problems relating to for example page loading times [(which is a crucial factor)](https://www.marketingdive.com/news/google-53-of-mobile-users-abandon-sites-that-take-over-3-seconds-to-load/426070/), the [critical rendering path](https://varvy.com/pagespeed/critical-render-path.html) or avoiding ["extra whitespace between HTML tags to avoid browser rendering quirks under some circumstances"](https://twig.symfony.com/doc/3.x/filters/spaceless.html). In the latter (a cite from the [Twig](https://twig.symfony.com/doc/2.x/filters/spaceless.html) documentation), Twig has a property to prevent this, but you need to explicitly enable it and "*its performance is directly related to the text size you are working on*". Developing in these environments can run the risk of spreading those problems over your whole project, making it almost impossible to recover from without rewriting your code base.
-
-So the idea was to create a library that minimizes the impact of the stated problems without making compromises on the comfort of programming.
-
-lewp generates a highly optimized HTML web page and provides automatic handling of your CSS code (and your JavaScript soon) if you want to. Have a look at the examples folder for more information about how to use it.
-
 ❗ ***lewp is not a webserver.*** It is a library that supports you in structuring your algorithms bringing them perfectly in line with your view, without letting your code get messy! It perfectly integrates with frameworks like [rocket](https://rocket.rs) or [actix-web](https://actix.rs).
 
-## 🚌 Roadmap
+## 📦 Features
 
-- [x] Skeleton to create website with by creating the DOM
-- [x] A webpage can have Modules
-  - [x] Each module is surrounded by a wrapper `div`
-- [x] A page is created with isolated modules (HTML only)
-- [x] Modules can have Modules, infinite loops are prevented
-  - [x] Submodules have `RuntimeInformation` available
-- [x] `<head>` modules only
-- [x] The wrapping `div` tag can be disabled *(recommended only for `<head>` modules)*
-- [x] File hierarchy for CSS and JS is defined
-  - [ ] Prevent `/` in IDs
-  - [x] Prevent usage of `..` in paths or IDs
-- [ ] CSS integration
-  - [x] Combining files is implemented
-  - [x] Minimization of CSS is implemented
-  - [x] Modules without CSS are skipped
-  - [x] CSS links are automatically inserted into the HTML `<head>` tag if files are available
-  - [ ] CSS can be split up into "render critical" (will be inlined on rendering) and "non render critical" parts
-  - [x] A CSS register is implemented that can be used as shared global querying instance for CSS files
-- [x] Modules are isolated (HTML, CSS)
-- [x] Page specific CSS is possible
-- [x] Provide an API for generic resources
-- [ ] Added [html5-picture](https://github.com/emirror-de/html5-picture) support
-  - [ ] Conversion of pictures on startup is possible
-  - [ ] Usage of `<picture>` tags within `lewp`
-- [ ] JavaScript integration
-  - [ ] Combining files is implemented
-  - [ ] Minimization is implemented
-- [ ] Modules are now fully isolated (HTML, CSS, JavaScript)
-- [ ] Compiling resources into binary is possible
-  - [ ] JavaScript
-  - [ ] CSS
-  - [ ] Resources implementing `fh::Component`
-- [ ] Add attributes to the container wrapping the module
+
+- [x] No more template hell in your code base
+- [x] No more whitespace bugs in your website
+- [x] Technically optimized, always valid, minified, HTML5 code
+- [x] Component based development, truly isolated with minimum overhead
+- [x] Storage definition with pre-defined paths for easy resource management
+- [x] Uses [rust_embed](https://docs.rs/rust-embed/latest/rust_embed/index.html)
+under the hood so all your assets are always available
+- [x] Build the DOM completely in Rust
+
+## 🚌 Planned feature list
+
+- [ ] CSS can be split up into "render critical" (will be inlined on rendering)
+and "non render critical" parts that will be inserted as `<link>`
+- [ ] [html5-picture](https://github.com/emirror-de/html5-picture) support to be
+able to scale the images to predefined sizes to optimize them for every breakpoint
+you need
+- [ ] JavaScript *per component* isolation
 - [ ] Provide an API for localization (l10n)
-- [ ] Modules can have isolated folders for temporary files
-- [ ] HTML can be streamed
-- [ ] Configuration using `.toml` files
-  - [ ] Modules
-  - [ ] Pages
 
 ## 🤠 Contributing
 
