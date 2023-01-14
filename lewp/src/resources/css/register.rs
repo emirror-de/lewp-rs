@@ -1,6 +1,9 @@
 use {
     super::{Css, Entireness, ProcessedComponent},
-    crate::fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
+    crate::{
+        component::ComponentId,
+        storage::{Level, ResourceType, Storage},
+    },
     std::{collections::HashMap, sync::Arc},
 };
 
@@ -54,14 +57,12 @@ impl Default for RegisterOptions {
 /// keeps them in memory, as long as this instance is available.
 pub struct Register {
     options: RegisterOptions,
-    components: HashMap<Arc<ComponentInformation>, ProcessedComponent>,
+    components: HashMap<(ComponentId, Level), ProcessedComponent>,
 }
 
 impl Register {
     /// Creates a new Register instance.
-    pub fn new<T: FileHierarchy>(
-        options: RegisterOptions,
-    ) -> anyhow::Result<Self> {
+    pub fn new<T: Storage>(options: RegisterOptions) -> anyhow::Result<Self> {
         log::debug!("Creating new CSS register with options: {options:?}");
         let mut register = Self {
             options,
@@ -81,10 +82,11 @@ impl Register {
     /// Queries the CSS of the given component using the given options.
     pub fn query(
         &self,
-        component_information: Arc<ComponentInformation>,
+        id: ComponentId,
+        level: Level,
         entity: Entireness,
     ) -> Option<Arc<String>> {
-        let ref_css = self.components.get(&component_information)?;
+        let ref_css = self.components.get(&(id, level))?;
         let css = match entity {
             Entireness::Full => ref_css.full(),
             Entireness::RenderCritical => ref_css.render_critical(),
@@ -94,7 +96,7 @@ impl Register {
     }
 
     /// Collects, processes and caches all available CSS in the file hierarchy.
-    pub fn load_process_components<T: FileHierarchy>(
+    pub fn load_process_components<T: Storage>(
         &mut self,
     ) -> anyhow::Result<()> {
         self.load_process_modules::<T>()?;
@@ -106,34 +108,24 @@ impl Register {
         &self.options.uri_path_prefix()
     }
 
-    fn load_process_modules<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
+    fn load_process_modules<T: Storage>(&mut self) -> anyhow::Result<()> {
         let module_ids =
-            T::collect_component_ids(ComponentType::Css, Level::Component)?;
+            T::collect_component_ids(ResourceType::Css, Level::Component)?;
         for id in module_ids {
-            let component_information = Arc::new(ComponentInformation {
-                id: id.clone(),
-                level: Level::Component,
-                kind: ComponentType::Css,
-            });
-            let c = Css::new(component_information.clone());
+            let c = Css::new(id.clone(), Level::Component);
             let c = ProcessedComponent::new::<T>(&c)?;
-            self.components.insert(component_information.clone(), c);
+            self.components.insert((id.clone(), Level::Component), c);
         }
         Ok(())
     }
 
-    fn load_process_pages<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
+    fn load_process_pages<T: Storage>(&mut self) -> anyhow::Result<()> {
         let page_ids =
-            T::collect_component_ids(ComponentType::Css, Level::Page)?;
+            T::collect_component_ids(ResourceType::Css, Level::Page)?;
         for id in page_ids {
-            let component_information = Arc::new(ComponentInformation {
-                id: id.clone(),
-                level: Level::Page,
-                kind: ComponentType::Css,
-            });
-            let c = Css::new(component_information.clone());
+            let c = Css::new(id.clone(), Level::Page);
             let c = ProcessedComponent::new::<T>(&c)?;
-            self.components.insert(component_information.clone(), c);
+            self.components.insert((id, Level::Page), c);
         }
         Ok(())
     }

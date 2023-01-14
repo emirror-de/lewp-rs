@@ -1,4 +1,4 @@
-//! Contains access to resources in the file hierarchy.
+//! Contains access to resources in a given [storage](crate::storage).
 
 mod css;
 mod image;

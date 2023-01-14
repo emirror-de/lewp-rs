@@ -2,7 +2,6 @@
 
 use {
     crate::{
-        fh::{ComponentInformation, ComponentType, FileHierarchy, Level},
         html::{
             api::{
                 body,
@@ -28,6 +27,7 @@ use {
             JsRegister,
             JsRegisterOptions,
         },
+        storage::{Level, ResourceType, Storage},
         view::PageView,
         Charset,
         LanguageTag,
@@ -104,7 +104,7 @@ pub struct PageWrapper<P: Page, CSS: CssState, JS: JsState, E: ExecutionState> {
 impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
     /// Attaches the given [CssRegister] instance to the page.
     #[cfg(not(debug_assertions))]
-    pub fn with_css_register<FH: FileHierarchy>(
+    pub fn with_css_register<FH: Storage>(
         self,
         register: Arc<CssRegister>,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
@@ -121,7 +121,7 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
 
     /// Attaches the given [CssRegister] instance to the page.
     #[cfg(debug_assertions)]
-    pub fn with_css_register<FH: FileHierarchy>(
+    pub fn with_css_register<FH: Storage>(
         self,
         register: Arc<CssRegister>,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
@@ -130,7 +130,7 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
 
     /// Creates a new [CssRegister] instance with the given [CSSRegisterOptions]
     /// and attaches it to the page.
-    pub fn with_new_css_register<FH: FileHierarchy>(
+    pub fn with_new_css_register<FH: Storage>(
         self,
         options: CssRegisterOptions,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
@@ -150,7 +150,7 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
 impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
     /// Attaches the given [JsRegister] instance to the page.
     #[cfg(not(debug_assertions))]
-    pub fn with_js_register<FH: FileHierarchy>(
+    pub fn with_js_register<FH: Storage>(
         self,
         register: Arc<JsRegister>,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
@@ -167,7 +167,7 @@ impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
 
     /// Attaches the given [JsRegister] instance to the page.
     #[cfg(debug_assertions)]
-    pub fn with_js_register<FH: FileHierarchy>(
+    pub fn with_js_register<FH: Storage>(
         self,
         register: Arc<JsRegister>,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
@@ -176,7 +176,7 @@ impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
 
     /// Creates a new [JsRegister] instance with the given [JSRegisterOptions]
     /// and attaches it to the page.
-    pub fn with_new_js_register<FH: FileHierarchy>(
+    pub fn with_new_js_register<FH: Storage>(
         self,
         options: JsRegisterOptions,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
@@ -293,14 +293,8 @@ impl<P: Page, CSS: CssState, JS: JsState>
     }
 
     fn get_page_css(&self) -> Option<Arc<String>> {
-        let comp_css = Arc::new(ComponentInformation {
-            id: self.model.id(),
-            level: Level::Page,
-            kind: ComponentType::Css,
-        });
-
         match &self.css_register {
-            Some(r) => r.query(comp_css, Entireness::Full),
+            Some(r) => r.query(self.model.id(), Level::Page, Entireness::Full),
             None => None,
         }
     }
@@ -313,11 +307,8 @@ impl<P: Page, CSS: CssState, JS: JsState>
         let mut collected_css = String::new();
         for component in self.view.dependency_list().list() {
             if let Some(css) = css_register.query(
-                Arc::new(ComponentInformation {
-                    id: component.into(),
-                    level: Level::Component,
-                    kind: ComponentType::Css,
-                }),
+                component.into(),
+                Level::Component,
                 Entireness::Full,
             ) {
                 collected_css += &css;
@@ -338,11 +329,7 @@ impl<P: Page, CSS: CssState, JS: JsState>
         };
         for component in self.view.dependency_list().list() {
             if let Some(js) =
-                js_register.query(Arc::new(ComponentInformation {
-                    id: component.into(),
-                    level: Level::Component,
-                    kind: ComponentType::JavaScript,
-                }))
+                js_register.query(component.into(), Level::Component)
             {
                 collected_js.push((*js).clone());
             };

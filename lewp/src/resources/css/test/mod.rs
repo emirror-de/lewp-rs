@@ -1,69 +1,50 @@
-use {
-    crate::{
-        fh::{
-            Component as FHComponent,
-            ComponentInformation,
-            ComponentType,
-            FileHierarchy,
-            Level,
-        },
-        file_hierarchy,
-        resources::{
-            Css,
-            CssRegister,
-            CssRegisterOptions,
-            Entireness,
-            ProcessedComponent,
-        },
+use crate::{
+    lewp_storage,
+    resources::{
+        Css,
+        CssRegister,
+        CssRegisterOptions,
+        Entireness,
+        ProcessedComponent,
     },
-    std::sync::Arc,
+    storage::{Level, ResourceType, Storage, StorageComponent},
 };
 
-file_hierarchy!(TestHierarchy, "testfiles");
+lewp_storage!(TestStorage, "testfiles");
 
 #[test]
 fn css_components_and_register() {
-    let mut test = TestHierarchy::collect_component_ids(
-        ComponentType::Css,
-        Level::Component,
-    )
-    .unwrap();
+    let mut test =
+        TestStorage::collect_component_ids(ResourceType::Css, Level::Component)
+            .unwrap();
     test.sort();
     assert_eq!(test, vec!["footer", "hello-world", "navigation"],);
     let mut test =
-        TestHierarchy::collect_component_ids(ComponentType::Css, Level::Page)
+        TestStorage::collect_component_ids(ResourceType::Css, Level::Page)
             .unwrap();
     test.sort();
     assert_eq!(test, vec!["sitemap"]);
-    let component_information = Arc::new(ComponentInformation {
-        id: "sitemap".to_string(),
-        level: Level::Page,
-        kind: ComponentType::Css,
-    });
-    let c = Css::new(component_information.clone());
-    let parsed_component =
-        ProcessedComponent::new::<TestHierarchy>(&c).unwrap();
+    let c = Css::new("sitemap".into(), Level::Page);
+    let parsed_component = ProcessedComponent::new::<TestStorage>(&c).unwrap();
     println!(
         "Parsed render critical: {:#?}",
         parsed_component.render_critical()
     );
 
-    let r = CssRegister::new::<TestHierarchy>(CssRegisterOptions::default())
+    let r =
+        CssRegister::new::<TestStorage>(CssRegisterOptions::default()).unwrap();
+    let css = r
+        .query("sitemap".into(), Level::Page, Entireness::Full)
         .unwrap();
-    let css = r.query(component_information, Entireness::Full).unwrap();
     println!("Queried from register: {css:#?}");
 }
 
 #[test]
 fn isolate_css_module() {
-    use crate::fh::Level;
+    use crate::storage::Level;
 
-    let css = Css::new(Arc::new(ComponentInformation {
-        id: String::from("hello-world"),
-        level: Level::Component,
-        kind: ComponentType::Css,
-    }));
-    let stylesheet = match css.content::<TestHierarchy>(()) {
+    let css = Css::new("hello-world".into(), Level::Component);
+    let stylesheet = match css.content::<TestStorage>(()) {
         Ok(c) => c,
         Err(e) => panic!("{}", e),
     };

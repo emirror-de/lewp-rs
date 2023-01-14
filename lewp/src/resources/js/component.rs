@@ -1,12 +1,7 @@
 use {
     crate::{
-        fh::{
-            Component as FHComponent,
-            ComponentInformation as FHComponentInformation,
-            FileHierarchy,
-        },
-        LewpError,
-        LewpErrorKind,
+        component::ComponentId,
+        storage::{Level, ResourceType, Storage, StorageComponent},
     },
     minify_js::{minify, TopLevelMode},
     rust_embed::RustEmbed,
@@ -19,19 +14,16 @@ use {
 /// JavaScript file. The resulting file is used to initialize your component on
 /// the client side.
 pub struct Js {
-    component_information: Arc<FHComponentInformation>,
+    id: ComponentId,
+    level: Level,
 }
 
-impl FHComponent for Js {
+impl StorageComponent for Js {
     /// The actual content is parsed and provided as String.
     type Content = String;
     type ContentParameter = ();
 
-    fn component_information(&self) -> Arc<FHComponentInformation> {
-        self.component_information.clone()
-    }
-
-    fn content<T: FileHierarchy>(
+    fn content<T: Storage>(
         &self,
         _params: Self::ContentParameter,
     ) -> anyhow::Result<Self::Content> {
@@ -46,12 +38,7 @@ impl FHComponent for Js {
             Ok(j) => j,
             Err(e) => {
                 return Err(anyhow::anyhow!(
-                    "{}",
-                    LewpError {
-                        kind: LewpErrorKind::JavaScript,
-                        message: format!("Could not minify JavaScript: {e}"),
-                        source_component: self.component_information.clone(),
-                    }
+                    "Could not minify JavaScript: {e}",
                 ));
             }
         };
@@ -59,29 +46,32 @@ impl FHComponent for Js {
             Ok(r) => Ok(r),
             Err(e) => {
                 return Err(anyhow::anyhow!(
-                    "{}",
-                    LewpError {
-                        kind: LewpErrorKind::JavaScript,
-                        message: format!(
-                        "Could not create String from minified JavaScript: {e}",
-                    ),
-                        source_component: self.component_information.clone(),
-                    }
+                    "Could not create String from minified JavaScript: {e}",
                 ));
             }
         }
+    }
+
+    fn id(&self) -> ComponentId {
+        self.id.clone()
+    }
+
+    fn level(&self) -> Level {
+        self.level
+    }
+
+    fn kind(&self) -> ResourceType {
+        ResourceType::JavaScript
     }
 }
 
 impl Js {
     /// Creates a new JS component
-    pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
-        Self {
-            component_information,
-        }
+    pub fn new(id: ComponentId, level: Level) -> Self {
+        Self { id, level }
     }
 
-    fn combine_files<T: FileHierarchy>(
+    fn combine_files<T: Storage>(
         &self,
         css_files: Vec<PathBuf>,
     ) -> anyhow::Result<String> {
@@ -100,14 +90,7 @@ impl Js {
                 Some(r) => r,
                 None => {
                     return Err(anyhow::anyhow!(
-                        "{}",
-                        LewpError::new(
-                            LewpErrorKind::JavaScript,
-                            &format!(
-                                "Could not get JavaScript file {css_file_name}"
-                            ),
-                            self.component_information.clone(),
-                        )
+                        "Could not get JavaScript file {css_file_name}",
                     ));
                 }
             };

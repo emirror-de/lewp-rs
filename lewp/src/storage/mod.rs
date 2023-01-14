@@ -1,23 +1,28 @@
-//! Defines the file hierarchy of [lewp](crate).
+//! Different storage possibilities for your resources.
 
 use {
-    crate::{LewpError, LewpErrorKind},
+    anyhow::Context,
     rust_embed::RustEmbed,
     std::{
         borrow::Cow,
         path::{Path, PathBuf},
-        sync::Arc,
     },
 };
 
 mod component;
 mod level;
+//pub mod register;
 
 pub use {
-    component::{Component, ComponentInformation, ComponentType, ResourceType},
+    component::{ResourceType, StorageComponent},
     level::Level,
 };
 
+/// A storage that loads resources from disk and stores them in memory as long
+/// as your application is running.
+pub trait MemoryStorage {}
+
+// THIS ROUTE SHOULD BE REPLACE BY http::uri::PathAndQuery
 /// Route path where the file hierarchy is mounted on the webserver. The default
 /// implementation is set to `/resources`
 pub trait Route {
@@ -27,23 +32,23 @@ pub trait Route {
     }
 }
 
-/// Defines the behavior of the file hierarchy.
-pub trait FileHierarchy
+/// A storage where you can load resources from.
+pub trait Storage
 where
     Self: RustEmbed,
 {
     /// Generates the folder path according to the file hierarchy. The folder
     /// that contains the `file_type` always corresponds to the extension of the
     /// files contained.
-    fn folder<COMP: Component>(component: &COMP) -> PathBuf;
+    fn folder<COMP: StorageComponent>(component: &COMP) -> PathBuf;
     /// Collects all filenames in the given component. The resulting
-    /// vector contains the filepath including the mountpoint of the FileHierarchy.
+    /// vector contains the filepath including the mountpoint of the Storage.
     /// This function is not recursive.
-    fn get_file_list<COMP: Component>(component: &COMP) -> Vec<PathBuf>;
-    /// Gets a list of the component ids available for this [ComponentType] on the
+    fn get_file_list<COMP: StorageComponent>(component: &COMP) -> Vec<PathBuf>;
+    /// Gets a list of the component ids available for this [ResourceType] on the
     /// given [Level].
     fn collect_component_ids(
-        kind: ComponentType,
+        kind: ResourceType,
         level: Level,
     ) -> anyhow::Result<Vec<String>>;
     /// Extracts the component id from the given PathBuf.
@@ -60,27 +65,20 @@ where
             Some(parent) => match parent.file_name() {
                 Some(f) => f,
                 None => {
-                    return Err(anyhow::anyhow!("{}", LewpError {
-                        kind: LewpErrorKind::FileHierarchy,
-                        message: format!(
-                            "Could not extract file name from parent of PathBuf: {p:#?}"
-                        ),
-                        source_component: Arc::new(ComponentInformation::core(
-                            "extract_component_ids_from_pathbuf",
-                        )),
-                    }))
-            }
+                    return Err(
+                        anyhow::anyhow!(
+                            "{}",
+                            format!("Could not extract file name from parent of PathBuf: {p:#?}")
+                        )
+                    ).context("extract_component_ids_from_pathbuf".to_string());
+                }
             },
             None => {
-                    return Err(anyhow::anyhow!("{}", LewpError {
-                        kind: LewpErrorKind::FileHierarchy,
-                        message: format!(
-                            "Could not extract parent from PathBuf: {p:#?}"
-                        ),
-                        source_component: Arc::new(ComponentInformation::core(
-                            "extract_component_ids_from_pathbuf",
-                        )),
-                    }))
+                return Err(anyhow::anyhow!(
+                    "{}",
+                    format!("Could not extract parent from PathBuf: {p:#?}")
+                ))
+                .context("extract_component_ids_from_pathbuf".to_string());
             }
         };
         let id = match os_str.to_str() {
@@ -88,25 +86,30 @@ where
             None => {
                 return Err(anyhow::anyhow!(
                     "{}",
-                    LewpError {
-                        kind: LewpErrorKind::FileHierarchy,
-                        message: format!(
-                            "Could not create String from OsStr: {os_str:#?}"
-                        ),
-                        source_component: Arc::new(ComponentInformation::core(
-                            "extract_component_ids_from_pathbuf",
-                        )),
-                    }
+                    format!("Could not create String from OsStr: {os_str:#?}")
                 ))
+                .context("extract_component_ids_from_pathbuf".to_string());
             }
         };
         Ok(id)
     }
 }
 
-/// Mounts the file hierarchy at the given folder.
+/// Defines a storage at the given filesystem location.
+///
+/// For example:
+/// ```rust
+/// # use lewp::lewp_storage;
+/// lewp_storage!(AssetsStorage, "testfiles");
+/// ```
+/// Will expand to:
+/// ```rust
+/// #[derive(::rust_embed::RustEmbed)]
+/// #[folder = "testfiles"]
+/// pub struct AssetsStorage;
+/// ```
 #[macro_export]
-macro_rules! file_hierarchy {
+macro_rules! lewp_storage {
     ($name: ident, $folder: literal) => {
         /// Storage definition of the file hierarchy.
         #[derive(::rust_embed::RustEmbed)]
@@ -115,15 +118,15 @@ macro_rules! file_hierarchy {
     };
 }
 
-impl<T: RustEmbed> FileHierarchy for T {
-    fn folder<COMP: Component>(component: &COMP) -> PathBuf {
+impl<T: RustEmbed> Storage for T {
+    fn folder<COMP: StorageComponent>(component: &COMP) -> PathBuf {
         let mut path = PathBuf::from(component.level().to_string());
         path.push(&component.id());
         path.push(component.kind().to_string());
         path
     }
 
-    fn get_file_list<COMP: Component>(component: &COMP) -> Vec<PathBuf> {
+    fn get_file_list<COMP: StorageComponent>(component: &COMP) -> Vec<PathBuf> {
         let subfolder = Path::new(&component.level().to_string())
             .join(Path::new(&component.id()))
             .join(Path::new(&component.kind().to_string()));
@@ -141,7 +144,7 @@ impl<T: RustEmbed> FileHierarchy for T {
     }
 
     fn collect_component_ids(
-        kind: ComponentType,
+        kind: ResourceType,
         level: Level,
     ) -> anyhow::Result<Vec<String>> {
         let pattern_path = Path::new(&level.to_string())
@@ -158,16 +161,9 @@ impl<T: RustEmbed> FileHierarchy for T {
             None => {
                 return Err(anyhow::anyhow!(
                     "{}",
-                    LewpError {
-                        kind: LewpErrorKind::FileHierarchy,
-                        message: String::from(
-                            "Error converting filepath to string!",
-                        ),
-                        source_component: Arc::new(ComponentInformation::core(
-                            "get_component_ids",
-                        )),
-                    }
+                    format!("Error converting filepath to string!")
                 ))
+                .context("get_component_ids".to_string());
             }
         };
         let pattern = glob::Pattern::new(&pattern_path)?;
@@ -196,55 +192,50 @@ impl<T: RustEmbed> FileHierarchy for T {
 
 #[cfg(test)]
 mod tests {
-    file_hierarchy!(TestHierarchy, "testfiles");
+    lewp_storage!(TestStorage, "testfiles");
 
-    use {
-        super::{
-            Component,
-            ComponentInformation,
-            ComponentType,
-            FileHierarchy,
-            Level,
-        },
-        std::sync::Arc,
-    };
+    use super::{Level, ResourceType, Storage, StorageComponent};
 
     struct Css {
         id: String,
     }
-    impl Component for Css {
+    impl StorageComponent for Css {
         type Content = ();
         type ContentParameter = ();
-        fn component_information(&self) -> Arc<ComponentInformation> {
-            Arc::new(ComponentInformation {
-                id: self.id.clone(),
-                level: Level::Component,
-                kind: ComponentType::Css,
-            })
-        }
-        fn content<T: FileHierarchy>(
+        fn content<T: Storage>(
             &self,
             _: Self::ContentParameter,
         ) -> anyhow::Result<Self::Content> {
             Ok(())
+        }
+        fn id(&self) -> crate::component::ComponentId {
+            self.id.clone()
+        }
+        fn level(&self) -> Level {
+            Level::Component
+        }
+        fn kind(&self) -> ResourceType {
+            ResourceType::Css
         }
     }
     struct Js {}
-    impl Component for Js {
+    impl StorageComponent for Js {
         type Content = ();
         type ContentParameter = ();
-        fn component_information(&self) -> Arc<ComponentInformation> {
-            Arc::new(ComponentInformation {
-                id: "hello-world".to_string(),
-                level: Level::Page,
-                kind: ComponentType::JavaScript,
-            })
-        }
-        fn content<T: FileHierarchy>(
+        fn content<T: Storage>(
             &self,
             _: Self::ContentParameter,
         ) -> anyhow::Result<Self::Content> {
             Ok(())
+        }
+        fn id(&self) -> crate::component::ComponentId {
+            "hello-world".into()
+        }
+        fn level(&self) -> Level {
+            Level::Page
+        }
+        fn kind(&self) -> ResourceType {
+            ResourceType::JavaScript
         }
     }
 
@@ -256,11 +247,11 @@ mod tests {
         let js = Js {};
         assert_eq!(
             "components/module-id/css",
-            TestHierarchy::folder(&css).to_str().unwrap()
+            TestStorage::folder(&css).to_str().unwrap()
         );
         assert_eq!(
             "pages/hello-world/js",
-            TestHierarchy::folder(&js).to_str().unwrap()
+            TestStorage::folder(&js).to_str().unwrap()
         );
     }
 
@@ -271,7 +262,7 @@ mod tests {
         let css = Css {
             id: String::from("hello-world"),
         };
-        let mut filenames = TestHierarchy::get_file_list(&css);
+        let mut filenames = TestStorage::get_file_list(&css);
         let mut reference = vec![
             PathBuf::from("components/hello-world/css/primary.css"),
             PathBuf::from("components/hello-world/css/secondary.css"),
@@ -281,10 +272,10 @@ mod tests {
 
     #[test]
     fn collect_component_ids() {
-        use super::{ComponentType, FileHierarchy, Level};
+        use super::{Level, ResourceType, Storage};
 
-        let mut component_ids = match TestHierarchy::collect_component_ids(
-            ComponentType::Css,
+        let mut component_ids = match TestStorage::collect_component_ids(
+            ResourceType::Css,
             Level::Component,
         ) {
             Ok(ids) => ids,

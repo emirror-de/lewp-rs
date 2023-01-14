@@ -1,11 +1,11 @@
 use {
     lewp::{
         component::{Component, ComponentId},
-        file_hierarchy,
         html::{
             api::{h1, text},
             Node,
         },
+        lewp_storage,
         page::{Page, PageId},
         resources::{JsRegister, JsRegisterOptions},
         view::PageView,
@@ -71,16 +71,16 @@ impl Page for HelloWorldPage {
 }
 
 // This defines where your hierarchy is stored. You can have multiple.
-file_hierarchy!(TestHierarchy, "testfiles");
+lewp_storage!(TestStorage, "testfiles");
 
 fn main() {
     simple_logger::init().unwrap();
     let js_register = Arc::new(
-        JsRegister::new::<TestHierarchy>(JsRegisterOptions::default()).unwrap(),
+        JsRegister::new::<TestStorage>(JsRegisterOptions::default()).unwrap(),
     );
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
-        .with_js_register::<TestHierarchy>(js_register)
+        .with_js_register::<TestStorage>(js_register)
         .unwrap();
     println!("{}", page.main().render());
 }

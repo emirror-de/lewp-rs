@@ -1,16 +1,7 @@
 use {
     crate::{
         component::ComponentId,
-        fh::{
-            Component as FHComponent,
-            ComponentInformation as FHComponentInformation,
-            ComponentType,
-            FileHierarchy,
-            Level,
-            ResourceType,
-        },
-        LewpError,
-        LewpErrorKind,
+        storage::{Level, ResourceType, Storage, StorageComponent},
     },
     rust_embed::RustEmbed,
     std::sync::Arc,
@@ -33,20 +24,17 @@ impl ImageParameter {
 
 /// Enables interactions with image files in the file hierarchy.
 pub struct Image {
-    component_information: Arc<FHComponentInformation>,
+    id: ComponentId,
+    level: Level,
 }
 
-impl FHComponent for Image {
+impl StorageComponent for Image {
     /// The actual content of the image.
     type Content = Vec<u8>;
     /// The image parameters.
     type ContentParameter = ImageParameter;
 
-    fn component_information(&self) -> Arc<FHComponentInformation> {
-        self.component_information.clone()
-    }
-
-    fn content<T: FileHierarchy>(
+    fn content<T: Storage>(
         &self,
         params: Self::ContentParameter,
     ) -> anyhow::Result<Self::Content> {
@@ -66,48 +54,44 @@ impl FHComponent for Image {
             Some(r) => r,
             None => {
                 return Err(anyhow::anyhow!(
-                    "{}",
-                    LewpError::new(
-                        LewpErrorKind::FileHierarchyComponent,
-                        &format!(
-                            "Error reading image file \"{}\" from file hierarchy!",
-                            filename,
-                        ),
-                        self.component_information.clone(),
-                    )
+                    "Error reading image file \"{filename}\" from file hierarchy!",
                 ));
             }
         };
         Ok(image.data.to_vec())
+    }
+
+    fn id(&self) -> ComponentId {
+        self.id.clone()
+    }
+
+    fn level(&self) -> Level {
+        self.level
+    }
+
+    fn kind(&self) -> ResourceType {
+        ResourceType::Image
     }
 }
 
 impl Image {
     /// Creates a new Image component.
     pub fn new(id: ComponentId, level: Level) -> Self {
-        let component_information = Arc::new(FHComponentInformation {
-            id,
-            level,
-            kind: ComponentType::Resource(ResourceType::Image),
-        });
-        log::trace!("ComponentInformation: {:#?}", component_information);
-        Self {
-            component_information,
-        }
+        Self { id, level }
     }
 }
 
 #[test]
 fn read_rust_logo() {
-    use crate::{fh::Level, file_hierarchy, resources::Image};
+    use crate::{lewp_storage, resources::Image, storage::Level};
 
-    file_hierarchy!(TestHierarchy, "testfiles");
+    lewp_storage!(TestStorage, "testfiles");
 
     let image_resource =
         Image::new(ComponentId::from("hello-world"), Level::Component);
-    let logo = match image_resource.content::<TestHierarchy>(
-        ImageParameter::new("rust-logo-512x512-blk.png"),
-    ) {
+    let logo = match image_resource.content::<TestStorage>(ImageParameter::new(
+        "rust-logo-512x512-blk.png",
+    )) {
         Ok(f) => f,
         Err(e) => panic!("{e:#?}"),
     };

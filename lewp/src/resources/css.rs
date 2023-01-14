@@ -1,13 +1,7 @@
 use {
     crate::{
-        fh::{
-            Component as FHComponent,
-            ComponentInformation as FHComponentInformation,
-            FileHierarchy,
-            Level,
-        },
-        LewpError,
-        LewpErrorKind,
+        component::ComponentId,
+        storage::{Level, ResourceType, Storage, StorageComponent},
     },
     lewp_css::{
         cssparser::ToCss,
@@ -23,7 +17,7 @@ use {
     },
     rust_embed::RustEmbed,
     selectors::parser::Selector,
-    std::{path::PathBuf, rc::Rc, sync::Arc},
+    std::{path::PathBuf, rc::Rc},
 };
 
 mod entireness;
@@ -54,19 +48,16 @@ const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 /// then the resulting stylesheet is *NOT* isolated as there is no reason for
 /// isolating a page wide CSS rule.
 pub struct Css {
-    component_information: Arc<FHComponentInformation>,
+    id: ComponentId,
+    level: Level,
 }
 
-impl FHComponent for Css {
+impl StorageComponent for Css {
     /// The actual content is parsed and provided as [Stylesheet].
     type Content = Stylesheet;
     type ContentParameter = ();
 
-    fn component_information(&self) -> Arc<FHComponentInformation> {
-        self.component_information.clone()
-    }
-
-    fn content<T: FileHierarchy>(
+    fn content<T: Storage>(
         &self,
         _params: Self::ContentParameter,
     ) -> anyhow::Result<Self::Content> {
@@ -75,34 +66,37 @@ impl FHComponent for Css {
         let stylesheet = match Stylesheet::parse(&css_raw) {
             Ok(s) => s,
             Err(msg) => {
-                return Err(anyhow::anyhow!(
-                    "{}",
-                    LewpError::new(
-                        LewpErrorKind::Css,
-                        &format!("{msg:#?}"),
-                        self.component_information.clone(),
-                    )
-                ));
+                return Err(anyhow::anyhow!("{msg:#?}",));
             }
         };
-        match &self.component_information.level {
+        match &self.level {
             Level::Page => return Ok(stylesheet), // there is no reason for pages to be isolated
             _ => (),
         }
         let stylesheet = self.isolate_stylesheet(stylesheet)?;
         Ok(stylesheet)
     }
+
+    fn id(&self) -> ComponentId {
+        self.id.clone()
+    }
+
+    fn level(&self) -> Level {
+        self.level
+    }
+
+    fn kind(&self) -> ResourceType {
+        ResourceType::Css
+    }
 }
 
 impl Css {
     /// Creates a new CSS component
-    pub fn new(component_information: Arc<FHComponentInformation>) -> Self {
-        Self {
-            component_information,
-        }
+    pub fn new(id: ComponentId, level: Level) -> Self {
+        Self { id, level }
     }
 
-    fn combine_files<T: FileHierarchy>(
+    fn combine_files<T: Storage>(
         &self,
         css_files: Vec<PathBuf>,
     ) -> anyhow::Result<String> {
@@ -120,14 +114,7 @@ impl Css {
             let css = match <T as RustEmbed>::get(&css_file_name) {
                 Some(r) => r,
                 None => {
-                    return Err(anyhow::anyhow!(
-                        "{}",
-                        LewpError::new(
-                            LewpErrorKind::Css,
-                            &format!("Stylesheet file not found."),
-                            self.component_information.clone(),
-                        )
-                    ));
+                    return Err(anyhow::anyhow!("Stylesheet file not found.",));
                 }
             };
             let css = std::str::from_utf8(&css.data)?;
@@ -139,7 +126,7 @@ impl Css {
     fn isolate_stylesheet(
         &self,
         stylesheet: Stylesheet,
-    ) -> anyhow::Result<<Self as FHComponent>::Content> {
+    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
         let mut stylesheet = stylesheet;
         self.isolate_rules(&mut stylesheet.rules, true)?;
         Ok(stylesheet)
@@ -184,14 +171,7 @@ impl Css {
     ) -> anyhow::Result<()> {
         let mut old = String::new();
         if let Err(e) = selector.to_css(&mut old) {
-            return Err(anyhow::anyhow!(
-                "{}",
-                LewpError::new(
-                    LewpErrorKind::Css,
-                    &format!("{e:#?}"),
-                    self.component_information(),
-                )
-            ));
+            return Err(anyhow::anyhow!("{e:#?}",));
         };
         let new = match lewp_css::parse_css_selector(&format!(
             ".{} {}",
@@ -199,14 +179,7 @@ impl Css {
             old
         )) {
             Err(e) => {
-                return Err(anyhow::anyhow!(
-                    "{}",
-                    LewpError::new(
-                        LewpErrorKind::Css,
-                        &format!("{e:#?}"),
-                        self.component_information(),
-                    )
-                ));
+                return Err(anyhow::anyhow!("{e:#?}",));
             }
             Ok(s) => s,
         };
@@ -220,14 +193,7 @@ impl Css {
     ) -> anyhow::Result<()> {
         let mut old = String::new();
         if let Err(e) = selector.to_css(&mut old) {
-            return Err(anyhow::anyhow!(
-                "{}",
-                LewpError::new(
-                    LewpErrorKind::Css,
-                    &format!("{e:#?}"),
-                    self.component_information(),
-                )
-            ));
+            return Err(anyhow::anyhow!("{e:#?}",));
         };
         let new = match lewp_css::parse_css_selector(&format!(
             "{}.{}",
@@ -235,14 +201,7 @@ impl Css {
             self.id()
         )) {
             Err(e) => {
-                return Err(anyhow::anyhow!(
-                    "{}",
-                    LewpError::new(
-                        LewpErrorKind::Css,
-                        &format!("{e:#?}"),
-                        self.component_information(),
-                    )
-                ));
+                return Err(anyhow::anyhow!("{e:#?}",));
             }
             Ok(s) => s,
         };
@@ -254,7 +213,7 @@ impl Css {
     pub fn extract_render_critical_stylesheet(
         &self,
         stylesheet: Stylesheet,
-    ) -> anyhow::Result<<Self as FHComponent>::Content> {
+    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
         self.filter_stylesheet_properties(
             stylesheet,
             Rc::new(Box::new(|x| x.is_render_critical())),
@@ -265,7 +224,7 @@ impl Css {
     pub fn extract_non_render_critical_stylesheet(
         &self,
         stylesheet: Stylesheet,
-    ) -> anyhow::Result<<Self as FHComponent>::Content> {
+    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
         self.filter_stylesheet_properties(
             stylesheet,
             Rc::new(Box::new(|x| !x.is_render_critical())),
@@ -279,7 +238,7 @@ impl Css {
         &self,
         stylesheet: Stylesheet,
         filter: Rc<Box<dyn Fn(&PropertyDeclaration<Importance>) -> bool>>,
-    ) -> anyhow::Result<<Self as FHComponent>::Content> {
+    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
         let mut stylesheet = stylesheet;
 
         self.filter_rules(&mut stylesheet.rules, filter, true)?;

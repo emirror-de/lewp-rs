@@ -1,6 +1,6 @@
 use {
     super::Css,
-    crate::fh::{Component as FHComponent, FileHierarchy},
+    crate::storage::{Storage, StorageComponent},
     std::sync::Arc,
 };
 
@@ -14,7 +14,7 @@ pub struct ProcessedComponent {
 
 impl ProcessedComponent {
     /// Creates a new processed component from the given [Css].
-    pub fn new<T: FileHierarchy>(comp: &Css) -> anyhow::Result<Self> {
+    pub fn new<T: Storage>(comp: &Css) -> anyhow::Result<Self> {
         let origin = comp.content::<T>(())?;
         let render_critical =
             comp.extract_render_critical_stylesheet(origin.clone())?;

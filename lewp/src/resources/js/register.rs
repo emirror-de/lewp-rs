@@ -1,15 +1,8 @@
 use {
     super::Js,
     crate::{
-        fh::{
-            Component,
-            ComponentInformation,
-            ComponentType,
-            FileHierarchy,
-            Level,
-        },
-        LewpError,
-        LewpErrorKind,
+        component::ComponentId,
+        storage::{Level, ResourceType, Storage, StorageComponent},
     },
     std::{collections::HashMap, sync::Arc},
 };
@@ -70,14 +63,12 @@ impl Default for JsRegisterOptions {
 /// keeps them in memory, as long as this instance is available.
 pub struct JsRegister {
     options: JsRegisterOptions,
-    components: HashMap<Arc<ComponentInformation>, Arc<String>>,
+    components: HashMap<(ComponentId, Level), Arc<String>>,
 }
 
 impl JsRegister {
     /// Creates a new Register instance.
-    pub fn new<T: FileHierarchy>(
-        options: JsRegisterOptions,
-    ) -> anyhow::Result<Self> {
+    pub fn new<T: Storage>(options: JsRegisterOptions) -> anyhow::Result<Self> {
         log::debug!("Creating new JS register with options: {options:?}");
         let mut register = Self {
             options,
@@ -94,87 +85,55 @@ impl JsRegister {
         self.options.clone()
     }
 
-    /// Queries the CSS of the given component using the given options.
-    pub fn query(
-        &self,
-        component_information: Arc<ComponentInformation>,
-    ) -> Option<Arc<String>> {
-        Some(Arc::clone(self.components.get(&component_information)?))
+    /// Queries the JS of the given component using the given options.
+    pub fn query(&self, id: ComponentId, level: Level) -> Option<Arc<String>> {
+        Some(Arc::clone(self.components.get(&(id, level))?))
     }
 
     /// Collects, processes and caches all available CSS in the file hierarchy.
-    pub fn load_process_components<T: FileHierarchy>(
+    pub fn load_process_components<T: Storage>(
         &mut self,
     ) -> anyhow::Result<()> {
         self.load_process_modules::<T>()?;
         self.load_process_pages::<T>()
     }
 
-    /// Returns the path prefix where the CSS is mounted on the webserver.
-    pub fn css_path(&self, level: Level, id: String) -> &str {
-        &self.options.uri_path_prefix()
-    }
-
-    fn load_process_modules<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
+    fn load_process_modules<T: Storage>(&mut self) -> anyhow::Result<()> {
         let module_ids = T::collect_component_ids(
-            ComponentType::JavaScript,
+            ResourceType::JavaScript,
             Level::Component,
         )?;
         for id in module_ids {
-            let component_information = Arc::new(ComponentInformation {
-                id: id.clone(),
-                level: Level::Component,
-                kind: ComponentType::JavaScript,
-            });
-            let c = Js::new(component_information.clone());
+            let c = Js::new(id.clone(), Level::Component);
             let c = match c.content::<T>(()) {
                 Ok(c) => c,
                 Err(e) => {
                     return Err(anyhow::anyhow!(
-                        "{}",
-                        LewpError {
-                            kind: LewpErrorKind::JavaScript,
-                            message: format!(
-                                "Could not get minified JavaScript: {e}",
-                            ),
-                            source_component: component_information.clone(),
-                        }
+                        "Could not get minified JavaScript: {e}",
                     ))
                 }
             };
             self.components
-                .insert(component_information.clone(), Arc::new(c));
+                .insert((id.clone(), Level::Component), Arc::new(c));
         }
         Ok(())
     }
 
-    fn load_process_pages<T: FileHierarchy>(&mut self) -> anyhow::Result<()> {
+    fn load_process_pages<T: Storage>(&mut self) -> anyhow::Result<()> {
         let page_ids =
-            T::collect_component_ids(ComponentType::JavaScript, Level::Page)?;
+            T::collect_component_ids(ResourceType::JavaScript, Level::Page)?;
         for id in page_ids {
-            let component_information = Arc::new(ComponentInformation {
-                id: id.clone(),
-                level: Level::Page,
-                kind: ComponentType::JavaScript,
-            });
-            let c = Js::new(component_information.clone());
+            let c = Js::new(id.clone(), Level::Page);
             let c = match c.content::<T>(()) {
                 Ok(c) => c,
                 Err(e) => {
                     return Err(anyhow::anyhow!(
-                        "{}",
-                        LewpError {
-                            kind: LewpErrorKind::JavaScript,
-                            message: format!(
-                                "Could not get minified JavaScript: {e}",
-                            ),
-                            source_component: component_information.clone(),
-                        }
+                        "Could not get minified JavaScript: {e}",
                     ))
                 }
             };
             self.components
-                .insert(component_information.clone(), Arc::new(c));
+                .insert((id.clone(), Level::Page), Arc::new(c));
         }
         Ok(())
     }

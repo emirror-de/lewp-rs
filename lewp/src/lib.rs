@@ -7,10 +7,14 @@
 //! ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)
 //!
 //! Lewp is a modular library that supports you in generating and rendering
-//! your website with ease. It also provides you with the possibility to
-//! manage different types of resources like images required for your website.
+//! your website with ease. Your components will be automatically isolated so
+//! CSS and JavaScript definitions are not a pain anymore and do not interfere each other!
+//! It also provides you with the possibility to
+//! manage different types of resources like images required for your website and
+//! embeds them on release build into the final binary.
 //! Lewp also saves you from getting stuck and lost in the web template hell
-//! by **NOT** mixing languages.
+//! by **NOT** mixing languages as other solutions available.
+//!
 //! Generate your HTML5 website technically optimized and always valid without
 //! losing the algorithmic comfort and flexibility.
 //!
@@ -25,10 +29,14 @@
 //! * No more whitespace bugs in your website
 //! * Technically optimized, always valid, minified, HTML5 code
 //! * Component based development, truly isolated with minimum overhead
-//! * File hierarchy for easy resource management
+//! * Storage definition with pre-defined paths for easy resource management
+//! * Uses [rust_embed] under the hood so all your assets are always available
 //! * Build the DOM completely in Rust
 //!
 //! ## Hello world example
+//!
+//! For more examples with comments have a look at the repositories
+//! [examples](https://github.com/emirror-de/lewp-rs/tree/main/lewp/examples).
 //! ```
 //! use lewp::{
 //!     component::{Component, ComponentId},
@@ -40,11 +48,9 @@
 //!     view::PageView,
 //! };
 //!
-//! // Your hello world component.
 //! struct HelloWorld {
 //!     data: String,
 //! }
-//!
 //! impl HelloWorld {
 //!     pub fn new() -> Self {
 //!         Self {
@@ -52,52 +58,29 @@
 //!         }
 //!     }
 //! }
-//!
-//! // Implement the [Component] trait to define the behavior and view.
 //! impl Component for HelloWorld {
-//!     // No message required for a simple component.
 //!     type Message = ();
 //!
-//!     // The unique ID of your component is used to identify and process further
-//!     // resources, as well as isolation in the world of JavaScript on client side.
-//!     // It is best practice to use the lowercase kebab-case of your structs name
-//!     // to have a clear identification of the components resources in the file
-//!     // hierarchy and your code base.
 //!     fn id(&self) -> ComponentId {
 //!         "hello-world".into()
 //!     }
 //!
-//!     // There is no reason for your page to fail. Errors during processing should
-//!     // result in a different view that you define below.
 //!     fn main(&mut self) {}
 //!
-//!     // This is the view of your component.
 //!     fn view(&self) -> Option<Node> {
 //!         Some(h1(vec![text(&self.data)]))
 //!     }
 //! }
 //!
-//! // Define your page. This simple example page only contains one component that
-//! // only specifies a h1 node.
 //! struct HelloWorldPage;
 //!
 //! impl Page for HelloWorldPage {
-//!     // Throughout your site, the page id should be unique for the same reason as
-//!     // the component id. Use lowercase kebab-case here as well as convention.
 //!     fn id(&self) -> PageId {
 //!         "hello-world-page".into()
 //!     }
 //!
-//!     // The main method of the page. In here you can add your components to the
-//!     // page and do whatever processing is required for your page to be rendered.
 //!     fn main(&self, view: &mut PageView) {
 //!         let mut comp = Component::new(HelloWorld::new());
-//!         // The component is only borrowed, to enable the possibility of adding
-//!         // it twice to your page. You can use the state of your component to
-//!         // define the behavior when adding it multiple times.
-//!         // However, the required head nodes for example CSS and JS is being added
-//!         // only once, so you can be sure that there is no overhead when adding
-//!         // the component multiple times.
 //!         view.push(&mut comp);
 //!     }
 //! }
@@ -105,24 +88,14 @@
 //! fn main() {
 //!     simple_logger::init().unwrap();
 //!
-//!     // Create an instance of your page
 //!     let page = Page::new(HelloWorldPage {});
-//!
-//!     // You have full control when you want to run and render your page.
-//!     // Because the internal state of the page changes when running the main
-//!     // method, you need to get the result in order to be able to render the
-//!     // resulting page.
 //!     let executed_page = page.main();
 //!
 //!     println!("{}", executed_page.render());
 //! }
 //! ```
 
-pub use {
-    charsets::Charset,
-    error::{LewpError, LewpErrorKind},
-    langtag::LanguageTag,
-};
+pub use {charsets::Charset, langtag::LanguageTag};
 
 /// Re-export of the [lewp_html] crate.
 pub mod html {
@@ -130,8 +103,7 @@ pub mod html {
 }
 
 pub mod component;
-mod error;
-pub mod fh;
 pub mod page;
 pub mod resources;
+pub mod storage;
 pub mod view;
