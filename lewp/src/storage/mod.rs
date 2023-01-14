@@ -12,38 +12,26 @@ use {
 mod component;
 mod level;
 //pub mod register;
+mod web_interface;
 
 pub use {
     component::{ResourceType, StorageComponent},
     level::Level,
+    memory_storage::MemoryStorage,
+    register::StorageRegister,
+    web_interface::WebInterface,
 };
 
-/// A storage that loads resources from disk and stores them in memory as long
-/// as your application is running.
-pub trait MemoryStorage {}
-
-// THIS ROUTE SHOULD BE REPLACE BY http::uri::PathAndQuery
-/// Route path where the file hierarchy is mounted on the webserver. The default
-/// implementation is set to `/resources`
-pub trait Route {
-    /// Returns the route path.
-    fn route() -> &'static str {
-        "/resources"
-    }
-}
-
-/// A storage where you can load resources from.
+/// A storage definition. This is an abstraction of a file hierarchy specific
+///to your project.
 pub trait Storage
 where
     Self: RustEmbed,
 {
-    /// Generates the folder path according to the file hierarchy. The folder
-    /// that contains the `file_type` always corresponds to the extension of the
-    /// files contained.
-    fn folder<COMP: StorageComponent>(component: &COMP) -> PathBuf;
-    /// Collects all filenames in the given component. The resulting
-    /// vector contains the filepath including the mountpoint of the Storage.
-    /// This function is not recursive.
+    /// Generates the folder path as the storage defines it.
+    fn folder_path<COMP: StorageComponent>(component: &COMP) -> PathBuf;
+    /// Collects all filenames in from the storage that are available for
+    /// the given component.
     fn get_file_list<COMP: StorageComponent>(component: &COMP) -> Vec<PathBuf>;
     /// Gets a list of the component ids available for this [ResourceType] on the
     /// given [Level].
@@ -55,9 +43,7 @@ where
     ///
     /// Example:
     /// `testfiles/components/footer/css` will result in `footer`.
-    fn extract_component_ids_from_pathbuf(
-        p: &PathBuf,
-    ) -> anyhow::Result<String> {
+    fn extract_component_ids(p: &PathBuf) -> anyhow::Result<String> {
         if p.parent().is_none() || p.parent().unwrap().parent().is_none() {
             return Err(anyhow::anyhow!("Invalid file path: {p:?}"));
         }
@@ -119,7 +105,7 @@ macro_rules! lewp_storage {
 }
 
 impl<T: RustEmbed> Storage for T {
-    fn folder<COMP: StorageComponent>(component: &COMP) -> PathBuf {
+    fn folder_path<COMP: StorageComponent>(component: &COMP) -> PathBuf {
         let mut path = PathBuf::from(component.level().to_string());
         path.push(&component.id());
         path.push(component.kind().to_string());
@@ -177,7 +163,7 @@ impl<T: RustEmbed> Storage for T {
         let mut component_ids: Vec<String> = filenames
             .iter()
             .filter_map(|e| {
-                Self::extract_component_ids_from_pathbuf(&PathBuf::from(
+                Self::extract_component_ids(&PathBuf::from(
                     e.clone().into_owned(),
                 ))
                 .ok()

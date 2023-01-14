@@ -1,5 +1,5 @@
 use {
-    super::super::{Level, ResourceType, Route, Storage},
+    super::super::{Level, ResourceType, Storage, WebInterface},
     crate::component::ComponentId,
     std::path::{Path, PathBuf},
 };
@@ -23,9 +23,9 @@ pub trait StorageComponent {
     fn level(&self) -> Level;
     /// The resource type.
     fn kind(&self) -> ResourceType;
-    /// Returns the router path to the given component file.
-    fn route<FH: Storage + Route>(&self, filename: &str) -> PathBuf {
-        Path::new(FH::route())
+    /// Returns web interface path (see [WebInterface]) to the specific component file.
+    fn uri_path<T: Storage + WebInterface>(&self, filename: &str) -> PathBuf {
+        Path::new(T::uri_path())
             .join(self.level().to_string())
             .join(self.id().to_string())
             .join(self.kind().to_string())

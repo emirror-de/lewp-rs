@@ -37,7 +37,7 @@ impl StorageComponent for Image {
         &self,
         params: Self::ContentParameter,
     ) -> anyhow::Result<Self::Content> {
-        let mut filename = T::folder(self);
+        let mut filename = T::folder_path(self);
         filename.push(params.filename);
         log::trace!("Image filename: {:#?}", filename);
         let filename = match filename.to_str() {

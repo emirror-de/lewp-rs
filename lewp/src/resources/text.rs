@@ -22,7 +22,7 @@ impl StorageComponent for Text {
         &self,
         params: Self::ContentParameter,
     ) -> anyhow::Result<Self::Content> {
-        let mut filename = T::folder(self);
+        let mut filename = T::folder_path(self);
         filename.push(params);
         let extension = match ResourceType::Text.extension() {
             Some(e) => e,
