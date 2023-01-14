@@ -27,7 +27,7 @@ use {
             JsRegister,
             JsRegisterOptions,
         },
-        storage::{Level, ResourceType, Storage},
+        storage::{Level, Storage},
         view::PageView,
         Charset,
         LanguageTag,

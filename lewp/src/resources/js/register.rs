@@ -15,11 +15,11 @@ pub struct JsRegisterOptions {
 }
 
 impl JsRegisterOptions {
-    /// Creates a [RegisterOptions] instance with `uri_path_prefix` set to `/resources/css` and
+    /// Creates a [RegisterOptions] instance with `uri_path_prefix` set to `/resources/js` and
     /// `autoload` to `true`.
     pub fn new() -> Self {
         Self {
-            uri_path_prefix: "/resources/css".to_string(),
+            uri_path_prefix: "/resources/js".to_string(),
             autoload: true,
         }
     }
@@ -41,7 +41,7 @@ impl JsRegisterOptions {
         self
     }
 
-    /// Sets the uri_path_prefix, usually the mountpoint of all CSS on the webserver.
+    /// Sets the uri_path_prefix, usually the mountpoint of all JS on the webserver.
     ///
     /// See [Self::new]
     pub fn set_uri_path_prefix(mut self, prefix: &str) -> Self {
@@ -90,7 +90,7 @@ impl JsRegister {
         Some(Arc::clone(self.components.get(&(id, level))?))
     }
 
-    /// Collects, processes and caches all available CSS in the file hierarchy.
+    /// Collects, processes and caches all available JS in the file hierarchy.
     pub fn load_process_components<T: Storage>(
         &mut self,
     ) -> anyhow::Result<()> {

@@ -103,11 +103,6 @@ impl Register {
         self.load_process_pages::<T>()
     }
 
-    /// Returns the path prefix where the CSS is mounted on the webserver.
-    pub fn css_path(&self, level: Level, id: String) -> &str {
-        &self.options.uri_path_prefix()
-    }
-
     fn load_process_modules<T: Storage>(&mut self) -> anyhow::Result<()> {
         let module_ids =
             T::collect_component_ids(ResourceType::Css, Level::Component)?;

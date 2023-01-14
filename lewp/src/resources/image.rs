@@ -4,7 +4,6 @@ use {
         storage::{Level, ResourceType, Storage, StorageComponent},
     },
     rust_embed::RustEmbed,
-    std::sync::Arc,
 };
 
 /// The parameter required for the image

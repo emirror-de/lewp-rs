@@ -5,7 +5,7 @@ use {
     },
     minify_js::{minify, TopLevelMode},
     rust_embed::RustEmbed,
-    std::{path::PathBuf, sync::Arc},
+    std::path::PathBuf,
 };
 
 /// Responsible for JS that is stored for a given [FHComponent].
@@ -30,7 +30,7 @@ impl StorageComponent for Js {
         let files = T::get_file_list(self);
         let js = self.combine_files::<T>(files)?;
         let mut result = Vec::new();
-        let js = match minify(
+        match minify(
             TopLevelMode::Global,
             js.into_bytes().to_vec(),
             &mut result,
