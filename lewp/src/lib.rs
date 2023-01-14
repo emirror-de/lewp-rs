@@ -13,7 +13,7 @@
 //! manage different types of resources like images required for your website and
 //! embeds them on release build into the final binary.
 //! Lewp also saves you from getting stuck and lost in the web template hell
-//! by **NOT** mixing languages as other solutions available.
+//! by **NOT** mixing languages as other solutions do.
 //!
 //! Generate your HTML5 website technically optimized and always valid without
 //! losing the algorithmic comfort and flexibility.

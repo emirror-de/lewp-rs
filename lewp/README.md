@@ -4,15 +4,26 @@
 
 ![Version](https://img.shields.io/crates/v/lewp?style=flat-square) [![](https://img.shields.io/docsrs/lewp?style=flat-square)](https://docs.rs/lewp) ![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square) ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)
 
-Say goodbye to the web template hell. Generate your HTML5 website technically optimized and always valid. Without mixing languages.
+## ❓What is lewp?
+
+Lewp is a modular library that supports you in generating and rendering
+your website with ease. Your components will be automatically isolated so
+CSS and JavaScript definitions are not a pain anymore and do not interfere each other!
+It also provides you with the possibility to
+manage different types of resources like images required for your website and
+embeds them on release build into the final binary.
+Lewp also saves you from getting stuck and lost in the web template hell
+by **NOT** mixing languages as other solutions do.
+
+Generate your HTML5 website technically optimized and always valid without
+losing the algorithmic comfort and flexibility.
+
+⚠ ***This crate is currently evolving. API breaking changes can happen anytime until v1.0.0.
+Compiler warnings are currently used as development reminders and will be removed as soon as possible.***
 
 *This is the adjusted Rust implementation of [the PHP version of lewp](https://gitlab.com/lewp/lewp).*
 
 If you have questions, want to contribute or have any other type of request, your invited to create an issue.
-
-## ❓What is lewp?
-
-Lewp is a collection of structs and traits that simplify modularized website creation and reusage of code without sacrificing the comfort of programming, speed and optimized serving of the resulting site.
 
 ## 🥅 Project goals
 
@@ -24,15 +35,15 @@ Lewp is a collection of structs and traits that simplify modularized website cre
 
 3. Providing a ***storage with pre-defined folder hierarchy*** for easy resource management and possibility to ***share*** between different projects
 
-4. Getting the ***best of both*** worlds, ***server*** side and ***client side*** rendering
+4. Getting the ***best of both*** worlds, ***server side rendering*** and ***client side application logic***
 
 5. ***Minimization*** of ***page loading*** times (for example FCP and TTI)
 
-6. ***Removing*** any ***HTML boilerplate*** code. Lewp takes care of it
+6. ***No HTML boilerplate*** code
 
 7. Applying **SEO** best practices already in development setup as much as possible
 
-❗ ***lewp is not a webserver.*** It is a library that supports you in structuring your algorithms bringing them perfectly in line with your view, without letting your code get messy! It perfectly integrates with frameworks like [rocket](https://rocket.rs) or [actix-web](https://actix.rs).
+❗ ***lewp is not a webserver.*** It is a library that supports you in structuring your algorithms bringing them perfectly in line with your view, without letting your code get messy! It perfectly integrates with frameworks like [rocket](https://rocket.rs), [actix-web](https://actix.rs) or [axum](https://github.com/tokio-rs/axum).
 
 ## 📦 Features
 
@@ -51,8 +62,7 @@ under the hood so all your assets are always available
 - [ ] CSS can be split up into "render critical" (will be inlined on rendering)
 and "non render critical" parts that will be inserted as `<link>`
 - [ ] [html5-picture](https://github.com/emirror-de/html5-picture) support to be
-able to scale the images to predefined sizes to optimize them for every breakpoint
-you need
+able to scale the images to predefined sizes for specific breakpoint optimization
 - [ ] JavaScript *per component* isolation
 - [ ] Provide an API for localization (l10n)
 
