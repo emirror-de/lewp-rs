@@ -7,7 +7,8 @@ use {
         },
         lewp_storage,
         page::{Page, PageId},
-        resources::{JsRegister, JsRegisterOptions},
+        resources::Js,
+        storage::{MemoryStorage, StorageRegister},
         view::PageView,
     },
     std::sync::Arc,
@@ -75,9 +76,8 @@ lewp_storage!(TestStorage, "testfiles");
 
 fn main() {
     simple_logger::init().unwrap();
-    let js_register = Arc::new(
-        JsRegister::new::<TestStorage>(JsRegisterOptions::default()).unwrap(),
-    );
+    let js_register =
+        Arc::new(MemoryStorage::<Js>::initialize::<TestStorage>(()).unwrap());
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
         .with_js_register::<TestStorage>(js_register)

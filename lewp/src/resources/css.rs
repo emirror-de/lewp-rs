@@ -25,7 +25,7 @@ mod property_classification;
 #[cfg(test)]
 mod test;
 
-pub use {
+pub(crate) use {
     entireness::Entireness,
     processed_component::ProcessedComponent,
     property_classification::PropertyClassification,
@@ -34,7 +34,7 @@ pub use {
 /// This keyword is intentionally defined with a whitespace at the end.
 const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 
-/// CSS file in a [Storage].
+/// CSS resources available in a [Storage].
 ///
 /// Processes all files in the components directory and combines them into one
 /// CSS [Stylesheet]. The resulting stylesheet is isolated to the scope of the

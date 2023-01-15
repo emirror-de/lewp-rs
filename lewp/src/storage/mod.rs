@@ -18,7 +18,7 @@ mod web_interface;
 pub use {
     component::{ResourceType, StorageComponent},
     level::Level,
-    memory_storage::{CssQueryOptions, MemoryStorage},
+    memory_storage::{CssQueryOptions, JsQueryOptions, MemoryStorage},
     register::StorageRegister,
     web_interface::WebInterface,
 };

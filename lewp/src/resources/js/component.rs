@@ -5,10 +5,10 @@ use {
     },
     minify_js::{minify, TopLevelMode},
     rust_embed::RustEmbed,
-    std::path::PathBuf,
+    std::{path::PathBuf, sync::Arc},
 };
 
-/// Responsible for JS that is stored for a given [FHComponent].
+/// Responsible for JS that is stored for a given [Storage].
 ///
 /// Processes all files in the components directory and combines them into one
 /// JavaScript file. The resulting file is used to initialize your component on
@@ -20,7 +20,7 @@ pub struct Js {
 
 impl StorageComponent for Js {
     /// The actual content is parsed and provided as String.
-    type Content = String;
+    type Content = Arc<String>;
     type ContentParameter = ();
 
     fn content<T: Storage>(
@@ -43,7 +43,7 @@ impl StorageComponent for Js {
             }
         };
         match String::from_utf8(result) {
-            Ok(r) => Ok(r),
+            Ok(r) => Ok(Arc::new(r)),
             Err(e) => {
                 return Err(anyhow::anyhow!(
                     "Could not create String from minified JavaScript: {e}",

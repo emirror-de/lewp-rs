@@ -1,5 +1,5 @@
 use {
-    crate::resources::PropertyClassification,
+    crate::resources::css::PropertyClassification,
     lewp_css::{
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},

@@ -33,7 +33,7 @@ fn css_components_and_register() {
         parsed_component.render_critical()
     );
 
-    let r = MemoryStorage::initialize::<TestStorage>(()).unwrap();
+    let r = MemoryStorage::<Css>::initialize::<TestStorage>(()).unwrap();
     let css = r
         .query("sitemap".into(), Level::Page, CssQueryOptions::default())
         .unwrap();

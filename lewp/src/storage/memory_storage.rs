@@ -7,8 +7,9 @@ use {
 };
 
 mod css;
+mod js;
 
-pub use css::CssQueryOptions;
+pub use {css::CssQueryOptions, js::JsQueryOptions};
 
 /// Loads resources from disk and stores them in memory as long
 /// as your application is running.

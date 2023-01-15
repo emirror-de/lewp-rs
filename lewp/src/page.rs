@@ -1,4 +1,94 @@
 //! Traits and data structures to create, run, assemble and render a web page.
+//!
+//! # Hello World! example
+//! ```rust
+//! # use lewp::{
+//! #     component::{Component, ComponentId},
+//! #     html::{
+//! #         api::{h1, text},
+//! #         Node,
+//! #     },
+//! #     page::{Page, PageId},
+//! #     view::PageView,
+//! # };
+//! #
+//! # // Your hello world component.
+//! # struct HelloWorld {
+//! #     data: String,
+//! # }
+//! #
+//! # impl HelloWorld {
+//! #     pub fn new() -> Self {
+//! #         Self {
+//! #             data: String::from("Hello World!"),
+//! #         }
+//! #     }
+//! # }
+//! #
+//! # // Implement the [Component] trait to define the behavior and view.
+//! # impl Component for HelloWorld {
+//! #     // No message required for a simple component.
+//! #     type Message = ();
+//! #
+//! #     // The unique ID of your component is used to identify and process further
+//! #     // resources, as well as isolation in the world of JavaScript on client side.
+//! #     // It is best practice to use the lowercase kebab-case of your structs name
+//! #     // to have a clear identification of the components resources in the file
+//! #     // hierarchy and your code base.
+//! #     fn id(&self) -> ComponentId {
+//! #         "hello-world".into()
+//! #     }
+//! #
+//! #     // There is no reason for your page to fail. Errors during processing should
+//! #     // result in a different view that you define below.
+//! #     fn main(&mut self) {}
+//! #
+//! #     // This is the view of your component.
+//! #     fn view(&self) -> Option<Node> {
+//! #         Some(h1(vec![text(&self.data)]))
+//! #     }
+//! # }
+//! #
+//! // Define your page. This simple example page uses the example from the component
+//! // module documentation.
+//! struct HelloWorldPage;
+//!
+//! impl Page for HelloWorldPage {
+//!     // Throughout your site, the page id should be unique for the same reason as
+//!     // the component id. Use lower kebab-case here as convention.
+//!     fn id(&self) -> PageId {
+//!         "hello-world-page".into()
+//!     }
+//!
+//!     // The main method of the page. In here you can add your components to the
+//!     // page and do whatever processing is required for your page to be rendered.
+//!     fn main(&self, view: &mut PageView) {
+//!         let mut comp = Component::new(HelloWorld::new());
+//!         // The component is only borrowed, to enable the possibility of adding
+//!         // it twice to your page. You can use the state of your component to
+//!         // define the behavior when adding it multiple times.
+//!         // However, the required head nodes for example CSS and JS is being added
+//!         // only once, so you can be sure that there is no overhead when adding
+//!         // the component multiple times.
+//!         view.push(&mut comp);
+//!     }
+//! }
+//!
+//! fn main() {
+//!     simple_logger::init().unwrap();
+//!
+//!     // Create an instance of your page
+//!     let page = Page::new(HelloWorldPage {});
+//!
+//!     // You have full control when you want to run and render your page.
+//!     // Because the internal state of the page changes when running the main
+//!     // method, you need to get the result in order to be able to render the
+//!     // resulting page.
+//!     let executed_page = page.main();
+//!
+//!     println!("{}", executed_page.render());
+//! }
+//! ```
 
 use {
     crate::{
@@ -20,9 +110,10 @@ use {
             NodeList,
             Script,
         },
-        resources::{Css, JsRegister, JsRegisterOptions},
+        resources::{Css, Js},
         storage::{
             CssQueryOptions,
+            JsQueryOptions,
             Level,
             MemoryStorage,
             Storage,
@@ -44,7 +135,7 @@ mod state;
 /// on the file system.
 pub type PageId = String;
 
-/// Defines your web page.
+/// Defines your web page with sane defaults.
 pub trait Page
 where
     Self: Sized,
@@ -90,21 +181,22 @@ where
 }
 
 /// A wrapper around the implemented [Page] trait. Contains all necessary code
-/// to execute the behavior and assemble the view of your page.
+/// to execute the behavior and assemble the view of your page. Please do always
+/// use [Page::new] for creating an instance.
 pub struct PageWrapper<P: Page, CSS: CssState, JS: JsState, E: ExecutionState> {
     model: P,
     view: PageView,
     css_register: Option<Arc<MemoryStorage<Css>>>,
-    js_register: Option<Arc<JsRegister>>,
+    js_register: Option<Arc<MemoryStorage<Js>>>,
     css_state: std::marker::PhantomData<CSS>,
     js_state: std::marker::PhantomData<JS>,
     execution_state: std::marker::PhantomData<E>,
 }
 
 impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
-    /// Attaches the given [CssRegister] instance to the page.
+    /// Attaches the given [`MemoryStorage<Css>`] instance to the page.
     #[cfg(not(debug_assertions))]
-    pub fn with_css_register<FH: Storage>(
+    pub fn with_css_register<S: Storage>(
         self,
         register: Arc<MemoryStorage<Css>>,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
@@ -119,7 +211,7 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
         })
     }
 
-    /// Attaches the given [CssRegister] instance to the page.
+    /// Attaches the given [`MemoryStorage<Css>`] instance to the page.
     #[cfg(debug_assertions)]
     pub fn with_css_register<S: Storage>(
         self,
@@ -128,8 +220,7 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
         self.with_new_css_register::<S>()
     }
 
-    /// Creates a new [CssRegister] instance with the given [CSSRegisterOptions]
-    /// and attaches it to the page.
+    /// Creates a new [`MemoryStorage<Css>`] instance and attaches it to the page.
     pub fn with_new_css_register<S: Storage>(
         self,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
@@ -147,11 +238,11 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
 }
 
 impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
-    /// Attaches the given [JsRegister] instance to the page.
+    /// Attaches the given [`MemoryStorage<Js>`] instance to the page.
     #[cfg(not(debug_assertions))]
-    pub fn with_js_register<FH: Storage>(
+    pub fn with_js_register<S: Storage>(
         self,
-        register: Arc<JsRegister>,
+        register: Arc<MemoryStorage<Js>>,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
         Ok(PageWrapper {
             model: self.model,
@@ -164,22 +255,20 @@ impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
         })
     }
 
-    /// Attaches the given [JsRegister] instance to the page.
+    /// Attaches the given [`MemoryStorage<Js>`] instance to the page.
     #[cfg(debug_assertions)]
-    pub fn with_js_register<FH: Storage>(
+    pub fn with_js_register<S: Storage>(
         self,
-        register: Arc<JsRegister>,
+        _register: Arc<MemoryStorage<Js>>,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
-        self.with_new_js_register::<FH>(register.options())
+        self.with_new_js_register::<S>()
     }
 
-    /// Creates a new [JsRegister] instance with the given [JSRegisterOptions]
-    /// and attaches it to the page.
-    pub fn with_new_js_register<FH: Storage>(
+    /// Creates a new [`MemoryStorage<Js>`] instance and attaches it to the page.
+    pub fn with_new_js_register<S: Storage>(
         self,
-        options: JsRegisterOptions,
     ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
-        let register = JsRegister::new::<FH>(options)?;
+        let register = MemoryStorage::initialize::<S>(())?;
         Ok(PageWrapper {
             model: self.model,
             view: self.view,
@@ -193,7 +282,7 @@ impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
 }
 
 impl<P: Page, JS: JsState> PageWrapper<P, WithCss, JS, PagePreparing> {
-    /// Returns the attached [CssRegister].
+    /// Returns the attached [`MemoryStorage<Css>`].
     pub fn css_register(&self) -> Arc<MemoryStorage<Css>> {
         // state enforces a Some to css_register
         Arc::clone(self.css_register.as_ref().unwrap())
@@ -201,8 +290,8 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithCss, JS, PagePreparing> {
 }
 
 impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithJs, PagePreparing> {
-    /// Returns the attached [JsRegister].
-    pub fn js_register(&self) -> Arc<JsRegister> {
+    /// Returns the attached [`MemoryStorage<Js>`].
+    pub fn js_register(&self) -> Arc<MemoryStorage<Js>> {
         // state enforces a Some to js_register
         Arc::clone(self.js_register.as_ref().unwrap())
     }
@@ -331,9 +420,11 @@ impl<P: Page, CSS: CssState, JS: JsState>
             None => return collected_js,
         };
         for component in self.view.dependency_list().list() {
-            if let Some(js) =
-                js_register.query(component.into(), Level::Component)
-            {
+            if let Some(js) = js_register.query(
+                component.into(),
+                Level::Component,
+                JsQueryOptions::default(),
+            ) {
                 collected_js.push((*js).clone());
             };
         }

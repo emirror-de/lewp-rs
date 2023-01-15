@@ -8,12 +8,12 @@ use {
     },
     crate::{
         component::ComponentId,
-        resources::{Css, Entireness},
+        resources::{css::Entireness, Css},
     },
     std::{collections::HashMap, sync::Arc},
 };
 
-/// Options when querying a [MemoryStorage<Css>].
+/// Options when querying a [`MemoryStorage<Css>`].
 #[derive(Default)]
 pub struct CssQueryOptions {
     entity: Entireness,
@@ -51,30 +51,30 @@ impl StorageRegister for MemoryStorage<Css> {
 
 impl MemoryStorage<Css> {
     /// Collects, processes and caches all available CSS in the file hierarchy.
-    pub fn load_process_components<T: Storage>(
+    pub fn load_process_components<S: Storage>(
         &mut self,
     ) -> anyhow::Result<()> {
-        self.load_process_modules::<T>()?;
-        self.load_process_pages::<T>()
+        self.load_process_modules::<S>()?;
+        self.load_process_pages::<S>()
     }
 
-    fn load_process_modules<T: Storage>(&mut self) -> anyhow::Result<()> {
+    fn load_process_modules<S: Storage>(&mut self) -> anyhow::Result<()> {
         let module_ids =
-            T::collect_component_ids(ResourceType::Css, Level::Component)?;
+            S::collect_component_ids(ResourceType::Css, Level::Component)?;
         for id in module_ids {
             let c = Css::new(id.clone(), Level::Component);
             self.register
-                .insert((id.clone(), Level::Component), c.content::<T>(())?);
+                .insert((id.clone(), Level::Component), c.content::<S>(())?);
         }
         Ok(())
     }
 
-    fn load_process_pages<T: Storage>(&mut self) -> anyhow::Result<()> {
+    fn load_process_pages<S: Storage>(&mut self) -> anyhow::Result<()> {
         let page_ids =
-            T::collect_component_ids(ResourceType::Css, Level::Page)?;
+            S::collect_component_ids(ResourceType::Css, Level::Page)?;
         for id in page_ids {
             let c = Css::new(id.clone(), Level::Page);
-            self.register.insert((id, Level::Page), c.content::<T>(())?);
+            self.register.insert((id, Level::Page), c.content::<S>(())?);
         }
         Ok(())
     }

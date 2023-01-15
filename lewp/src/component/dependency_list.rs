@@ -6,8 +6,7 @@ use {super::ComponentId, std::fmt::Display};
 
 /// A list of components that are required by your
 /// [Component](super::Component) implementation.
-#[derive(Clone)]
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct DependencyList {
     dependency_list: Vec<ComponentId>,
 }
@@ -21,7 +20,7 @@ impl DependencyList {
         self.dependency_list.push(id);
     }
 
-    /// Returns the list as [Vec<ComponentId>].
+    /// Returns the list as [`Vec<ComponentId>`].
     pub fn list(&self) -> &Vec<ComponentId> {
         &self.dependency_list
     }
@@ -50,8 +49,6 @@ impl Display for DependencyList {
         write!(f, "{}", self.dependency_list.join(", "))
     }
 }
-
-
 
 impl From<Vec<ComponentId>> for DependencyList {
     fn from(dependency_list: Vec<ComponentId>) -> Self {

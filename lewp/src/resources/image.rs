@@ -6,7 +6,7 @@ use {
     rust_embed::RustEmbed,
 };
 
-/// The parameter required for the image
+/// The parameter required for the image.
 pub struct ImageParameter {
     /// The file name relative to the levels "images" directory including the
     /// extension.
@@ -21,7 +21,7 @@ impl ImageParameter {
     }
 }
 
-/// Enables interactions with image files in the file hierarchy.
+/// Enables interactions with image files in a [Storage].
 pub struct Image {
     id: ComponentId,
     level: Level,

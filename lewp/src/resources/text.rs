@@ -6,7 +6,7 @@ use {
     rust_embed::RustEmbed,
 };
 
-/// Enables interactions with text files in the file hierarchy.
+/// Enables loading text files from a [Storage].
 pub struct Text {
     id: ComponentId,
     level: Level,
