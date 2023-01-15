@@ -92,6 +92,7 @@
 
 use {
     crate::{
+        component::ComponentId,
         html::{
             api::{
                 body,
@@ -369,9 +370,13 @@ impl<P: Page, CSS: CssState, JS: JsState>
             head.push(style(text(&inline_css)));
         }
 
-        for c in self.get_component_js() {
-            let script = script(Script::Inline(&c))
-                .attrs(vec![("type", "module"), ("defer", "defer")]);
+        for (id, c) in self.get_component_js() {
+            let script = script(Script::Inline(&c)).attrs(vec![
+                ("type", "module"),
+                ("defer", "defer"),
+                ("data-lewp-id", &id),
+                ("data-lewp-type", "component"),
+            ]);
             head.push(script);
         }
 
@@ -413,7 +418,7 @@ impl<P: Page, CSS: CssState, JS: JsState>
         Some(collected_css)
     }
 
-    fn get_component_js(&self) -> Vec<String> {
+    fn get_component_js(&self) -> Vec<(ComponentId, String)> {
         let mut collected_js = vec![];
         let js_register = match &self.js_register {
             Some(r) => r,
@@ -425,7 +430,7 @@ impl<P: Page, CSS: CssState, JS: JsState>
                 Level::Component,
                 JsQueryOptions::default(),
             ) {
-                collected_js.push((*js).clone());
+                collected_js.push((component.into(), (*js).clone()));
             };
         }
 
