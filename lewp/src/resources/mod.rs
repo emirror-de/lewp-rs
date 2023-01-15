@@ -6,14 +6,7 @@ mod js;
 mod text;
 
 pub use {
-    css::{
-        Css,
-        CssRegister,
-        CssRegisterOptions,
-        Entireness,
-        ProcessedComponent,
-        PropertyClassification,
-    },
+    css::{Css, Entireness, ProcessedComponent, PropertyClassification},
     image::Image,
     js::{Js, JsRegister, JsRegisterOptions},
     text::Text,

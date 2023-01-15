@@ -20,14 +20,14 @@ use {
             NodeList,
             Script,
         },
-        resources::{
-            CssRegister,
-            CssRegisterOptions,
-            Entireness,
-            JsRegister,
-            JsRegisterOptions,
+        resources::{Css, JsRegister, JsRegisterOptions},
+        storage::{
+            CssQueryOptions,
+            Level,
+            MemoryStorage,
+            Storage,
+            StorageRegister,
         },
-        storage::{Level, Storage},
         view::PageView,
         Charset,
         LanguageTag,
@@ -94,7 +94,7 @@ where
 pub struct PageWrapper<P: Page, CSS: CssState, JS: JsState, E: ExecutionState> {
     model: P,
     view: PageView,
-    css_register: Option<Arc<CssRegister>>,
+    css_register: Option<Arc<MemoryStorage<Css>>>,
     js_register: Option<Arc<JsRegister>>,
     css_state: std::marker::PhantomData<CSS>,
     js_state: std::marker::PhantomData<JS>,
@@ -106,7 +106,7 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
     #[cfg(not(debug_assertions))]
     pub fn with_css_register<FH: Storage>(
         self,
-        register: Arc<CssRegister>,
+        register: Arc<MemoryStorage<Css>>,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
         Ok(PageWrapper {
             model: self.model,
@@ -121,20 +121,19 @@ impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
 
     /// Attaches the given [CssRegister] instance to the page.
     #[cfg(debug_assertions)]
-    pub fn with_css_register<FH: Storage>(
+    pub fn with_css_register<S: Storage>(
         self,
-        register: Arc<CssRegister>,
+        _register: Arc<MemoryStorage<Css>>,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
-        self.with_new_css_register::<FH>(register.options())
+        self.with_new_css_register::<S>()
     }
 
     /// Creates a new [CssRegister] instance with the given [CSSRegisterOptions]
     /// and attaches it to the page.
-    pub fn with_new_css_register<FH: Storage>(
+    pub fn with_new_css_register<S: Storage>(
         self,
-        options: CssRegisterOptions,
     ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
-        let register = CssRegister::new::<FH>(options)?;
+        let register = MemoryStorage::initialize::<S>(())?;
         Ok(PageWrapper {
             model: self.model,
             view: self.view,
@@ -195,7 +194,7 @@ impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
 
 impl<P: Page, JS: JsState> PageWrapper<P, WithCss, JS, PagePreparing> {
     /// Returns the attached [CssRegister].
-    pub fn css_register(&self) -> Arc<CssRegister> {
+    pub fn css_register(&self) -> Arc<MemoryStorage<Css>> {
         // state enforces a Some to css_register
         Arc::clone(self.css_register.as_ref().unwrap())
     }
@@ -294,7 +293,11 @@ impl<P: Page, CSS: CssState, JS: JsState>
 
     fn get_page_css(&self) -> Option<Arc<String>> {
         match &self.css_register {
-            Some(r) => r.query(self.model.id(), Level::Page, Entireness::Full),
+            Some(r) => r.query(
+                self.model.id(),
+                Level::Page,
+                CssQueryOptions::default(), // adjust here when implementing render critical split
+            ),
             None => None,
         }
     }
@@ -309,7 +312,7 @@ impl<P: Page, CSS: CssState, JS: JsState>
             if let Some(css) = css_register.query(
                 component.into(),
                 Level::Component,
-                Entireness::Full,
+                CssQueryOptions::default(), // adjust here when implementing render critical split
             ) {
                 collected_css += &css;
             };

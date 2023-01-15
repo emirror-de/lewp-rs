@@ -11,13 +11,14 @@ use {
 
 mod component;
 mod level;
-//pub mod register;
+mod memory_storage;
+mod register;
 mod web_interface;
 
 pub use {
     component::{ResourceType, StorageComponent},
     level::Level,
-    memory_storage::MemoryStorage,
+    memory_storage::{CssQueryOptions, MemoryStorage},
     register::StorageRegister,
     web_interface::WebInterface,
 };
@@ -233,11 +234,11 @@ mod tests {
         let js = Js {};
         assert_eq!(
             "components/module-id/css",
-            TestStorage::folder(&css).to_str().unwrap()
+            TestStorage::folder_path(&css).to_str().unwrap()
         );
         assert_eq!(
             "pages/hello-world/js",
-            TestStorage::folder(&js).to_str().unwrap()
+            TestStorage::folder_path(&js).to_str().unwrap()
         );
     }
 

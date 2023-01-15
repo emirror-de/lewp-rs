@@ -7,7 +7,7 @@ use {
         },
         lewp_storage,
         page::{Page, PageId},
-        resources::{CssRegister, CssRegisterOptions},
+        storage::{MemoryStorage, StorageRegister},
         view::PageView,
     },
     std::sync::Arc,
@@ -75,9 +75,8 @@ lewp_storage!(TestStorage, "testfiles");
 
 fn main() {
     simple_logger::init().unwrap();
-    let css_register = Arc::new(
-        CssRegister::new::<TestStorage>(CssRegisterOptions::default()).unwrap(),
-    );
+    let css_register =
+        Arc::new(MemoryStorage::initialize::<TestStorage>(()).unwrap());
     let hello_world = HelloWorldPage {};
     let page = Page::new(hello_world)
         .with_css_register::<TestStorage>(css_register)

@@ -7,7 +7,6 @@ use {
         cssparser::ToCss,
         domain::{
             at_rules::{document::DocumentAtRule, media::MediaAtRule},
-            properties::{Importance, PropertyDeclaration},
             selectors::OurSelectorImpl,
             CssRule,
             CssRules,
@@ -17,13 +16,12 @@ use {
     },
     rust_embed::RustEmbed,
     selectors::parser::Selector,
-    std::{path::PathBuf, rc::Rc},
+    std::path::PathBuf,
 };
 
 mod entireness;
 mod processed_component;
 mod property_classification;
-mod register;
 #[cfg(test)]
 mod test;
 
@@ -31,16 +29,12 @@ pub use {
     entireness::Entireness,
     processed_component::ProcessedComponent,
     property_classification::PropertyClassification,
-    register::{
-        Register as CssRegister,
-        RegisterOptions as CssRegisterOptions,
-    },
 };
 
 /// This keyword is intentionally defined with a whitespace at the end.
 const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 
-/// Responsible for CSS that is stored for a given [FHComponent].
+/// CSS file in a [Storage].
 ///
 /// Processes all files in the components directory and combines them into one
 /// CSS [Stylesheet]. The resulting stylesheet is isolated to the scope of the
@@ -53,8 +47,7 @@ pub struct Css {
 }
 
 impl StorageComponent for Css {
-    /// The actual content is parsed and provided as [Stylesheet].
-    type Content = Stylesheet;
+    type Content = ProcessedComponent;
     type ContentParameter = ();
 
     fn content<T: Storage>(
@@ -70,11 +63,11 @@ impl StorageComponent for Css {
             }
         };
         match &self.level {
-            Level::Page => return Ok(stylesheet), // there is no reason for pages to be isolated
+            Level::Page => return Ok(ProcessedComponent::new(stylesheet)?), // there is no reason for pages to be isolated
             _ => (),
         }
         let stylesheet = self.isolate_stylesheet(stylesheet)?;
-        Ok(stylesheet)
+        Ok(ProcessedComponent::new(stylesheet)?)
     }
 
     fn id(&self) -> ComponentId {
@@ -126,7 +119,7 @@ impl Css {
     fn isolate_stylesheet(
         &self,
         stylesheet: Stylesheet,
-    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
+    ) -> anyhow::Result<Stylesheet> {
         let mut stylesheet = stylesheet;
         self.isolate_rules(&mut stylesheet.rules, true)?;
         Ok(stylesheet)
@@ -207,83 +200,5 @@ impl Css {
         };
         *selector = new;
         Ok(())
-    }
-
-    /// Creates a new stylesheet that contains only render critical properties.
-    pub fn extract_render_critical_stylesheet(
-        &self,
-        stylesheet: Stylesheet,
-    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
-        self.filter_stylesheet_properties(
-            stylesheet,
-            Rc::new(Box::new(|x| x.is_render_critical())),
-        )
-    }
-
-    /// Creates a new stylesheet that contains only NON render critical properties.
-    pub fn extract_non_render_critical_stylesheet(
-        &self,
-        stylesheet: Stylesheet,
-    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
-        self.filter_stylesheet_properties(
-            stylesheet,
-            Rc::new(Box::new(|x| !x.is_render_critical())),
-        )
-    }
-
-    /// Creates a new stylesheet and filters the properties by the given closure.
-    ///
-    /// It automatically cleans up empty rules.
-    pub fn filter_stylesheet_properties(
-        &self,
-        stylesheet: Stylesheet,
-        filter: Rc<Box<dyn Fn(&PropertyDeclaration<Importance>) -> bool>>,
-    ) -> anyhow::Result<<Self as StorageComponent>::Content> {
-        let mut stylesheet = stylesheet;
-
-        self.filter_rules(&mut stylesheet.rules, filter, true)?;
-
-        self.remove_empty_rules(&mut stylesheet.rules);
-
-        Ok(stylesheet)
-    }
-
-    fn filter_rules(
-        &self,
-        rules: &mut CssRules,
-        filter: Rc<Box<dyn Fn(&PropertyDeclaration<Importance>) -> bool>>,
-        recursive: bool,
-    ) -> anyhow::Result<()> {
-        for rule in &mut rules.0 {
-            let iteration_filter = Rc::clone(&filter);
-            match rule {
-                CssRule::Style(StyleRule {
-                    property_declarations,
-                    ..
-                }) => {
-                    property_declarations.0.retain(|x| iteration_filter(x));
-                }
-                CssRule::Media(MediaAtRule { rules, .. })
-                | CssRule::Document(DocumentAtRule { rules, .. }) => {
-                    if !recursive {
-                        continue;
-                    }
-                    self.filter_rules(rules, iteration_filter, true)?
-                }
-                _ => {}
-            }
-        }
-
-        Ok(())
-    }
-
-    fn remove_empty_rules(&self, rules: &mut CssRules) {
-        rules.0.retain(|r| match r {
-            CssRule::Style(StyleRule {
-                property_declarations,
-                ..
-            }) => !property_declarations.is_empty(),
-            _ => false,
-        });
     }
 }

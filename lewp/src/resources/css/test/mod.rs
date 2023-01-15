@@ -1,13 +1,15 @@
 use crate::{
     lewp_storage,
-    resources::{
-        Css,
-        CssRegister,
-        CssRegisterOptions,
-        Entireness,
-        ProcessedComponent,
+    resources::Css,
+    storage::{
+        CssQueryOptions,
+        Level,
+        MemoryStorage,
+        ResourceType,
+        Storage,
+        StorageComponent,
+        StorageRegister,
     },
-    storage::{Level, ResourceType, Storage, StorageComponent},
 };
 
 lewp_storage!(TestStorage, "testfiles");
@@ -25,16 +27,15 @@ fn css_components_and_register() {
     test.sort();
     assert_eq!(test, vec!["sitemap"]);
     let c = Css::new("sitemap".into(), Level::Page);
-    let parsed_component = ProcessedComponent::new::<TestStorage>(&c).unwrap();
+    let parsed_component = c.content::<TestStorage>(()).unwrap();
     println!(
         "Parsed render critical: {:#?}",
         parsed_component.render_critical()
     );
 
-    let r =
-        CssRegister::new::<TestStorage>(CssRegisterOptions::default()).unwrap();
+    let r = MemoryStorage::initialize::<TestStorage>(()).unwrap();
     let css = r
-        .query("sitemap".into(), Level::Page, Entireness::Full)
+        .query("sitemap".into(), Level::Page, CssQueryOptions::default())
         .unwrap();
     println!("Queried from register: {css:#?}");
 }
@@ -49,7 +50,7 @@ fn isolate_css_module() {
         Err(e) => panic!("{}", e),
     };
     assert_eq!(
-        stylesheet.to_css_string(true),
+        *stylesheet.full(),
         String::from("header.hello-world{border: thin solid black}.hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")
         );
 }
