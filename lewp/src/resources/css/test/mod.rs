@@ -6,6 +6,7 @@ use {
         resources::{
             Css,
             CssOptions,
+            Resource,
             ResourceLevel,
             ResourceType,
             WebInterface,
@@ -43,7 +44,7 @@ fn css_components_and_archive() {
         id: "sitemap".into(),
         level: ResourceLevel::Page,
     };
-    let c = Arc::new(Css::load::<TestArchive>(options).unwrap());
+    let c = Arc::new(Resource::<Css>::load::<TestArchive>(options).unwrap());
     println!("Parsed render critical: {:#?}", c.content.render_critical);
 
     let mut a = ArchiveCache::default();
@@ -65,7 +66,7 @@ fn isolate_css_module() {
         id: "hello-world".into(),
         level: ResourceLevel::Component,
     };
-    let css = Css::load::<TestArchive>(options).unwrap();
+    let css = Resource::<Css>::load::<TestArchive>(options).unwrap();
     assert_eq!(
         *css.content.full,
         String::from("header.hello-world{border: thin solid black}.hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")

@@ -71,6 +71,7 @@ impl TryFrom<&std::ffi::OsStr> for ResourceLevel {
 ///
 /// Especially used in combination with [ArchiveCache] because the [WebInterface]
 /// is no longer available after loading from disk.
+#[derive(Debug)]
 pub struct Resource<R: crate::archive::ArchiveComponent> {
     model: R,
     /// The web root path where this resource is available.

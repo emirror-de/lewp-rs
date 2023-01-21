@@ -4,7 +4,13 @@
 use {
     crate::{
         component::{ComponentDetails, ComponentId},
-        resources::{ResourceId, ResourceLevel, ResourceType, WebInterface},
+        resources::{
+            Resource,
+            ResourceId,
+            ResourceLevel,
+            ResourceType,
+            WebInterface,
+        },
     },
     anyhow::Context,
     rust_embed::RustEmbed,
@@ -291,7 +297,8 @@ mod tests {
     fn archive_example() {
         let mut cache = archive_cache_example();
 
-        let css = Arc::new(Css::load::<ResourceArchive>(()).unwrap());
+        let css =
+            Arc::new(Resource::<Css>::load::<ResourceArchive>(()).unwrap());
         let css_component_details = ComponentDetails {
             level: ResourceLevel::Component,
             resource_type: ResourceType::Css,
@@ -300,7 +307,7 @@ mod tests {
         };
         cache.insert(css);
 
-        let js = Arc::new(Js::load::<ResourceArchive>(()).unwrap());
+        let js = Arc::new(Resource::<Js>::load::<ResourceArchive>(()).unwrap());
         let js_component_details = ComponentDetails {
             level: ResourceLevel::Component,
             resource_type: ResourceType::JavaScript,

@@ -7,6 +7,7 @@ use {
             CssOptions,
             Js,
             JsOptions,
+            Resource,
             ResourceLevel,
             ResourceType,
         },
@@ -24,7 +25,7 @@ impl ArchiveCache {
     /// Inserts the given component into the cache.
     pub fn insert<C: ArchiveComponent + Send + Sync + 'static>(
         &mut self,
-        component: Arc<C>,
+        component: Arc<Resource<C>>,
     ) {
         self.cache.insert(component.details().clone(), component);
     }
@@ -32,7 +33,7 @@ impl ArchiveCache {
     /// Inserts the given list of components into the cache.
     pub fn insert_all<C: ArchiveComponent + Send + Sync + 'static>(
         &mut self,
-        components: Vec<Arc<C>>,
+        components: Vec<Arc<Resource<C>>>,
     ) {
         for c in components {
             self.cache.insert(c.details().clone(), c);
@@ -43,9 +44,9 @@ impl ArchiveCache {
     pub fn query<C: ArchiveComponent + Send + Sync + 'static>(
         &self,
         details: &ComponentDetails,
-    ) -> Option<Arc<&C>> {
+    ) -> Option<Arc<&Resource<C>>> {
         let c = match self.cache.get(&details) {
-            Some(c) => c.downcast_ref::<C>().unwrap(),
+            Some(c) => c.downcast_ref::<Resource<C>>().unwrap(),
             None => return None,
         };
         Some(Arc::new(c))
@@ -75,7 +76,7 @@ impl ArchiveCache {
                 id,
                 level: ResourceLevel::Component,
             };
-            let css = Css::load::<A>(options)?;
+            let css = Resource::<Css>::load::<A>(options)?;
             self.insert(Arc::new(css));
         }
         Ok(())
@@ -89,7 +90,7 @@ impl ArchiveCache {
                 id,
                 level: ResourceLevel::Page,
             };
-            let css = Css::load::<A>(options)?;
+            let css = Resource::<Css>::load::<A>(options)?;
             self.insert(Arc::new(css));
         }
         Ok(())
@@ -112,7 +113,7 @@ impl ArchiveCache {
                 id,
                 level: ResourceLevel::Component,
             };
-            let js = Js::load::<A>(options)?;
+            let js = Resource::<Js>::load::<A>(options)?;
             self.insert(Arc::new(js));
         }
         Ok(())

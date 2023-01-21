@@ -113,7 +113,7 @@ use {
             Script,
         },
         lewp_archive,
-        resources::{Css, Js, ResourceLevel, ResourceType},
+        resources::{Css, Js, Resource, ResourceLevel, ResourceType},
         view::PageView,
         Charset,
         LanguageTag,
@@ -309,7 +309,7 @@ impl<P: PageModel> Page<P, PageFinished> {
                     ResourceLevel::Page,
                 );
                 a.query(&details)
-                    .map(|c: Arc<&Css>| Arc::clone(&c.content.full))
+                    .map(|c: Arc<&Resource<Css>>| Arc::clone(&c.content.full))
             }
             None => None,
         }
@@ -325,7 +325,7 @@ impl<P: PageModel> Page<P, PageFinished> {
                     ResourceType::Css,
                     ResourceLevel::Component,
                 );
-                a.query(&details).map(|c: Arc<&Css>| {
+                a.query(&details).map(|c: Arc<&Resource<Css>>| {
                     log::debug!("Adding CSS for {:?}", details);
                     collected_css += &(*c).content.full;
                 });
@@ -347,7 +347,7 @@ impl<P: PageModel> Page<P, PageFinished> {
                     ResourceType::JavaScript,
                     ResourceLevel::Component,
                 );
-                a.query(&details).map(|c: Arc<&Js>| {
+                a.query(&details).map(|c: Arc<&Resource<Js>>| {
                     log::debug!("Adding JavaScript for {:?}", details);
                     collected_js
                         .push((component_id.into(), Arc::clone(&(*c).content)));
