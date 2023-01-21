@@ -8,7 +8,7 @@
 //! #         api::{h1, text},
 //! #         Node,
 //! #     },
-//! #     page::{Page, PageId},
+//! #     page::{PageModel, PageId, Page},
 //! #     view::PageView,
 //! # };
 //! #
@@ -53,7 +53,7 @@
 //! // module documentation.
 //! struct HelloWorldPage;
 //!
-//! impl Page for HelloWorldPage {
+//! impl PageModel for HelloWorldPage {
 //!     // Throughout your site, the page id should be unique for the same reason as
 //!     // the component id. Use lower kebab-case here as convention.
 //!     fn id(&self) -> PageId {
@@ -78,7 +78,7 @@
 //!     simple_logger::init().unwrap();
 //!
 //!     // Create an instance of your page
-//!     let page = Page::new(HelloWorldPage {});
+//!     let page = Page::from(HelloWorldPage {});
 //!
 //!     // You have full control when you want to run and render your page.
 //!     // Because the internal state of the page changes when running the main
@@ -92,7 +92,8 @@
 
 use {
     crate::{
-        component::ComponentId,
+        archive::ArchiveCache,
+        component::{ComponentDetails, ComponentId},
         html::{
             api::{
                 body,
@@ -111,15 +112,8 @@ use {
             NodeList,
             Script,
         },
-        resources::{Css, Js},
-        storage::{
-            CssQueryOptions,
-            JsQueryOptions,
-            Level,
-            MemoryStorage,
-            Storage,
-            StorageRegister,
-        },
+        lewp_archive,
+        resources::{Css, Js, ResourceLevel, ResourceType},
         view::PageView,
         Charset,
         LanguageTag,
@@ -132,12 +126,14 @@ use {
 
 mod state;
 
+lewp_archive!(LewpJavaScript, "js");
+
 /// Defines the unique page ID. This ID is used to identify eg. the page resources
 /// on the file system.
 pub type PageId = String;
 
-/// Defines your web page with sane defaults.
-pub trait Page
+/// Defines your web page model with sane defaults.
+pub trait PageModel
 where
     Self: Sized,
 {
@@ -172,154 +168,57 @@ where
     fn head(&self) -> NodeList {
         vec![]
     }
-    /// Creates a new [PageWrapper] which is able to attach different
+    /*
+    /// Creates a new [Page] which is able to attach different
     /// resources and rendering the page.
     fn new(
         model: Self,
-    ) -> PageWrapper<Self, WithoutCss, WithoutJs, PagePreparing> {
-        PageWrapper::from(model)
+    ) -> Page<Self, WithoutCss, WithoutJs, PagePreparing, CSTO, JSTO> {
+        Page::from(model)
     }
+    */
 }
 
 /// A wrapper around the implemented [Page] trait. Contains all necessary code
 /// to execute the behavior and assemble the view of your page. Please do always
 /// use [Page::new] for creating an instance.
-pub struct PageWrapper<P: Page, CSS: CssState, JS: JsState, E: ExecutionState> {
+pub struct Page<P: PageModel, E: ExecutionState> {
     model: P,
     view: PageView,
-    css_register: Option<Arc<MemoryStorage<Css>>>,
-    js_register: Option<Arc<MemoryStorage<Js>>>,
-    css_state: std::marker::PhantomData<CSS>,
-    js_state: std::marker::PhantomData<JS>,
+    archive_cache: Option<Arc<ArchiveCache>>,
     execution_state: std::marker::PhantomData<E>,
 }
 
-impl<P: Page, JS: JsState> PageWrapper<P, WithoutCss, JS, PagePreparing> {
-    /// Attaches the given [`MemoryStorage<Css>`] instance to the page.
-    #[cfg(not(debug_assertions))]
-    pub fn with_css_register<S: Storage>(
+impl<P: PageModel> Page<P, PagePreparing> {
+    /// Attaches the given [ArchiveCache] instance to the page.
+    pub fn with_archive_cache(
         self,
-        register: Arc<MemoryStorage<Css>>,
-    ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
-        Ok(PageWrapper {
+        archive_cache: Arc<ArchiveCache>,
+    ) -> Page<P, PagePreparing> {
+        Page {
             model: self.model,
             view: self.view,
-            css_register: Some(Arc::new(register)),
-            js_register: self.js_register,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        })
-    }
-
-    /// Attaches the given [`MemoryStorage<Css>`] instance to the page.
-    #[cfg(debug_assertions)]
-    pub fn with_css_register<S: Storage>(
-        self,
-        _register: Arc<MemoryStorage<Css>>,
-    ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
-        self.with_new_css_register::<S>()
-    }
-
-    /// Creates a new [`MemoryStorage<Css>`] instance and attaches it to the page.
-    pub fn with_new_css_register<S: Storage>(
-        self,
-    ) -> anyhow::Result<PageWrapper<P, WithCss, JS, PagePreparing>> {
-        let register = MemoryStorage::initialize::<S>(())?;
-        Ok(PageWrapper {
-            model: self.model,
-            view: self.view,
-            css_register: Some(Arc::new(register)),
-            js_register: self.js_register,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        })
-    }
-}
-
-impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithoutJs, PagePreparing> {
-    /// Attaches the given [`MemoryStorage<Js>`] instance to the page.
-    #[cfg(not(debug_assertions))]
-    pub fn with_js_register<S: Storage>(
-        self,
-        register: Arc<MemoryStorage<Js>>,
-    ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
-        Ok(PageWrapper {
-            model: self.model,
-            view: self.view,
-            css_register: self.css_register,
-            js_register: Some(register),
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        })
-    }
-
-    /// Attaches the given [`MemoryStorage<Js>`] instance to the page.
-    #[cfg(debug_assertions)]
-    pub fn with_js_register<S: Storage>(
-        self,
-        _register: Arc<MemoryStorage<Js>>,
-    ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
-        self.with_new_js_register::<S>()
-    }
-
-    /// Creates a new [`MemoryStorage<Js>`] instance and attaches it to the page.
-    pub fn with_new_js_register<S: Storage>(
-        self,
-    ) -> anyhow::Result<PageWrapper<P, CSS, WithJs, PagePreparing>> {
-        let register = MemoryStorage::initialize::<S>(())?;
-        Ok(PageWrapper {
-            model: self.model,
-            view: self.view,
-            css_register: self.css_register,
-            js_register: Some(Arc::new(register)),
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
-            execution_state: std::marker::PhantomData,
-        })
-    }
-}
-
-impl<P: Page, JS: JsState> PageWrapper<P, WithCss, JS, PagePreparing> {
-    /// Returns the attached [`MemoryStorage<Css>`].
-    pub fn css_register(&self) -> Arc<MemoryStorage<Css>> {
-        // state enforces a Some to css_register
-        Arc::clone(self.css_register.as_ref().unwrap())
-    }
-}
-
-impl<P: Page, CSS: CssState> PageWrapper<P, CSS, WithJs, PagePreparing> {
-    /// Returns the attached [`MemoryStorage<Js>`].
-    pub fn js_register(&self) -> Arc<MemoryStorage<Js>> {
-        // state enforces a Some to js_register
-        Arc::clone(self.js_register.as_ref().unwrap())
-    }
-}
-
-impl<P: Page, CSS: CssState, JS: JsState>
-    PageWrapper<P, CSS, JS, PagePreparing>
-{
-    /// This is your main entry point to processing your implemented page.
-    pub fn main(mut self) -> PageWrapper<P, CSS, JS, PageFinished> {
-        self.model.main(&mut self.view);
-
-        PageWrapper {
-            model: self.model,
-            view: self.view,
-            css_register: self.css_register,
-            js_register: self.js_register,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
+            archive_cache: Some(archive_cache),
             execution_state: std::marker::PhantomData,
         }
     }
 }
 
-impl<P: Page, CSS: CssState, JS: JsState>
-    PageWrapper<P, CSS, JS, PageFinished>
-{
+impl<P: PageModel> Page<P, PagePreparing> {
+    /// This is your main entry point to processing your implemented page.
+    pub fn main(mut self) -> Page<P, PageFinished> {
+        self.model.main(&mut self.view);
+
+        Page {
+            model: self.model,
+            view: self.view,
+            archive_cache: self.archive_cache,
+            execution_state: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<P: PageModel> Page<P, PageFinished> {
     /// Renders the page to valid `HTML5` code.
     pub fn render(self) -> String {
         log::debug!(
@@ -360,7 +259,10 @@ impl<P: Page, CSS: CssState, JS: JsState>
 
         let mut inline_css = match self.get_page_css() {
             Some(css) => format!("{css}"),
-            None => "".into(),
+            None => {
+                log::debug!("No page CSS has been found!");
+                "".into()
+            }
         };
         if let Some(css) = self.get_component_css() {
             inline_css += &css;
@@ -373,12 +275,25 @@ impl<P: Page, CSS: CssState, JS: JsState>
         for (id, c) in self.get_component_js() {
             let script = script(Script::Inline(&c)).attrs(vec![
                 ("type", "module"),
-                ("defer", "defer"),
+                //("defer", "defer"), // can only be used when not inlined
                 ("data-lewp-id", &id),
                 ("data-lewp-type", "component"),
             ]);
             head.push(script);
         }
+
+        // add lewp javascript code
+        match LewpJavaScript::get("lewp.js") {
+            None => log::error!(
+                "ALERT!! Could not get lewp.js! This should never occur!"
+            ),
+            Some(js) => match String::from_utf8(js.data.to_vec()) {
+                Ok(s) => head.push(script(Script::Inline(&s))),
+                Err(e) => log::error!(
+                    "ALERT!! Converting lewp.js to UTF8 failed: {e}"
+                ),
+            },
+        };
 
         head.append(&mut self.view.head());
 
@@ -386,29 +301,34 @@ impl<P: Page, CSS: CssState, JS: JsState>
     }
 
     fn get_page_css(&self) -> Option<Arc<String>> {
-        match &self.css_register {
-            Some(r) => r.query(
-                self.model.id(),
-                Level::Page,
-                CssQueryOptions::default(), // adjust here when implementing render critical split
-            ),
+        match self.archive_cache.as_ref() {
+            Some(a) => {
+                let details = ComponentDetails::new(
+                    self.model.id(),
+                    ResourceType::Css,
+                    ResourceLevel::Page,
+                );
+                a.query(&details)
+                    .map(|c: Arc<&Css>| Arc::clone(&c.content.full))
+            }
             None => None,
         }
     }
 
     fn get_component_css(&self) -> Option<String> {
-        let css_register = match &self.css_register {
-            Some(r) => r,
-            None => return None,
-        };
         let mut collected_css = String::new();
-        for component in self.view.dependency_list().list() {
-            if let Some(css) = css_register.query(
-                component.into(),
-                Level::Component,
-                CssQueryOptions::default(), // adjust here when implementing render critical split
-            ) {
-                collected_css += &css;
+
+        for component_id in self.view.dependency_list().list() {
+            if let Some(a) = self.archive_cache.as_ref() {
+                let details = ComponentDetails::new(
+                    component_id.into(),
+                    ResourceType::Css,
+                    ResourceLevel::Component,
+                );
+                a.query(&details).map(|c: Arc<&Css>| {
+                    log::debug!("Adding CSS for {:?}", details);
+                    collected_css += &(*c).content.full;
+                });
             };
         }
 
@@ -418,19 +338,20 @@ impl<P: Page, CSS: CssState, JS: JsState>
         Some(collected_css)
     }
 
-    fn get_component_js(&self) -> Vec<(ComponentId, String)> {
+    fn get_component_js(&self) -> Vec<(ComponentId, Arc<String>)> {
         let mut collected_js = vec![];
-        let js_register = match &self.js_register {
-            Some(r) => r,
-            None => return collected_js,
-        };
-        for component in self.view.dependency_list().list() {
-            if let Some(js) = js_register.query(
-                component.into(),
-                Level::Component,
-                JsQueryOptions::default(),
-            ) {
-                collected_js.push((component.into(), (*js).clone()));
+        for component_id in self.view.dependency_list().list() {
+            if let Some(a) = self.archive_cache.as_ref() {
+                let details = ComponentDetails::new(
+                    component_id.into(),
+                    ResourceType::JavaScript,
+                    ResourceLevel::Component,
+                );
+                a.query(&details).map(|c: Arc<&Js>| {
+                    log::debug!("Adding JavaScript for {:?}", details);
+                    collected_js
+                        .push((component_id.into(), Arc::clone(&(*c).content)));
+                });
             };
         }
 
@@ -438,15 +359,12 @@ impl<P: Page, CSS: CssState, JS: JsState>
     }
 }
 
-impl<P: Page> From<P> for PageWrapper<P, WithoutCss, WithoutJs, PagePreparing> {
+impl<P: PageModel> From<P> for Page<P, PagePreparing> {
     fn from(model: P) -> Self {
         Self {
             model,
             view: PageView::default(),
-            css_register: None,
-            js_register: None,
-            css_state: std::marker::PhantomData,
-            js_state: std::marker::PhantomData,
+            archive_cache: None,
             execution_state: std::marker::PhantomData,
         }
     }

@@ -1,12 +1,12 @@
 use lewp::{
-    page::{Page, PageId},
+    page::{Page, PageId, PageModel},
     view::PageView,
 };
 
 // This page will only contain a title node in <head>.
 struct DescriptivePage;
 
-impl Page for DescriptivePage {
+impl PageModel for DescriptivePage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
@@ -28,6 +28,6 @@ impl Page for DescriptivePage {
 fn main() {
     simple_logger::init().unwrap();
     let descriptive_page = DescriptivePage {};
-    let page = Page::new(descriptive_page);
+    let page = Page::from(descriptive_page);
     println!("{}", page.main().render());
 }

@@ -1,4 +1,7 @@
 //! View related models.
+//!
+//! These models are shown here for reference and are not required to be created
+//! by the user.
 
 use {
     crate::{

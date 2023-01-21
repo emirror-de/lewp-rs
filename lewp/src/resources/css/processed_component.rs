@@ -16,9 +16,9 @@ use {
 /// Container of a processed CSS component.
 #[derive(Debug)]
 pub struct ProcessedComponent {
-    render_critical: Arc<String>,
-    non_render_critical: Arc<String>,
-    full: Arc<String>,
+    pub render_critical: Arc<String>,
+    pub non_render_critical: Arc<String>,
+    pub full: Arc<String>,
 }
 
 impl ProcessedComponent {
@@ -35,18 +35,6 @@ impl ProcessedComponent {
             ),
             full: Arc::new(stylesheet.to_css_string(false)),
         })
-    }
-    /// Returns the render critical part of the processed [css_next::Stylesheet] [Css].
-    pub fn render_critical(&self) -> Arc<String> {
-        Arc::clone(&self.render_critical)
-    }
-    /// Returns the NON render critical part of the processed [css_next::Stylesheet] [Css].
-    pub fn non_render_critical(&self) -> Arc<String> {
-        Arc::clone(&self.non_render_critical)
-    }
-    /// Returns the complete processed [css_next::Stylesheet] [Css].
-    pub fn full(&self) -> Arc<String> {
-        Arc::clone(&self.full)
     }
 
     /// Creates a new stylesheet that contains only render critical properties.

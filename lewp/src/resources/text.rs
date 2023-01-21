@@ -1,8 +1,10 @@
 use {
     crate::{
         component::ComponentId,
-        storage::{Level, ResourceType, Storage, StorageComponent},
+        resources::ResourceType,
+        storage::{Level, Storage, StorageComponent},
     },
+    mime::Mime,
     rust_embed::RustEmbed,
 };
 
@@ -66,6 +68,10 @@ impl StorageComponent for Text {
 
     fn kind(&self) -> ResourceType {
         ResourceType::Text
+    }
+
+    fn mime_type() -> Mime {
+        mime::TEXT_STAR
     }
 }
 

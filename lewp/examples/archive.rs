@@ -1,16 +1,17 @@
 use {
     lewp::{
+        archive::{ArchiveCache, ArchiveRoot},
         component::{Component, ComponentId},
         html::{
             api::{h1, text},
             Node,
         },
-        lewp_storage,
-        page::{Page, PageId},
-        storage::{MemoryStorage, StorageRegister},
+        lewp_archive,
+        page::{Page, PageId, PageModel},
+        resources::WebInterface,
         view::PageView,
     },
-    std::sync::Arc,
+    std::path::PathBuf,
 };
 
 // Your hello world component.
@@ -52,7 +53,7 @@ impl Component for HelloWorld {
 // only specifies a h1 node.
 struct HelloWorldPage;
 
-impl Page for HelloWorldPage {
+impl PageModel for HelloWorldPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
@@ -71,15 +72,22 @@ impl Page for HelloWorldPage {
 }
 
 // This defines where your hierarchy is stored. You can have multiple.
-lewp_storage!(TestStorage, "testfiles");
+lewp_archive!(TestArchive, "testfiles");
+
+impl ArchiveRoot for TestArchive {
+    fn root() -> PathBuf {
+        PathBuf::from("testfiles")
+    }
+}
+impl WebInterface for TestArchive {}
 
 fn main() {
     simple_logger::init().unwrap();
-    let css_register =
-        Arc::new(MemoryStorage::initialize::<TestStorage>(()).unwrap());
+    let archive_cache = ArchiveCache::default()
+        .load_css::<TestArchive>()
+        .unwrap()
+        .seal();
     let hello_world = HelloWorldPage {};
-    let page = Page::new(hello_world)
-        .with_css_register::<TestStorage>(css_register)
-        .unwrap();
+    let page = Page::from(hello_world).with_archive_cache(archive_cache);
     println!("{}", page.main().render());
 }

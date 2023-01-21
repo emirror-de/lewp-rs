@@ -44,7 +44,7 @@
 //!         api::{h1, text},
 //!         Node,
 //!     },
-//!     page::{Page, PageId},
+//!     page::{Page, PageId, PageModel},
 //!     view::PageView,
 //! };
 //!
@@ -74,7 +74,7 @@
 //!
 //! struct HelloWorldPage;
 //!
-//! impl Page for HelloWorldPage {
+//! impl PageModel for HelloWorldPage {
 //!     fn id(&self) -> PageId {
 //!         "hello-world-page".into()
 //!     }
@@ -88,7 +88,7 @@
 //! fn main() {
 //!     simple_logger::init().unwrap();
 //!
-//!     let page = Page::new(HelloWorldPage {});
+//!     let page = Page::from(HelloWorldPage {});
 //!     let executed_page = page.main();
 //!
 //!     println!("{}", executed_page.render());
@@ -102,8 +102,9 @@ pub mod html {
     pub use lewp_html::*;
 }
 
+pub mod archive;
 pub mod component;
 pub mod page;
 pub mod resources;
-pub mod storage;
+//pub mod storage;
 pub mod view;

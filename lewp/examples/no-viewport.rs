@@ -1,13 +1,13 @@
 use lewp::{
     html::Node,
-    page::{Page, PageId},
+    page::{Page, PageId, PageModel},
     view::PageView,
 };
 
 // This page will not contain a <meta name="viewport" ...> node.
 struct NoViewportPage;
 
-impl Page for NoViewportPage {
+impl PageModel for NoViewportPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
@@ -25,6 +25,6 @@ impl Page for NoViewportPage {
 fn main() {
     simple_logger::init().unwrap();
     let no_viewport = NoViewportPage {};
-    let page = Page::new(no_viewport);
+    let page = Page::from(no_viewport);
     println!("{}", page.main().render());
 }

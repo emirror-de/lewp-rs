@@ -56,8 +56,9 @@
 //! ```
 
 mod dependency_list;
+mod details;
 
-pub use dependency_list::DependencyList;
+pub use {dependency_list::DependencyList, details::ComponentDetails};
 
 use {
     crate::{

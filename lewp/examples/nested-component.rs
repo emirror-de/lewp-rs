@@ -4,7 +4,7 @@ use lewp::{
         api::{div, h1, h2, text},
         Node,
     },
-    page::{Page, PageId},
+    page::{Page, PageId, PageModel},
     view::PageView,
 };
 
@@ -90,7 +90,7 @@ impl Component for NestedComponent {
 // only specifies a h1 node.
 struct HelloWorldPage;
 
-impl Page for HelloWorldPage {
+impl PageModel for HelloWorldPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
@@ -111,6 +111,6 @@ impl Page for HelloWorldPage {
 fn main() {
     simple_logger::init().unwrap();
     let hello_world = HelloWorldPage {};
-    let page = Page::new(hello_world);
+    let page = Page::from(hello_world);
     println!("{}", page.main().render());
 }

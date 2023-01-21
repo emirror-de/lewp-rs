@@ -4,7 +4,7 @@ use lewp::{
         api::{h1, text},
         Node,
     },
-    page::{Page, PageId},
+    page::{Page, PageId, PageModel},
     view::PageView,
 };
 
@@ -49,7 +49,7 @@ impl Component for HelloWorld {
 // only specifies a h1 node.
 struct HelloWorldPage;
 
-impl Page for HelloWorldPage {
+impl PageModel for HelloWorldPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id. Use lowercase kebab-case here as well as convention.
     fn id(&self) -> PageId {
@@ -74,7 +74,7 @@ fn main() {
     simple_logger::init().unwrap();
 
     // Create an instance of your page
-    let page = Page::new(HelloWorldPage {});
+    let page = Page::from(HelloWorldPage {});
 
     // You have full control when you want to run and render your page.
     // Because the internal state of the page changes when running the main

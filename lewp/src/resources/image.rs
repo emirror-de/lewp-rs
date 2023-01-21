@@ -1,45 +1,46 @@
 use {
     crate::{
-        component::ComponentId,
-        storage::{Level, ResourceType, Storage, StorageComponent},
+        archive::{Archive, ArchiveComponent},
+        component::{ComponentDetails, ComponentId},
+        resources::{ResourceLevel, ResourceType},
     },
+    mime::Mime,
     rust_embed::RustEmbed,
+    std::path::PathBuf,
 };
 
-/// The parameter required for the image.
-pub struct ImageParameter {
-    /// The file name relative to the levels "images" directory including the
-    /// extension.
-    filename: String,
+/// The options to be passed when loading an image.
+#[derive(Debug)]
+pub struct ImageOptions {
+    /// The component id.
+    pub id: ComponentId,
+    /// The resource level.
+    pub level: ResourceLevel,
+    /// File name to load including the extension.
+    filename: PathBuf,
 }
 
-impl ImageParameter {
-    pub fn new(filename: &str) -> Self {
-        Self {
-            filename: filename.to_string(),
-        }
-    }
-}
-
-/// Enables interactions with image files in a [Storage].
+/// Enables interactions with image files in an [Archive](crate::archive::Archive).
 pub struct Image {
-    id: ComponentId,
-    level: Level,
+    details: ComponentDetails,
+    /// The image content.
+    pub content: Vec<u8>,
 }
 
-impl StorageComponent for Image {
-    /// The actual content of the image.
-    type Content = Vec<u8>;
-    /// The image parameters.
-    type ContentParameter = ImageParameter;
+impl ArchiveComponent for Image {
+    type Options = ImageOptions;
 
-    fn content<T: Storage>(
-        &self,
-        params: Self::ContentParameter,
-    ) -> anyhow::Result<Self::Content> {
-        let mut filename = T::folder_path(self);
-        filename.push(params.filename);
-        log::trace!("Image filename: {:#?}", filename);
+    fn load<A: Archive>(options: Self::Options) -> anyhow::Result<Self> {
+        let details = ComponentDetails::new(
+            options.id.clone(),
+            ResourceType::Image,
+            options.level,
+        );
+        log::debug!("Created ComponentDetails for {options:?}:\n{details:#?}");
+
+        let mut filename = A::path(&details);
+        filename.push(options.filename);
+        log::debug!("Image filename to load: {:#?}", filename);
         let filename = match filename.to_str() {
             Some(s) => s,
             None => {
@@ -49,7 +50,7 @@ impl StorageComponent for Image {
                 ))
             }
         };
-        let image = match <T as RustEmbed>::get(&filename) {
+        let image = match <A as RustEmbed>::get(&filename) {
             Some(r) => r,
             None => {
                 return Err(anyhow::anyhow!(
@@ -57,40 +58,44 @@ impl StorageComponent for Image {
                 ));
             }
         };
-        Ok(image.data.to_vec())
+        Ok(Self {
+            details,
+            content: image.data.to_vec(),
+        })
     }
 
-    fn id(&self) -> ComponentId {
-        self.id.clone()
+    fn mime_type() -> Mime {
+        mime::IMAGE_STAR
     }
 
-    fn level(&self) -> Level {
-        self.level
-    }
-
-    fn kind(&self) -> ResourceType {
-        ResourceType::Image
-    }
-}
-
-impl Image {
-    /// Creates a new Image component.
-    pub fn new(id: ComponentId, level: Level) -> Self {
-        Self { id, level }
+    fn details(&self) -> &ComponentDetails {
+        &self.details
     }
 }
 
 #[test]
 fn read_rust_logo() {
-    use crate::{lewp_storage, resources::Image, storage::Level};
+    use crate::{
+        archive::ArchiveRoot,
+        lewp_archive,
+        resources::{Image, WebInterface},
+    };
 
-    lewp_storage!(TestStorage, "testfiles");
+    lewp_archive!(TestArchive, "testfiles");
 
-    let image_resource =
-        Image::new(ComponentId::from("hello-world"), Level::Component);
-    let logo = match image_resource.content::<TestStorage>(ImageParameter::new(
-        "rust-logo-512x512-blk.png",
-    )) {
+    impl ArchiveRoot for TestArchive {
+        fn root() -> PathBuf {
+            PathBuf::from("testfiles")
+        }
+    }
+    impl WebInterface for TestArchive {}
+
+    let image_details = ImageOptions {
+        id: "hello-world".into(),
+        level: ResourceLevel::Component,
+        filename: PathBuf::from("rust-logo-512x512-blk.png"),
+    };
+    let image_resource = match Image::load::<TestArchive>(image_details) {
         Ok(f) => f,
         Err(e) => panic!("{e:#?}"),
     };
@@ -100,6 +105,6 @@ fn read_rust_logo() {
             "testfiles/components/hello-world/images/rust-logo-512x512-blk.png"
         )
         .unwrap(),
-        logo
+        image_resource.content
     );
 }

@@ -1,7 +1,8 @@
 use {
     crate::{
-        component::ComponentId,
-        storage::{Level, ResourceType, Storage, StorageComponent},
+        archive::{Archive, ArchiveComponent},
+        component::{ComponentDetails, ComponentId},
+        resources::{ResourceLevel, ResourceType},
     },
     lewp_css::{
         cssparser::ToCss,
@@ -14,6 +15,7 @@ use {
         },
         Stylesheet,
     },
+    mime::Mime,
     rust_embed::RustEmbed,
     selectors::parser::Selector,
     std::path::PathBuf,
@@ -34,63 +36,74 @@ pub(crate) use {
 /// This keyword is intentionally defined with a whitespace at the end.
 const CSS_COMPONENT_IDENTIFIER: &str = "#component ";
 
-/// CSS resources available in a [Storage].
+/// Options to be passed when loading a [Css] component from disk.
+#[derive(Debug)]
+pub struct CssOptions {
+    /// The unique component id.
+    pub id: ComponentId,
+    /// The resource level of the component.
+    pub level: ResourceLevel,
+}
+
+/// CSS resources available in an [Archive].
 ///
 /// Processes all files in the components directory and combines them into one
 /// CSS [Stylesheet]. The resulting stylesheet is isolated to the scope of the
-/// module it belongs to. If the stylesheet's [level](Level) is [Page](Level::Page),
+/// module it belongs to. If the stylesheet's [level](ResourceLevel) is [Page](ResourceLevel::Page),
 /// then the resulting stylesheet is *NOT* isolated as there is no reason for
 /// isolating a page wide CSS rule.
+#[derive(Debug)]
 pub struct Css {
-    id: ComponentId,
-    level: Level,
+    details: ComponentDetails,
+    /// The processed content of the [Css] component.
+    pub content: ProcessedComponent,
 }
 
-impl StorageComponent for Css {
-    type Content = ProcessedComponent;
-    type ContentParameter = ();
+impl ArchiveComponent for Css {
+    type Options = CssOptions;
+    fn load<A: Archive>(options: Self::Options) -> anyhow::Result<Self> {
+        let details = ComponentDetails::new(
+            options.id.clone(),
+            ResourceType::Css,
+            options.level,
+        );
+        log::debug!("Created ComponentDetails for {options:?}:\n{details:#?}");
 
-    fn content<T: Storage>(
-        &self,
-        _params: Self::ContentParameter,
-    ) -> anyhow::Result<Self::Content> {
-        let files = T::get_file_list(self);
-        let css_raw = self.combine_files::<T>(files)?;
+        let files = A::get_file_list(&details);
+        log::debug!("Found {} CSS files.", files.len());
+        log::debug!("Combining the CSS files for component {details:?}",);
+        let css_raw = Self::combine_files::<A>(files)?;
+        log::debug!("Parsing combined stylesheet...",);
         let stylesheet = match Stylesheet::parse(&css_raw) {
             Ok(s) => s,
             Err(msg) => {
                 return Err(anyhow::anyhow!("{msg:#?}",));
             }
         };
-        match &self.level {
-            Level::Page => return Ok(ProcessedComponent::new(stylesheet)?), // there is no reason for pages to be isolated
+        log::debug!("Successfully parsed combined stylesheet for {details:?}",);
+        match &options.level {
+            ResourceLevel::Page => {
+                let content = ProcessedComponent::new(stylesheet)?;
+                return Ok(Self { details, content });
+            } // there is no reason for pages to be isolated
             _ => (),
         }
-        let stylesheet = self.isolate_stylesheet(stylesheet)?;
-        Ok(ProcessedComponent::new(stylesheet)?)
+        let stylesheet = Self::isolate_stylesheet(stylesheet, &options)?;
+        let content = ProcessedComponent::new(stylesheet)?;
+        Ok(Self { details, content })
     }
 
-    fn id(&self) -> ComponentId {
-        self.id.clone()
+    fn mime_type() -> Mime {
+        mime::TEXT_CSS
     }
 
-    fn level(&self) -> Level {
-        self.level
-    }
-
-    fn kind(&self) -> ResourceType {
-        ResourceType::Css
+    fn details(&self) -> &ComponentDetails {
+        &self.details
     }
 }
 
 impl Css {
-    /// Creates a new CSS component
-    pub fn new(id: ComponentId, level: Level) -> Self {
-        Self { id, level }
-    }
-
-    fn combine_files<T: Storage>(
-        &self,
+    fn combine_files<A: Archive>(
         css_files: Vec<PathBuf>,
     ) -> anyhow::Result<String> {
         let mut css_combined = String::new();
@@ -104,7 +117,7 @@ impl Css {
                     ))
                 }
             };
-            let css = match <T as RustEmbed>::get(&css_file_name) {
+            let css = match <A as RustEmbed>::get(&css_file_name) {
                 Some(r) => r,
                 None => {
                     return Err(anyhow::anyhow!("Stylesheet file not found.",));
@@ -117,18 +130,18 @@ impl Css {
     }
 
     fn isolate_stylesheet(
-        &self,
         stylesheet: Stylesheet,
+        options: &<Self as ArchiveComponent>::Options,
     ) -> anyhow::Result<Stylesheet> {
         let mut stylesheet = stylesheet;
-        self.isolate_rules(&mut stylesheet.rules, true)?;
+        Self::isolate_rules(&mut stylesheet.rules, true, options)?;
         Ok(stylesheet)
     }
 
     fn isolate_rules(
-        &self,
         rules: &mut CssRules,
         recursive: bool,
+        options: &<Self as ArchiveComponent>::Options,
     ) -> anyhow::Result<()> {
         for rule in &mut rules.0 {
             match rule {
@@ -137,12 +150,12 @@ impl Css {
                         if s.to_css_string()
                             .starts_with(CSS_COMPONENT_IDENTIFIER)
                         {
-                            self.replace_identifier_and_append_module_prefix(
-                                s,
+                            Self::replace_identifier_and_append_module_prefix(
+                                s, options,
                             )?;
                             continue;
                         }
-                        self.add_component_prefix(s)?;
+                        Self::add_component_prefix(s, options)?;
                     }
                 }
                 CssRule::Media(MediaAtRule { rules, .. })
@@ -150,7 +163,7 @@ impl Css {
                     if !recursive {
                         continue;
                     }
-                    self.isolate_rules(rules, true)?
+                    Self::isolate_rules(rules, true, options)?
                 }
                 _ => {}
             }
@@ -159,8 +172,8 @@ impl Css {
     }
 
     fn add_component_prefix(
-        &self,
         selector: &mut Selector<OurSelectorImpl>,
+        options: &<Self as ArchiveComponent>::Options,
     ) -> anyhow::Result<()> {
         let mut old = String::new();
         if let Err(e) = selector.to_css(&mut old) {
@@ -168,8 +181,7 @@ impl Css {
         };
         let new = match lewp_css::parse_css_selector(&format!(
             ".{} {}",
-            self.id(),
-            old
+            options.id, old
         )) {
             Err(e) => {
                 return Err(anyhow::anyhow!("{e:#?}",));
@@ -181,8 +193,8 @@ impl Css {
     }
 
     fn replace_identifier_and_append_module_prefix(
-        &self,
         selector: &mut Selector<OurSelectorImpl>,
+        options: &<Self as ArchiveComponent>::Options,
     ) -> anyhow::Result<()> {
         let mut old = String::new();
         if let Err(e) = selector.to_css(&mut old) {
@@ -191,7 +203,7 @@ impl Css {
         let new = match lewp_css::parse_css_selector(&format!(
             "{}.{}",
             old.replace(CSS_COMPONENT_IDENTIFIER, ""),
-            self.id()
+            options.id
         )) {
             Err(e) => {
                 return Err(anyhow::anyhow!("{e:#?}",));

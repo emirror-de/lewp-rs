@@ -1,7 +1,7 @@
 use {
     lewp::{
         component::{Component, ComponentId},
-        page::{Page, PageId},
+        page::{Page, PageId, PageModel},
         view::PageView,
     },
     lewp_html::{api::script, Node, NodeList},
@@ -49,7 +49,7 @@ impl Component for HeadComponent {
 // This page will only contain a head node.
 struct HeadOnlyPage;
 
-impl Page for HeadOnlyPage {
+impl PageModel for HeadOnlyPage {
     // Throughout your site, the page id should be unique for the same reason as
     // the component id.
     fn id(&self) -> PageId {
@@ -72,6 +72,6 @@ impl Page for HeadOnlyPage {
 fn main() {
     simple_logger::init().unwrap();
     let hello_world = HeadOnlyPage {};
-    let page = Page::new(hello_world);
+    let page = Page::from(hello_world);
     println!("{}", page.main().render());
 }

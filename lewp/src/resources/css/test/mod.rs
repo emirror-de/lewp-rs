@@ -1,56 +1,73 @@
-use crate::{
-    lewp_storage,
-    resources::Css,
-    storage::{
-        CssQueryOptions,
-        Level,
-        MemoryStorage,
-        ResourceType,
-        Storage,
-        StorageComponent,
-        StorageRegister,
+use {
+    crate::{
+        archive::{Archive, ArchiveCache, ArchiveComponent, ArchiveRoot},
+        component::ComponentDetails,
+        lewp_archive,
+        resources::{
+            Css,
+            CssOptions,
+            ResourceLevel,
+            ResourceType,
+            WebInterface,
+        },
     },
+    std::{path::PathBuf, sync::Arc},
 };
 
-lewp_storage!(TestStorage, "testfiles");
+lewp_archive!(TestArchive, "testfiles");
+
+impl ArchiveRoot for TestArchive {
+    fn root() -> PathBuf {
+        PathBuf::from("testfiles")
+    }
+}
+impl WebInterface for TestArchive {}
 
 #[test]
-fn css_components_and_register() {
-    let mut test =
-        TestStorage::collect_component_ids(ResourceType::Css, Level::Component)
-            .unwrap();
+fn css_components_and_archive() {
+    let mut test = TestArchive::collect_component_ids(
+        ResourceType::Css,
+        ResourceLevel::Component,
+    )
+    .unwrap();
     test.sort();
     assert_eq!(test, vec!["footer", "hello-world", "navigation"],);
-    let mut test =
-        TestStorage::collect_component_ids(ResourceType::Css, Level::Page)
-            .unwrap();
+    let mut test = TestArchive::collect_component_ids(
+        ResourceType::Css,
+        ResourceLevel::Page,
+    )
+    .unwrap();
     test.sort();
     assert_eq!(test, vec!["sitemap"]);
-    let c = Css::new("sitemap".into(), Level::Page);
-    let parsed_component = c.content::<TestStorage>(()).unwrap();
-    println!(
-        "Parsed render critical: {:#?}",
-        parsed_component.render_critical()
-    );
+    let options = CssOptions {
+        id: "sitemap".into(),
+        level: ResourceLevel::Page,
+    };
+    let c = Arc::new(Css::load::<TestArchive>(options).unwrap());
+    println!("Parsed render critical: {:#?}", c.content.render_critical);
 
-    let r = MemoryStorage::<Css>::initialize::<TestStorage>(()).unwrap();
-    let css = r
-        .query("sitemap".into(), Level::Page, CssQueryOptions::default())
-        .unwrap();
+    let mut a = ArchiveCache::default();
+    a.insert(c);
+    let details = ComponentDetails::new(
+        "sitemap".into(),
+        ResourceType::Css,
+        ResourceLevel::Page,
+    );
+    let css = a.query::<Css>(&details).unwrap();
     println!("Queried from register: {css:#?}");
 }
 
 #[test]
 fn isolate_css_module() {
-    use crate::storage::Level;
+    use crate::resources::ResourceLevel;
 
-    let css = Css::new("hello-world".into(), Level::Component);
-    let stylesheet = match css.content::<TestStorage>(()) {
-        Ok(c) => c,
-        Err(e) => panic!("{}", e),
+    let options = CssOptions {
+        id: "hello-world".into(),
+        level: ResourceLevel::Component,
     };
+    let css = Css::load::<TestArchive>(options).unwrap();
     assert_eq!(
-        *stylesheet.full(),
+        *css.content.full,
         String::from("header.hello-world{border: thin solid black}.hello-world h1{font-style: bold}.hello-world h2{font-style: italic}")
         );
 }
