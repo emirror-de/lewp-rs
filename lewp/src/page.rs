@@ -92,8 +92,8 @@
 
 use {
     crate::{
-        archive::ArchiveCache,
-        component::{ComponentDetails, ComponentId},
+        archive::{ArchiveCache, ArchiveComponent},
+        component::ComponentDetails,
         html::{
             api::{
                 body,
@@ -120,6 +120,7 @@ use {
     },
     html5ever::serialize,
     markup5ever_rcdom::SerializableHandle,
+    minify_js::{minify, TopLevelMode},
     state::*,
     std::sync::Arc,
 };
@@ -272,11 +273,22 @@ impl<P: PageModel> Page<P, PageFinished> {
             head.push(style(text(&inline_css)));
         }
 
-        for (id, c) in self.get_component_js() {
-            let script = script(Script::Inline(&c)).attrs(vec![
+        for c in self.get_component_js() {
+            let web_path = c.web_root.join(&c.path);
+            let web_path = match web_path.to_str() {
+                Some(r) => r,
+                None => {
+                    log::error!(
+                        "Could not convert {} to str",
+                        web_path.display()
+                    );
+                    continue;
+                }
+            };
+            let script = script(Script::Src(web_path)).attrs(vec![
                 ("type", "module"),
-                //("defer", "defer"), // can only be used when not inlined
-                ("data-lewp-id", &id),
+                ("async", "async"),
+                ("data-lewp-id", &(*c).details().component_id),
                 ("data-lewp-type", "component"),
             ]);
             head.push(script);
@@ -287,17 +299,38 @@ impl<P: PageModel> Page<P, PageFinished> {
             None => log::error!(
                 "ALERT!! Could not get lewp.js! This should never occur!"
             ),
-            Some(js) => match String::from_utf8(js.data.to_vec()) {
-                Ok(s) => head.push(script(Script::Inline(&s))),
-                Err(e) => log::error!(
-                    "ALERT!! Converting lewp.js to UTF8 failed: {e}"
-                ),
-            },
+            Some(js) => {
+                let js = js.data.to_vec();
+                #[cfg(not(debug_assertions))]
+                let js = match Self::minify_javascript(js) {
+                    Ok(j) => j,
+                    Err(e) => {
+                        log::error!("Could not minify JavaScript: {e}",);
+                        js.data.to_vec()
+                    }
+                };
+                match String::from_utf8(js) {
+                    Ok(s) => head.push(script(Script::Inline(&s))),
+                    Err(e) => log::error!(
+                        "ALERT!! Converting lewp.js to UTF8 failed: {e}"
+                    ),
+                }
+            }
         };
 
         head.append(&mut self.view.head());
 
         head
+    }
+
+    #[cfg(not(debug_assertions))]
+    fn minify_javascript(js_utf8: Vec<u8>) -> anyhow::Result<Vec<u8>> {
+        let mut result = vec![];
+        if let Err(e) = minify(TopLevelMode::Global, js_utf8, &mut result) {
+            Err(anyhow::anyhow!("{e}"))
+        } else {
+            Ok(result)
+        }
     }
 
     fn get_page_css(&self) -> Option<Arc<String>> {
@@ -338,6 +371,25 @@ impl<P: PageModel> Page<P, PageFinished> {
         Some(collected_css)
     }
 
+    fn get_component_js(&self) -> Vec<Arc<&Resource<Js>>> {
+        let mut collected_js = vec![];
+        for component_id in self.view.dependency_list().list() {
+            if let Some(a) = self.archive_cache.as_ref() {
+                let details = ComponentDetails::new(
+                    component_id.into(),
+                    ResourceType::JavaScript,
+                    ResourceLevel::Component,
+                );
+                a.query(&details).map(|c: Arc<&Resource<Js>>| {
+                    log::debug!("Adding JavaScript for {:?}", details);
+                    collected_js.push(Arc::clone(&c));
+                });
+            };
+        }
+
+        collected_js
+    }
+    /*
     fn get_component_js(&self) -> Vec<(ComponentId, Arc<String>)> {
         let mut collected_js = vec![];
         for component_id in self.view.dependency_list().list() {
@@ -357,6 +409,7 @@ impl<P: PageModel> Page<P, PageFinished> {
 
         collected_js
     }
+    */
 }
 
 impl<P: PageModel> From<P> for Page<P, PagePreparing> {

@@ -4,13 +4,7 @@
 use {
     crate::{
         component::{ComponentDetails, ComponentId},
-        resources::{
-            Resource,
-            ResourceId,
-            ResourceLevel,
-            ResourceType,
-            WebInterface,
-        },
+        resources::{ResourceId, ResourceLevel, ResourceType, WebInterface},
     },
     anyhow::Context,
     rust_embed::RustEmbed,

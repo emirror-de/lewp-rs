@@ -76,6 +76,8 @@ pub struct Resource<R: crate::archive::ArchiveComponent> {
     model: R,
     /// The web root path where this resource is available.
     pub web_root: PathBuf,
+    /// The path to the resource.
+    pub path: PathBuf,
 }
 
 impl<R: crate::archive::ArchiveComponent> Resource<R> {
@@ -83,9 +85,12 @@ impl<R: crate::archive::ArchiveComponent> Resource<R> {
     pub fn load<A: Archive>(
         options: <R as ArchiveComponent>::Options,
     ) -> anyhow::Result<Self> {
+        let model = R::load::<A>(options)?;
+        let path = A::path(model.details());
         Ok(Self {
-            model: R::load::<A>(options)?,
+            model,
             web_root: A::web_root(),
+            path,
         })
     }
 }

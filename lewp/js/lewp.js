@@ -20,11 +20,11 @@ Lewp.prototype.init = function() {
 			return;
 		}
 		let module_dom_nodes = document.querySelectorAll(
-			'body [data-lewp-type="component"][data-lewp-id="' + module_id + '"]'
+			'body [data-lewp-type="component"][class="' + module_id + '"]'
 		);
 		let module_url = new URL(module_script.src);
 		import("." + module_url.pathname).then((module) => {
-			if (!Object.keys(module).contains('init')) {
+			if (!Object.keys(module).includes('init')) {
 				console.debug({
 					'message': 'No init method exported from script.',
 					'domNode': module,
