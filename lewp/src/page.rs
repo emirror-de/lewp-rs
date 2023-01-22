@@ -302,16 +302,16 @@ impl<P: PageModel> Page<P, PageFinished> {
                 "ALERT!! Could not get lewp.js! This should never occur!"
             ),
             Some(js) => {
-                let js = js.data.to_vec();
+                let js_vec = js.data.to_vec();
                 #[cfg(not(debug_assertions))]
-                let js = match Self::minify_javascript(js) {
+                let js_vec = match Self::minify_javascript(js_vec) {
                     Ok(j) => j,
                     Err(e) => {
                         log::error!("Could not minify JavaScript: {e}",);
                         js.data.to_vec()
                     }
                 };
-                match String::from_utf8(js) {
+                match String::from_utf8(js_vec) {
                     Ok(s) => head.push(script(Script::Inline(&s))),
                     Err(e) => log::error!(
                         "ALERT!! Converting lewp.js to UTF8 failed: {e}"
