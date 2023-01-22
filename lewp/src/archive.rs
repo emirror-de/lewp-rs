@@ -203,7 +203,7 @@ mod tests {
         super::*,
         crate::{
             lewp_archive,
-            resources::{ResourceLevel, ResourceType},
+            resources::{Resource, ResourceLevel, ResourceType},
         },
         mime::Mime,
         std::sync::Arc,

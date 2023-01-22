@@ -1,6 +1,6 @@
 use {
     crate::{
-        archive::{Archive, ArchiveCache, ArchiveComponent, ArchiveRoot},
+        archive::{Archive, ArchiveCache, ArchiveRoot},
         component::ComponentDetails,
         lewp_archive,
         resources::{

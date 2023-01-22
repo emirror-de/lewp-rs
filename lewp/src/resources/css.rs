@@ -28,7 +28,7 @@ mod property_classification;
 mod test;
 
 pub(crate) use {
-    entireness::Entireness,
+    //entireness::Entireness,
     processed_component::ProcessedComponent,
     property_classification::PropertyClassification,
 };

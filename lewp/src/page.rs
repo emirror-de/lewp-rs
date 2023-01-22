@@ -120,10 +120,12 @@ use {
     },
     html5ever::serialize,
     markup5ever_rcdom::SerializableHandle,
-    minify_js::{minify, TopLevelMode},
     state::*,
     std::sync::Arc,
 };
+
+#[cfg(not(debug_assertions))]
+use minify_js::{minify, TopLevelMode};
 
 mod state;
 
