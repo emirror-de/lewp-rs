@@ -23,7 +23,7 @@ Lewp.prototype.init = function() {
 			'body [data-lewp-type="component"][class="' + module_id + '"]'
 		);
 		let module_url = new URL(module_script.src);
-		import("." + module_url.pathname).then((module) => {
+		import(module_url.pathname).then((module) => {
 			if (!Object.keys(module).includes('init')) {
 				console.debug({
 					'message': 'No init method exported from script.',
