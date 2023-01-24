@@ -28,7 +28,7 @@
 //! * No more template hell in your code base
 //! * No more whitespace bugs in your website
 //! * Technically optimized, always valid, minified, HTML5 code
-//! * Component based development, truly isolated with minimum overhead
+//! * Component based development, truly isolated
 //! * Storage definition with pre-defined paths for easy resource management
 //! * Uses [rust_embed] under the hood so all your assets are always available
 //! * Build the DOM completely in Rust
@@ -73,7 +73,6 @@
 //! }
 //!
 //! struct HelloWorldPage;
-//!
 //! impl PageModel for HelloWorldPage {
 //!     fn id(&self) -> PageId {
 //!         "hello-world-page".into()

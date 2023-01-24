@@ -303,6 +303,7 @@ impl<P: PageModel> Page<P, PageFinished> {
             ),
             Some(js) => {
                 let js_vec = js.data.to_vec();
+                /*
                 #[cfg(not(debug_assertions))]
                 let js_vec = match Self::minify_javascript(js_vec) {
                     Ok(j) => j,
@@ -311,6 +312,7 @@ impl<P: PageModel> Page<P, PageFinished> {
                         js.data.to_vec()
                     }
                 };
+                */
                 match String::from_utf8(js_vec) {
                     Ok(s) => head.push(script(Script::Inline(&s))),
                     Err(e) => log::error!(
