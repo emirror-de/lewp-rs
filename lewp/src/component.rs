@@ -3,7 +3,7 @@
 //! # Hello World! example
 //!```rust
 //! # use lewp::{
-//! #     component::{Component, ComponentId},
+//! #     component::{Component, ComponentId, ComponentModel},
 //! #     html::{
 //! #         api::{h1, text},
 //! #         Node,
@@ -26,8 +26,8 @@
 //!     }
 //! }
 //!
-//! // Implement the [Component] trait to define the behavior and view.
-//! impl Component for HelloWorld {
+//! // Implement the [ComponentModel] trait to define the behavior and view.
+//! impl ComponentModel for HelloWorld {
 //!     // No message required for a simple component.
 //!     // A message can be used by other components to update the state of
 //!     // this component after the initial processing has taken place.
@@ -74,7 +74,7 @@ use {
 /// Implement this trait to create a component for your web page. This trait
 /// also pre-defines some defaults like the dependency list. Make sure that
 /// you implement these methods as well if you deviate from the defaults.
-pub trait Component
+pub trait ComponentModel
 where
     Self: Sized,
 {
@@ -117,20 +117,16 @@ where
     fn dependency_list(&self) -> DependencyList {
         DependencyList::default()
     }
-    /// Returns a new component that can be added to a page.
-    fn new(component: Self) -> ComponentWrapper<Self> {
-        ComponentWrapper::from(component)
-    }
 }
 
 /// A unique component ID.
 pub type ComponentId = String;
 
-/// A component that is used to create web pages. This struct is created when calling
-/// [Component::new] and should only be instantiated this way.
-pub struct ComponentWrapper<C>
+/// A component that is used to create web pages. This struct can be created from
+/// a [ComponentModel].
+pub struct Component<C>
 where
-    C: Component,
+    C: ComponentModel,
 {
     ///// Contains head nodes required by the component.
     head: Rc<RefCell<NodeList>>,
@@ -141,9 +137,9 @@ where
     view: Rc<RefCell<Option<Node>>>,
 }
 
-impl<C> ComponentWrapper<C>
+impl<C> Component<C>
 where
-    C: Component,
+    C: ComponentModel,
 {
     /// Executes and renders the component by calling its
     /// [main](Component::main) and [view](Component::view) method.
@@ -155,7 +151,7 @@ where
 
     /// Updates the model by calling the models [update](Component::update)
     /// method using the given message.
-    pub fn update(&mut self, message: <C as Component>::Message) {
+    pub fn update(&mut self, message: <C as ComponentModel>::Message) {
         log::debug!(
             "Updating component state \"{}\"",
             self.model.borrow().id()
@@ -236,7 +232,7 @@ where
     }
 }
 
-impl<C: Component> From<C> for ComponentWrapper<C> {
+impl<C: ComponentModel> From<C> for Component<C> {
     fn from(model: C) -> Self {
         log::debug!("Creating new component for model: \"{}\"", model.id());
         let model = Rc::new(RefCell::new(model));

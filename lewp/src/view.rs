@@ -5,7 +5,7 @@
 
 use {
     crate::{
-        component::{Component, ComponentId, ComponentWrapper, DependencyList},
+        component::{Component, ComponentId, ComponentModel, DependencyList},
         html::{Node, NodeExt, NodeList},
     },
     std::{cell::RefCell, rc::Rc},
@@ -41,9 +41,9 @@ pub struct PageView {
 
 impl PageView {
     /// Appends the component to the page view.
-    pub fn push<C: Component>(
+    pub fn push<C: ComponentModel>(
         &mut self,
-        component: &mut ComponentWrapper<C>,
+        component: &mut Component<C>,
     ) -> &mut Self {
         log::debug!("Added component \"{}\"", component.id());
         component.main();

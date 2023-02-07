@@ -1,5 +1,5 @@
 use lewp::{
-    component::{Component, ComponentId, DependencyList},
+    component::{Component, ComponentId, ComponentModel, DependencyList},
     html::{
         api::{div, h1, h2, text},
         Node,
@@ -23,8 +23,8 @@ impl Parent {
     }
 }
 
-// Implement the [Component] trait to define the behavior and view.
-impl Component for Parent {
+// Implement the [ComponentModel] trait to define the behavior and view.
+impl ComponentModel for Parent {
     // No message required for a simple component.
     type Message = ();
 
@@ -62,8 +62,8 @@ impl Component for Parent {
 // Define your component that is nested in [Parent].
 struct NestedComponent;
 
-// Implement the [Component] trait to define the behavior and view.
-impl Component for NestedComponent {
+// Implement the [ComponentModel] trait to define the behavior and view.
+impl ComponentModel for NestedComponent {
     // No message required for a simple component.
     type Message = ();
 
@@ -100,7 +100,7 @@ impl PageModel for HelloWorldPage {
     // The main method of the page. In here you can add your components to the
     // page and do whatever processing is required for your page to be rendered.
     fn main(&self, view: &mut PageView) {
-        let mut comp = Component::new(Parent::new());
+        let mut comp = Component::from(Parent::new());
         // the component is only borrowed, to enable the possibility of adding
         // it twice to your page. You can use the state of your component to
         // define the behavior when adding it multiple times.

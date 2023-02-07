@@ -1,6 +1,6 @@
 use {
     lewp::{
-        component::{Component, ComponentId},
+        component::{Component, ComponentId, ComponentModel},
         page::{Page, PageId, PageModel},
         view::PageView,
     },
@@ -16,8 +16,8 @@ impl HeadComponent {
     }
 }
 
-// Implement the [Component] trait to define the behavior and view.
-impl Component for HeadComponent {
+// Implement the [ComponentModel] trait to define the behavior and view.
+impl ComponentModel for HeadComponent {
     // No message required for a simple component.
     type Message = ();
 
@@ -59,7 +59,7 @@ impl PageModel for HeadOnlyPage {
     // The main method of the page. In here you can add your components to the
     // page and do whatever processing is required for your page to be rendered.
     fn main(&self, view: &mut PageView) {
-        let mut comp = Component::new(HeadComponent::new());
+        let mut comp = Component::from(HeadComponent::new());
         // the component is only borrowed, to enable the possibility of adding
         // it twice to your page. You can use the state of your component to
         // define the behavior when adding it multiple times.

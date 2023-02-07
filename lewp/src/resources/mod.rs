@@ -1,7 +1,4 @@
-//! Contains access to resources in a given [storage](crate::storage).
-//!
-//! See [MemoryStorage](crate::storage::MemoryStorage) for optimized usage in
-//! combination with [Css] and [Js].
+//! Contains access to resources in a given [archive](crate::archive).
 
 use {
     crate::archive::{Archive, ArchiveComponent},

@@ -1,5 +1,5 @@
 use lewp::{
-    component::{Component, ComponentId},
+    component::{Component, ComponentId, ComponentModel},
     html::{
         api::{h1, text},
         Node,
@@ -21,8 +21,8 @@ impl HelloWorld {
     }
 }
 
-// Implement the [Component] trait to define the behavior and view.
-impl Component for HelloWorld {
+// Implement the [ComponentModel] trait to define the behavior and view.
+impl ComponentModel for HelloWorld {
     // No message required for a simple component.
     type Message = ();
 
@@ -59,7 +59,7 @@ impl PageModel for HelloWorldPage {
     // The main method of the page. In here you can add your components to the
     // page and do whatever processing is required for your page to be rendered.
     fn main(&self, view: &mut PageView) {
-        let mut comp = Component::new(HelloWorld::new());
+        let mut comp = Component::from(HelloWorld::new());
         // The component is only borrowed, to enable the possibility of adding
         // it twice to your page. You can use the state of your component to
         // define the behavior when adding it multiple times.
