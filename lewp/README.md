@@ -1,8 +1,11 @@
-![](logo/lewp-transparent-background.inkscape.png)
+![](https://github.com/emirror-de/lewp-rs/raw/main/logo/lewp-transparent-background.inkscape.png)
 
 ----------------
 
-![Version](https://img.shields.io/crates/v/lewp?style=flat-square) [![](https://img.shields.io/docsrs/lewp?style=flat-square)](https://docs.rs/lewp) ![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square) ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)
+![Version](https://img.shields.io/crates/v/lewp?style=flat-square)
+[![](https://img.shields.io/docsrs/lewp?style=flat-square)](https://docs.rs/lewp)
+![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square)
+![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)
 
 ## ❓What is lewp?
 
@@ -48,23 +51,25 @@ If you have questions, want to contribute or have any other type of request, you
 ## 📦 Features
 
 
-- [x] No more template hell in your code base
-- [x] No more whitespace bugs in your website
-- [x] Technically optimized, always valid, minified, HTML5 code
-- [x] Component based development, truly isolated with minimum overhead
-- [x] Storage definition with pre-defined paths for easy resource management
-- [x] Uses [rust_embed](https://docs.rs/rust-embed/latest/rust_embed/index.html)
+- No more template hell in your code base
+- No more whitespace bugs in your website
+- Technically optimized, always valid, minified, HTML5 code
+- Component based development, truly isolated
+- Storage definition with pre-defined paths for easy resource management
+- Uses [rust_embed](https://docs.rs/rust-embed/latest/rust_embed/index.html)
 under the hood so all your assets are always available
-- [x] Build the DOM completely in Rust
+- Build the DOM completely in Rust
 
 ## 🚌 Planned feature list
 
-- [ ] CSS can be split up into "render critical" (will be inlined on rendering)
+- Option to split CSS up into "render critical" (will be inlined on rendering)
 and "non render critical" parts that will be inserted as `<link>`
-- [ ] [html5-picture](https://github.com/emirror-de/html5-picture) support to be
+- [html5-picture](https://github.com/emirror-de/html5-picture) support to be
 able to scale the images to predefined sizes for specific breakpoint optimization
-- [ ] JavaScript *per component* isolation
-- [ ] Provide an API for localization (l10n)
+- JavaScript minification
+- Provide an API for localization (l10n)
+- Async main method for `PageModel` and `ComponentModel`
+- More to come ... :-)
 
 ## 🤠 Contributing
 
@@ -76,7 +81,61 @@ Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines and co
 
 Licensed under either of
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](https://github.com/emirror-de/naphtha/blob/main/LICENSE-APACHE) or https://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](https://github.com/emirror-de/naphtha/blob/main/LICENSE-MIT) or https://opensource.org/licenses/MIT)
+- Apache License, Version 2.0 ([LICENSE-APACHE](https://github.com/emirror-de/lewp-rs/blob/main/LICENSE-APACHE))
+- MIT license ([LICENSE-MIT](https://github.com/emirror-de/lewp-rs/blob/main/LICENSE-MIT))
 
 at your option.
+
+
+## Hello world example
+
+For more examples with comments have a look at the repositories
+[examples](https://github.com/emirror-de/lewp-rs/tree/main/lewp/examples).
+
+```rust
+use lewp::{
+    component::{Component, ComponentId, ComponentModel},
+    html::{
+        api::{h1, text},
+        Node,
+    },
+    page::{Page, PageId, PageModel},
+    view::PageView,
+};
+struct HelloWorld {
+    data: String,
+}
+impl HelloWorld {
+    pub fn new() -> Self {
+        Self {
+            data: String::from("Hello World!"),
+        }
+    }
+}
+impl ComponentModel for HelloWorld {
+    type Message = ();
+    fn id(&self) -> ComponentId {
+        "hello-world".into()
+    }
+    fn main(&mut self) {}
+    fn view(&self) -> Option<Node> {
+        Some(h1(vec![text(&self.data)]))
+    }
+}
+struct HelloWorldPage;
+impl PageModel for HelloWorldPage {
+    fn id(&self) -> PageId {
+        "hello-world-page".into()
+    }
+    fn main(&self, view: &mut PageView) {
+        let mut comp = Component::from(HelloWorld::new());
+        view.push(&mut comp);
+    }
+}
+fn main() {
+    simple_logger::init().unwrap();
+    let page = Page::from(HelloWorldPage {});
+    let executed_page = page.main();
+    println!("{}", executed_page.render());
+}
+```
