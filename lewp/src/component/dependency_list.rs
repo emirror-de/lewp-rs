@@ -5,7 +5,7 @@
 use {super::ComponentId, std::fmt::Display};
 
 /// A list of components that are required by your
-/// [Component](super::Component) implementation.
+/// [ComponentModel](super::ComponentModel) implementation.
 #[derive(Clone, Default)]
 pub struct DependencyList {
     dependency_list: Vec<ComponentId>,

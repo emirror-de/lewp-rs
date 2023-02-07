@@ -60,33 +60,6 @@ If you have questions, want to contribute or have any other type of request, you
 under the hood so all your assets are always available
 - Build the DOM completely in Rust
 
-## 🚌 Planned feature list
-
-- Option to split CSS up into "render critical" (will be inlined on rendering)
-and "non render critical" parts that will be inserted as `<link>`
-- [html5-picture](https://github.com/emirror-de/html5-picture) support to be
-able to scale the images to predefined sizes for specific breakpoint optimization
-- JavaScript minification
-- Provide an API for localization (l10n)
-- Async main method for `PageModel` and `ComponentModel`
-- More to come ... :-)
-
-## 🤠 Contributing
-
-Unless explicitly stated, any contribution intentionally submitted for inclusion in this project, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
-
-Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines and conventions.
-
-## ⚖ License
-
-Licensed under either of
-
-- Apache License, Version 2.0 ([LICENSE-APACHE](https://github.com/emirror-de/lewp-rs/blob/main/LICENSE-APACHE))
-- MIT license ([LICENSE-MIT](https://github.com/emirror-de/lewp-rs/blob/main/LICENSE-MIT))
-
-at your option.
-
-
 ## Hello world example
 
 For more examples with comments have a look at the repositories
@@ -139,3 +112,29 @@ fn main() {
     println!("{}", executed_page.render());
 }
 ```
+
+## 🚌 Planned feature list
+
+- Option to split CSS up into "render critical" (will be inlined on rendering)
+and "non render critical" parts that will be inserted as `<link>`
+- [html5-picture](https://github.com/emirror-de/html5-picture) support to be
+able to scale the images to predefined sizes for specific breakpoint optimization
+- JavaScript minification
+- Provide an API for localization (l10n)
+- Async main method for `PageModel` and `ComponentModel`
+- More to come ... :-)
+
+## 🤠 Contributing
+
+Unless explicitly stated, any contribution intentionally submitted for inclusion in this project, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
+
+Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines and conventions.
+
+## ⚖ License
+
+Licensed under either of
+
+- Apache License, Version 2.0 ([LICENSE-APACHE](https://github.com/emirror-de/lewp-rs/blob/main/LICENSE-APACHE))
+- MIT license ([LICENSE-MIT](https://github.com/emirror-de/lewp-rs/blob/main/LICENSE-MIT))
+
+at your option.
