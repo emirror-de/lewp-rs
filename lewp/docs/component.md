@@ -89,7 +89,7 @@ example in the repository, as this is a bit more noisy.
 # How do I add `CSS` or `JavaScript` to my component?
 
 `lewp-rs` by design does not support the definition of `CSS` or `JavaScript` within
-your Rust component. To use these features, an
+your Rust component. To use `CSS` or `JavaScript` on the client side, an
 [Archive](super::archive::Archive) is required. Please have a look at the
 [Css ArchiveComponent](crate::resources::Css) and
 [Js ArchiveComponent](crate::resources::Js) documentation as well.

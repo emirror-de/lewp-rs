@@ -1,5 +1,5 @@
 //! A component can be used to create self-contained areas of your web page, for example a navigation bar.
-#![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/docs/component.md"))]
+#![doc = include_str!("../docs/component.md")]
 
 mod dependency_list;
 mod details;
@@ -88,7 +88,7 @@ where
     C: ComponentModel,
 {
     /// Executes and renders the component by calling its
-    /// [main](Component::main) and [view](Component::view) method.
+    /// [main](Component::main) method and updates its view.
     pub fn main(&mut self) {
         log::debug!("Running component \"{}\"", self.model.borrow().id());
         self.model.borrow_mut().main();

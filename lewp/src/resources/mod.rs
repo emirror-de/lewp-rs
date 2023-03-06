@@ -66,8 +66,8 @@ impl TryFrom<&std::ffi::OsStr> for ResourceLevel {
 
 /// A specific resource with additional information required to be used in a webpage.
 ///
-/// Especially used in combination with [ArchiveCache] because the [WebInterface]
-/// is no longer available after loading from disk.
+/// Especially used in combination with [ArchiveCache](crate::archive::ArchiveCache)
+/// because the [WebInterface] is no longer available after loading from disk.
 #[derive(Debug)]
 pub struct Resource<R: crate::archive::ArchiveComponent> {
     model: R,

@@ -122,7 +122,7 @@ able to scale the images to predefined sizes for specific breakpoint optimizatio
 - JavaScript minification
 - Provide an API for localization (l10n)
 - Async main method for `PageModel` and `ComponentModel`
-- More to come ... :-)
+- More to come, throw your ideas to the issues ... :-)
 
 ## 🤠 Contributing
 
