@@ -5,6 +5,10 @@ the generation of HTML code on the server and ends mainly with CSS and JavaScrip
 on the client side. By implementing [ComponentModel] you define the behavior
 as well as all dependencies of your component.
 
+**Components are executed once**. When the state of your component should be updated
+later in the generation of your page, you can use the [ComponenModel::Message] type
+in combination with the [ComponentModel::update] method. See below for more information.
+
 # The navigation bar example
 
 A component can represent anything you can imagine for your web page. Lets have
@@ -62,7 +66,8 @@ impl ComponentModel for NavigationBar {
             li(vec![a("/admin", vec![text("Administrator")])]),
             li(vec![a("/faq", vec![text("FAQ")])]),
         ];
-        // this is of course bad practice, but simple enough for demonstration
+        // Accessing indices directly without previous checks is of course bad practice,
+        // but simple enough for demonstration in our case.
         list_items[self.selected_index].borrow_attr("class", "selected");
 				
         Some(nav(vec![ul(list_items)]))
@@ -72,6 +77,19 @@ impl ComponentModel for NavigationBar {
 
 Thats basically it. Your component now renders a list of three links with the
 selected one having a `class` attribute with the value `selected`.
+
+### Why `Option` as return type of `view`?
+
+In `lewp` it is also possible to create "head-only" components, meaning they
+do not get rendered inside the `<body>` tag of your page, but exist inside `<head>`.
+At first glance this seems to be a bit more of boilerplate, but enables more flexible
+use cases for `lewp`. By using "head-only" components it is possible to include
+scripts that do not have visible DOM nodes attached to your page.
+
+To create a "head-only" component, simply return `None` in the `view` method.
+An example can be found in the
+[examples](https://github.com/emirror-de/lewp-rs/tree/main/lewp/examples)
+folder in the repository.
 
 ### The `ComponentModel::Message` type
 
@@ -84,7 +102,8 @@ the [update](ComponentModel::update) method.
 
 It is also possible to nest multiple components. Please have a look at the
 [nested component](https://github.com/emirror-de/lewp-rs/blob/main/lewp/examples/nested-component.rs)
-example in the repository, as this is a bit more noisy.
+example in the repository, as this is a bit more noisy. Please pay special attention
+to the [ComponentModel::nested_view] method when nesting components.
 
 # How do I add `CSS` or `JavaScript` to my component?
 
