@@ -6,7 +6,12 @@ use {
     std::path::PathBuf,
 };
 
-/// Details that identify a [ComponentModel](super::ComponentModel).
+/// Identifies a [ComponentModel](super::ComponentModel). Used to serve resources by URL.
+///
+/// This struct contains all required information to identify your component.
+/// By combining all parameter into a URL, it is possible to serve resources
+/// for a web page. See [Archive::parse](crate::archive::Archive::parse) method
+/// for the default implementation.
 #[derive(Hash, PartialEq, Eq, Clone, Debug)]
 pub struct ComponentDetails {
     /// The resource level.

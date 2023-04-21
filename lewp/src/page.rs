@@ -23,7 +23,6 @@ use {
             NodeList,
             Script,
         },
-        lewp_archive,
         resources::{Css, Js, Resource, ResourceLevel, ResourceType},
         view::PageView,
         Charset,
@@ -40,7 +39,10 @@ use minify_js::{minify, TopLevelMode};
 
 mod state;
 
-lewp_archive!(LewpJavaScript, "js");
+/// JavaScript scripts required to run `lewp`.
+#[derive(rust_embed::RustEmbed)]
+#[folder = "js"]
+pub struct LewpJavaScript;
 
 /// Defines the unique page ID. This ID is used to identify eg. the page resources
 /// on the file system.

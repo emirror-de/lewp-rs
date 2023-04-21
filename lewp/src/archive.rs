@@ -1,5 +1,5 @@
-//! Provides an archive for your resources. Use [ArchiveCache] to load your resources
-//! from any [Archive] to memory for efficient retrieval.
+//! Provides an archive for your resources with the possibility to embed it in your binary.
+#![doc = include_str!(concat!("../docs/archive.md"))]
 
 use {
     crate::{
@@ -20,7 +20,8 @@ mod root;
 
 pub use {cache::ArchiveCache, component::ArchiveComponent, root::ArchiveRoot};
 
-/// Defines an archive at the given filesystem location.
+/// Defines an archive at the given filesystem location. Uses [rust-embed](rust_embed)
+/// under the hood to compile the archive files into the release binary.
 ///
 /// For example:
 /// ```rust

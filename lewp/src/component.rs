@@ -39,7 +39,7 @@ where
     /// Defines the view of the component.
     fn view(&self) -> Option<Node>;
     /// Use this when rendering a nested component. This ensures that all
-    /// required attributes are set to make your `JavaScript` work on client side.
+    /// required attributes are set to make your `JavaScript` and `CSS` work on client side.
     fn nested_view(&self) -> Option<Node> {
         match self.view() {
             Some(v) => {
