@@ -1,6 +1,6 @@
 use {
     crate::{
-        archive::{Archive, ArchiveCache, ArchiveRoot},
+        archive::{Archive, ArchiveCache},
         component::ComponentDetails,
         lewp_archive,
         resources::{
@@ -16,12 +16,6 @@ use {
 };
 
 lewp_archive!(TestArchive, "testfiles");
-
-impl ArchiveRoot for TestArchive {
-    fn root() -> PathBuf {
-        PathBuf::from("testfiles")
-    }
-}
 impl WebInterface for TestArchive {}
 
 #[test]

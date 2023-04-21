@@ -76,18 +76,11 @@ impl ArchiveComponent for Image {
 #[test]
 fn read_rust_logo() {
     use crate::{
-        archive::ArchiveRoot,
         lewp_archive,
         resources::{Image, WebInterface},
     };
 
     lewp_archive!(TestArchive, "testfiles");
-
-    impl ArchiveRoot for TestArchive {
-        fn root() -> PathBuf {
-            PathBuf::from("testfiles")
-        }
-    }
     impl WebInterface for TestArchive {}
 
     let image_details = ImageOptions {
