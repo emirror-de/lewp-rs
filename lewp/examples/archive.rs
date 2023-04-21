@@ -73,12 +73,6 @@ impl PageModel for HelloWorldPage {
 
 // This defines where your hierarchy is stored. You can have multiple.
 lewp_archive!(TestArchive, "testfiles");
-
-impl ArchiveRoot for TestArchive {
-    fn root() -> PathBuf {
-        PathBuf::from("testfiles")
-    }
-}
 impl WebInterface for TestArchive {}
 
 fn main() {

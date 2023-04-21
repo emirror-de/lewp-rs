@@ -36,10 +36,15 @@ pub use {cache::ArchiveCache, component::ArchiveComponent, root::ArchiveRoot};
 #[macro_export]
 macro_rules! lewp_archive {
     ($name: ident, $folder: literal) => {
-        /// The archive in the defined folder.
+        /// User defined archive in the given folder.
         #[derive(::rust_embed::RustEmbed)]
         #[folder = $folder]
         pub struct $name;
+        impl $crate::archive::ArchiveRoot for $name {
+            fn root() -> ::std::path::PathBuf {
+                ::std::path::PathBuf::from($folder)
+            }
+        }
     };
 }
 
@@ -275,12 +280,6 @@ mod tests {
     }
 
     lewp_archive!(ResourceArchive, "testfiles");
-
-    impl ArchiveRoot for ResourceArchive {
-        fn root() -> PathBuf {
-            PathBuf::from("testfiles")
-        }
-    }
     impl WebInterface for ResourceArchive {}
 
     fn archive_cache_example() -> ArchiveCache {
