@@ -12,7 +12,7 @@ use {
             WebInterface,
         },
     },
-    std::{path::PathBuf, sync::Arc},
+    std::sync::Arc,
 };
 
 lewp_archive!(TestArchive, "testfiles");

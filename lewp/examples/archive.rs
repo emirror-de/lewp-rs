@@ -1,17 +1,14 @@
-use {
-    lewp::{
-        archive::{ArchiveCache, ArchiveRoot},
-        component::{Component, ComponentId, ComponentModel},
-        html::{
-            api::{h1, text},
-            Node,
-        },
-        lewp_archive,
-        page::{Page, PageId, PageModel},
-        resources::WebInterface,
-        view::PageView,
+use lewp::{
+    archive::ArchiveCache,
+    component::{Component, ComponentId, ComponentModel},
+    html::{
+        api::{h1, text},
+        Node,
     },
-    std::path::PathBuf,
+    lewp_archive,
+    page::{Page, PageId, PageModel},
+    resources::WebInterface,
+    view::PageView,
 };
 
 // Your hello world component.
