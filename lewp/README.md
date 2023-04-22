@@ -7,16 +7,27 @@
 ![Downloads](https://img.shields.io/crates/d/lewp?style=flat-square)
 ![MIT or Apache-2.0 License](https://img.shields.io/crates/l/lewp?style=flat-square)
 
-## ❓What is lewp?
+## ❓ What is lewp?
 
-Lewp is a modular library that supports you in generating and rendering
-your website with ease. Your components will be automatically isolated so
-CSS and JavaScript definitions are not a pain anymore and do not interfere each other!
-It also provides you with the possibility to
-manage different types of resources like images required for your website and
-embeds them on release build into the final binary.
-Lewp also saves you from getting stuck and lost in the web template hell
-by **NOT** mixing languages as other solutions do.
+Lewp is a server side website rendering framework that enables you to use the
+full
+algorithmic power of Rust for the creation of technically valid HTML5 websites.
+
+Its approach differs from most of the popular frameworks currently available by
+not using templates, `JSX` or other custom syntax that mixes languages. This
+prevents your code from getting messy ending up in unmaintainable spaghetti.
+
+By its unique identification approach of pages, components and resources, Lewp
+speeds up the development of your next website and makes it easier to maintain
+even when you did not touch your source code for a longer period of time.
+
+Thanks to lewp's file hierarchy implementation, structuring your resources has
+never been easier. They even get compiled into the final binary, so you do not
+need to worry about missing resources on deployment any longer. Your components
+CSS and JavaScript is automatically isolated and integrated into your webpage,
+so no more tearing one's hair about the optimization of your `<script>` and
+`<link>` tags. You will find more simplifications and optimizations for your
+website creation while exploring lewp.
 
 Generate your HTML5 website technically optimized and always valid without
 losing the algorithmic comfort and flexibility.
@@ -30,19 +41,19 @@ If you have questions, want to contribute or have any other type of request, you
 
 ## 🥅 Project goals
 
-1. ***Simplfying*** the creation of web pages ***without mixing programming languages*** or 
+1. **Simplfying** the creation of web pages **without mixing programming languages** or 
    putting logic into your HTML (like it is done in templates)
 
-2. Creating ***modularized websites*** with ***truly isolated*** and ***reusable*** 
-   components/modules, eg. automatically ***namespaced CSS*** and ***JavaScript***
+2. Creating **modularized websites** with **truly isolated** and **reusable** 
+   components/modules, eg. automatically **namespaced CSS** and **JavaScript**
 
-3. Providing a ***storage with pre-defined folder hierarchy*** for easy resource management and possibility to ***share*** between different projects
+3. Providing a default implementation of a **folder hierarchy for easy resource management** and possibility to **share between different projects**
 
-4. Getting the ***best of both*** worlds, ***server side rendering*** and ***client side application logic***
+4. Getting the **best of both** worlds, **server side rendering** and **client side application logic**
 
-5. ***Minimization*** of ***page loading*** times (for example FCP and TTI)
+5. **Minimization** of **page loading** times (for example FCP and TTI)
 
-6. ***No HTML boilerplate*** code
+6. **No HTML boilerplate** code
 
 7. Applying **SEO** best practices already in development setup as much as possible
 
@@ -55,12 +66,12 @@ If you have questions, want to contribute or have any other type of request, you
 - No more whitespace bugs in your website
 - Technically optimized, always valid, minified, HTML5 code
 - Component based development, truly isolated
-- Storage definition with pre-defined paths for easy resource management
+- Archive definition with pre-defined paths for easy resource management
 - Uses [rust_embed](https://docs.rs/rust-embed/latest/rust_embed/index.html)
 under the hood so all your assets are always available
 - Build the DOM completely in Rust
 
-## Hello world example
+## Quick start example
 
 For more examples with comments have a look at the repositories
 [examples](https://github.com/emirror-de/lewp-rs/tree/main/lewp/examples).
