@@ -38,7 +38,7 @@ pub use {cache::ArchiveCache, component::ArchiveComponent, root::ArchiveRoot};
 macro_rules! lewp_archive {
     ($name: ident, $folder: literal) => {
         /// User defined archive in the given folder.
-        #[derive(::rust_embed::RustEmbed)]
+        #[derive(::lewp::rust_embed::RustEmbed)]
         #[folder = $folder]
         pub struct $name;
         impl $crate::archive::ArchiveRoot for $name {

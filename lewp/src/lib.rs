@@ -1,7 +1,7 @@
 #![deny(missing_docs)]
 #![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/README.md"))]
 
-pub use {charsets::Charset, langtag::LanguageTag};
+pub use {charsets::Charset, langtag::LanguageTag, rust_embed};
 
 /// Re-export of the [lewp_html] crate.
 pub mod html {
