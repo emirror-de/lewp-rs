@@ -10,6 +10,8 @@
 
 ### 📈 Changes
 
+- All functions in `api` module now take `impl ToString` instead of `&str`
+
 ### 🐛 Bugfixes
 
 ### 🔨 Breaking changes

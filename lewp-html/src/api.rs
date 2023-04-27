@@ -239,9 +239,13 @@ api_children_only! {
 }
 
 /// Helper function to create a tag node.
-fn new_element(tag_name: &str, children: NodeList) -> Node {
+fn new_element(tag_name: impl ToString, children: NodeList) -> Node {
     let node = rcdom::Node::new(rcdom::NodeData::Element {
-        name: QualName::new(None, ns!(html), LocalName::from(tag_name)),
+        name: QualName::new(
+            None,
+            ns!(html),
+            LocalName::from(&tag_name.to_string()[..]),
+        ),
         attrs: RefCell::new(vec![]),
         template_contents: RefCell::new(None),
         mathml_annotation_xml_integration_point: false,
@@ -279,15 +283,16 @@ pub fn html(language: LanguageTag, head: Node, body: Node) -> Node {
 }
 
 /// Creates a [title](https://html.spec.whatwg.org/dev/semantics.html#the-title-element) element.
-pub fn title(title: &str) -> Node {
+pub fn title(title: impl ToString) -> Node {
     new_element("title", vec![text(title)])
 }
 
 /// Creates a [base](https://html.spec.whatwg.org/dev/semantics.html#the-base-element) element.
-pub fn base(href: &str, target: BrowsingContext) -> Node {
+pub fn base(href: impl ToString, target: BrowsingContext) -> Node {
     let mut e = new_element("base", vec![]);
+    let href = href.to_string();
     if !href.is_empty() {
-        e = e.attr("href", href);
+        e = e.attr("href", &href);
     }
     match target {
         BrowsingContext::Empty => e,
@@ -296,13 +301,15 @@ pub fn base(href: &str, target: BrowsingContext) -> Node {
 }
 
 /// Creates a [link](https://html.spec.whatwg.org/dev/semantics.html#the-link-element) element.
-pub fn link(type_: &str, href: &str) -> Node {
+pub fn link(type_: impl ToString, href: impl ToString) -> Node {
     let mut e = new_element("link", vec![]);
+    let href = href.to_string();
     if !href.is_empty() {
-        e = e.attr("href", href);
+        e = e.attr("href", &href);
     }
+    let type_ = type_.to_string();
     if !type_.is_empty() {
-        e = e.attr("type", type_);
+        e = e.attr("type", &type_);
     }
     e
 }
@@ -329,36 +336,40 @@ pub fn style(text: Node) -> Node {
 }
 
 /// Creates an [anchor](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-a-element) element.
-pub fn a(href: &str, children: NodeList) -> Node {
+pub fn a(href: impl ToString, children: NodeList) -> Node {
     let mut e = new_element("a", children);
+    let href = href.to_string();
     if !href.is_empty() {
-        e = e.attr("href", href);
+        e = e.attr("href", &href);
     }
     e
 }
 
 /// Creates an [data](https://html.spec.whatwg.org/dev/text-level-semantics.html#the-data-element) element.
-pub fn data(value: &str, children: NodeList) -> Node {
-    new_element("a", children).attr("value", value)
+pub fn data(value: impl ToString, children: NodeList) -> Node {
+    new_element("a", children).attr("value", &value.to_string())
 }
 
 /// Creates an [img](https://html.spec.whatwg.org/dev/embedded-content.html#the-img-element) element.
-pub fn img(src: &Path, title: &str, alt: &str) -> Node {
+pub fn img(src: &Path, title: impl ToString, alt: impl ToString) -> Node {
     new_element("img", vec![]).attrs(vec![
         ("src", &format!("{}", src.display())),
-        ("alt", alt),
-        ("title", title),
+        ("alt", &alt.to_string()),
+        ("title", &title.to_string()),
     ])
 }
 
 /// Creates an [param](https://html.spec.whatwg.org/dev/iframe-embed-object.html#the-param-element) element.
-pub fn param(name: &str, value: &str) -> Node {
-    new_element("param", vec![]).attrs(vec![("name", name), ("value", value)])
+pub fn param(name: impl ToString, value: impl ToString) -> Node {
+    new_element("param", vec![]).attrs(vec![
+        ("name", &name.to_string()),
+        ("value", &value.to_string()),
+    ])
 }
 
 /// Creates an [map](https://html.spec.whatwg.org/dev/image-maps.html#the-map-element) element.
-pub fn map(name: &str, children: NodeList) -> Node {
-    new_element("map", children).attr("name", name)
+pub fn map(name: impl ToString, children: NodeList) -> Node {
+    new_element("map", children).attr("name", &name.to_string())
 }
 /// Creates an [script](https://html.spec.whatwg.org/dev/scripting.html#the-script-element) element.
 pub fn script(content: Script) -> Node {
@@ -371,14 +382,14 @@ pub fn script(content: Script) -> Node {
 }
 
 /// Creates an element with the given custom name.
-pub fn custom(name: &str, children: NodeList) -> Node {
+pub fn custom(name: impl ToString, children: NodeList) -> Node {
     new_element(name, children)
 }
 
 /// Creates a text node.
-pub fn text(text: &str) -> Node {
+pub fn text(text: impl ToString) -> Node {
     rcdom::Node::new(NodeData::Text {
-        contents: RefCell::new(Tendril::from(text)),
+        contents: RefCell::new(Tendril::from(&text.to_string()[..])),
     })
 }
 
@@ -388,8 +399,11 @@ pub fn charset(charset: &Charset) -> Node {
 }
 
 /// Creates a `<meta>` tag node with description.
-pub fn description(description: &str) -> Node {
-    meta().attrs(vec![("name", "description"), ("content", description)])
+pub fn description(description: impl ToString) -> Node {
+    meta().attrs(vec![
+        ("name", "description"),
+        ("content", &description.to_string()),
+    ])
 }
 
 /// Creates a `<meta>` viewport tag node.
