@@ -3,7 +3,7 @@
 A page represents surprisingly, a HTML5 page. Every page consists of one or
 more [components](crate::component). By adding a component to your page,
 `lewp` knows which dependencies are required and automatically adds the required
-tags to the final document (if the files are available on the file system).
+tags to the final document (only if the files are available on the file system).
 However, `lewp` is designed to be very flexible
 about the integration of your CSS or JavaScript dependencies.
 To enable this, an [Archive](crate::archive::Archive)

@@ -52,6 +52,7 @@ pub struct CssOptions {
 /// module it belongs to. If the stylesheet's [level](ResourceLevel) is [Page](ResourceLevel::Page),
 /// then the resulting stylesheet is *NOT* isolated as there is no reason for
 /// isolating a page wide CSS rule.
+#[doc = include_str!(concat!("../../docs/resources/css.md"))]
 #[derive(Debug)]
 pub struct Css {
     details: ComponentDetails,

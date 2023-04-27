@@ -26,7 +26,7 @@ The state of your component is usually represented by a struct. We keep it simpl
 our case:
 ```rust
 struct NavigationBar {
-	pub selected_index: usize,
+    pub selected_index: usize,
 }
 ```
 Our navigation bar state only contains the index of the selected link.
@@ -104,6 +104,8 @@ It is also possible to nest multiple components. Please have a look at the
 [nested component](https://github.com/emirror-de/lewp-rs/blob/main/lewp/examples/nested-component.rs)
 example in the repository, as this is a bit more noisy. Please pay special attention
 to the [ComponentModel::nested_view] method when nesting components.
+In addition to that, make sure that you implement [ComponentModel::dependency_list]
+if you do have nested components.
 
 # How do I add `CSS` or `JavaScript` to my component?
 

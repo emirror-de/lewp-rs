@@ -47,9 +47,81 @@ written in Rust and has access to your archive struct.
 
 # Serving resources from a webserver
 
+## Using `Archive` or `ArchiveCache`
+
+While it is recommended to use an [ArchiveCache] instance for your resources,
+you can also use [Archive] to have more fine control about your resources.
+
+### `Archive`
+
+To use the [Archive] trait with your resource you
+simply make use of the [ArchiveComponent] trait that you implemented for your
+resource. If you are unsure how the content of this trait should look like, have
+a look at the [Js](crate::resources::Js) component implementation for reference.
+
+To use a resource you can follow this simple example:
+```rust
+use {
+    lewp::{
+        lewp_archive,
+        resources::{Resource, Js, JsOptions, ResourceLevel, WebInterface},
+    },
+};
+lewp_archive!(ResourceArchive, "testfiles");
+impl WebInterface for ResourceArchive {}
+
+// these options depend on the resource implementation
+let options = JsOptions {
+    id: "hello-world".into(),
+    level: ResourceLevel::Component,
+};
+// loads the resource from disk
+let js = Resource::<Js>::load::<ResourceArchive>(options).unwrap();
+```
+
+### `ArchiveCache`
+
+To efficiently process and serve resources, `lewp` provides the [ArchiveCache]
+struct. This cache implementation loads all resources on instantiation into
+memory and keeps them until the restart of your server.
+Using [ArchiveCache] is the recommended way to use resources in your app since
+it is faster due to its memory cache. Resources that are added to the [ArchiveCache]
+are loaded upon instantiation. This means the best way to use it is when you spin
+up your server. [ArchiveCache] is especially useful when having resources that
+require processing before they can be used. This can either be for example
+images that are scaled to different sizes, or `CSS` that
+is split up into parts (as `lewp` does).
+
+So your `main.rs` could look like the following:
+```rust
+use {
+    lewp::{
+        lewp_archive,
+        archive::ArchiveCache,
+        resources::{Resource, Js, JsOptions, ResourceLevel, WebInterface},
+    },
+};
+lewp_archive!(ResourceArchive, "testfiles");
+impl WebInterface for ResourceArchive {}
+
+fn main() {
+    // initialize whatever is required for your app...
+
+    let archive_cache = ArchiveCache::default()
+        .load_css::<ResourceArchive>().unwrap()
+        .load_javascript::<ResourceArchive>().unwrap()
+        // you can add more resources by using the insert or insert_all method
+        .seal(); // seal wraps the ArchiveCache into an Arc so it is read-only
+
+    // ... spin up your server
+}
+```
+
+## Route handler implementation
+
 It is pretty simple to serve your resources from a custom webserver. Keeping
 the example for the `ResourceArchive` above the implementation of a handler for
-eg `axum` should look like the following:
+eg `axum` could look like the following:
 ```rust
 # use {
 #     axum::{
@@ -134,11 +206,38 @@ pub async fn resources(
 }
 ```
 
-# Efficiently serving resources
+## Adding `ArchiveCache` to a page
 
-To efficiently process and serve resources, `lewp` provides the [ArchiveCache]
-struct. This cache implementation loads all resources on instantiation into
-memory and keeps them until the restart of your server. This is especially useful
-when having resources that require processing before they can be used. This can
-either be for example images that are scaled to different sizes, or `CSS` that
-is split up into parts (as `lewp` does).
+[Page](crate::page::Page)s need to know if they should serve your webpage in combination with an
+[ArchiveCache]. So for `lewp` to be able to automatically add resources like
+`CSS` or `JavaScript` you need to provide this information to the page:
+
+```rust
+# #[derive(Default)]
+# struct HomePage;
+# 
+# impl PageModel for HomePage {
+#     fn id(&self) -> PageId {
+#         "home-page".into()
+#     }
+#     fn main(&self, view: &mut PageView) {}
+# }
+# use {
+#     axum::{
+#         response::Html,
+#     },
+#     lewp::{
+#         page::{PageModel, PageId, Page},
+#         view::PageView,
+#         archive::{ArchiveCache},
+#         resources::WebInterface,
+#     },
+#     std::sync::Arc,
+# };
+fn your_route_handler(archive_cache: Arc<ArchiveCache>) -> Html<String> {
+    let page = Page::from(HomePage::default())
+        .with_archive_cache(archive_cache);
+    let page = page.main();
+    Html(page.render())
+}
+```
