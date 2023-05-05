@@ -19,3 +19,6 @@ markup5ever = { version = "0.11" }
 langtag = "0.3"
 log = "0.4"
 charsets = "0.2"
+
+[badges]
+maintenance = { status = "actively-developed"}
