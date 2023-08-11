@@ -234,7 +234,7 @@ impl<P: PageModel> Page<P, PageFinished> {
     #[cfg(not(debug_assertions))]
     fn minify_javascript(js_utf8: Vec<u8>) -> anyhow::Result<Vec<u8>> {
         let mut result = vec![];
-        if let Err(e) = minify(TopLevelMode::Global, js_utf8, &mut result) {
+        if let Err(e) = minify(TopLevelMode::Module, js_utf8, &mut result) {
             Err(anyhow::anyhow!("{e}"))
         } else {
             Ok(result)
